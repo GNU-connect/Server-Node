@@ -7,7 +7,7 @@ import {
   ListItem,
   Profile,
   Thumbnail,
-} from '../interfaces/etc';
+} from '../interfaces/response/fields/etc';
 import {
   SimpleText,
   SimpleImage,
@@ -16,7 +16,7 @@ import {
   ListCard,
   ItemCard,
   Component,
-} from '../interfaces/component';
+} from '../interfaces/response/fields/component';
 
 // SimpleText 생성 함수
 export function createSimpleText(text: string): SimpleText {

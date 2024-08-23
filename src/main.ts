@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { KakaoInterceptor } from './interceptors/kakao.interceptor';
+import { ResponseDTO } from './common/dto/response.dto';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
+  app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
 
   const config = new DocumentBuilder()
     .setTitle('커넥트지누 노드 서버 API')
@@ -15,7 +19,8 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
   await app.listen(PORT);
 }
+
 bootstrap();

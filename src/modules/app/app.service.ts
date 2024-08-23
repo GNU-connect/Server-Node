@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ContextControl } from 'src/common/interfaces/context';
-import { SkillTemplate } from 'src/common/interfaces/template';
-import { KakaoInterceptor } from 'src/interceptor/kakao.interceptor';
+import { ContextControl } from 'src/common/interfaces/response/fields/context';
+import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
+import { ResponseDTO } from '../../common/dto/response.dto';
 
 @Injectable()
 export class AppService {
-  getHello(): any {
+  getHello(): ResponseDTO {
     const exampleTemplate: SkillTemplate = {
       outputs: [
         {
@@ -29,12 +29,6 @@ export class AppService {
     const exampleData: Map<string, any> = new Map();
     exampleData.set('exampleKey', 'exampleValue');
 
-    const responseJson = KakaoInterceptor.generateResponseJson(
-      exampleTemplate,
-      exampleContext,
-      exampleData,
-    );
-
-    return responseJson;
+    return new ResponseDTO(exampleTemplate, exampleContext, exampleData);
   }
 }

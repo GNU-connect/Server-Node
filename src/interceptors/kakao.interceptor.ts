@@ -1,32 +1,20 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { ContextControl } from 'src/common/interfaces/context';
-import { SkillResponse } from 'src/common/interfaces/response';
-import { SkillTemplate } from 'src/common/interfaces/template';
+import { plainToInstance } from 'class-transformer';
+import { Observable, map } from 'rxjs';
 
-export class KakaoInterceptor {
-  private static readonly VERSION: string = '2.0';
+export class KakaoInterceptor implements NestInterceptor {
+  constructor(private dto: any) {}
 
-  // 응답 객체 생성
-  static createResponse(
-    template: SkillTemplate,
-    context?: ContextControl,
-    data?: Map<string, any>,
-  ): SkillResponse {
-    return {
-      version: KakaoInterceptor.VERSION,
-      template,
-      context,
-      data,
-    };
-  }
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    console.log('핸들러에 접근중');
 
-  static generateResponseJson(
-    template: SkillTemplate,
-    context?: ContextControl,
-    data?: Map<string, any>,
-  ): string {
-    const response = KakaoInterceptor.createResponse(template, context, data);
-    return JSON.stringify(response, null, 2);
+    return next.handle().pipe(
+      map((data: any) => {
+        console.log(data);
+        return plainToInstance(this.dto, data, {
+          excludeExtraneousValues: true,
+        });
+      }),
+    );
   }
 }
