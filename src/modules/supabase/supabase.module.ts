@@ -15,7 +15,7 @@ import * as path from 'path';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         synchronize: false,
-        entities: [path.join(__dirname, 'src/entities/**/*.entity.{js, ts}')],
+        entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
         logging: true,
         timezone: 'local',
       }),
