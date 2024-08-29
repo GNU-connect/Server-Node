@@ -60,4 +60,5 @@ export interface QuickReply {
   action: 'block' | 'message';
   blockId?: string;
   messageText?: string;
+  extra?: Record<string, any>;
 }

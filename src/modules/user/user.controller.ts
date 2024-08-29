@@ -8,20 +8,23 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('get/campus')
-  async getCampus(@Body() body: SkillPayload): Promise<ResponseDTO> {
+  async getCampus(): Promise<ResponseDTO> {
     const template = await this.userService.getCampusListCard();
     return new ResponseDTO(template);
   }
 
   @Post('get/college')
-  async getCollege(@Body() body: SkillPayload): Promise<any> {
-    const capmusId = 1;
+  async getCollege(@Body() body: SkillPayload): Promise<ResponseDTO> {
+    const capmusId = body.action.clientExtra['campusId'];
     const template = await this.userService.getCollegeListCard(capmusId);
+    console.log(template);
     return new ResponseDTO(template);
   }
 
-  @Post('register/department')
-  registerDepartment(): any {
-    //return this.userService.registerDepartment();
+  @Post('get/department')
+  async getDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
+    const collegeId = body.action.clientExtra['collegeId'];
+    const template = await this.userService.getDepartmentListCard(collegeId);
+    return new ResponseDTO(template);
   }
 }
