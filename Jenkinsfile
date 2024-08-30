@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    sh 'docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
+                    sh 'docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                     sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                 }
             }
@@ -40,8 +40,8 @@ pipeline {
             steps {
                 script {
                     // Docker Compose를 사용하여 애플리케이션 배포
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} down'
-                    sh 'docker-compose -f ${DOCKER_COMPOSE_FILE} up -d'
+                    sh 'docker-compose -f down'
+                    sh 'docker-compose -f up -d backend_node_server'
                 }
             }
         }
