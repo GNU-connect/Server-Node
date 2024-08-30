@@ -12,7 +12,7 @@ export class CampusRepository {
 
   async findAll(): Promise<CampusEntity[]> {
     return await this.campusRepository.find({
-      select: ['id', 'name', 'thumbnail_url'],
+      select: ['id', 'name', 'thumbnailUrl'],
       where: {
         id: In([1, 2, 3, 4]),
       },

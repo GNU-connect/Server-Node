@@ -9,11 +9,18 @@ import { CampusRepository } from './repository/campus.repository';
 import { CollegeRepository } from './repository/college.repository';
 import { CollegeEntity } from './entities/college.entity';
 import { DepartmentEntity } from './entities/department.entity';
+import { UserRepository } from './repository/user.repository';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
     SupabaseModule,
-    TypeOrmModule.forFeature([CampusEntity, CollegeEntity, DepartmentEntity]),
+    TypeOrmModule.forFeature([
+      CampusEntity,
+      CollegeEntity,
+      DepartmentEntity,
+      UserEntity,
+    ]),
   ],
   controllers: [UserController],
   providers: [
@@ -22,6 +29,7 @@ import { DepartmentEntity } from './entities/department.entity';
     CampusRepository,
     CollegeRepository,
     DepartmentRepository,
+    UserRepository,
   ],
 })
 export class UserModule {}

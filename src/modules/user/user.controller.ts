@@ -15,16 +15,34 @@ export class UserController {
 
   @Post('get/college')
   async getCollege(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const capmusId = body.action.clientExtra['campusId'];
-    const template = await this.userService.getCollegeListCard(capmusId);
-    console.log(template);
+    const { clientExtra } = body.action;
+    const capmusId = clientExtra['campusId'];
+    const page = clientExtra['page'];
+    const template = await this.userService.getCollegeListCard(capmusId, page);
     return new ResponseDTO(template);
   }
 
   @Post('get/department')
   async getDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const collegeId = body.action.clientExtra['collegeId'];
-    const template = await this.userService.getDepartmentListCard(collegeId);
+    const { clientExtra } = body.action;
+    const collegeId = clientExtra['collegeId'];
+    const page = clientExtra['page'];
+    const template = await this.userService.getDepartmentListCard(
+      collegeId,
+      page,
+    );
+    return new ResponseDTO(template);
+  }
+
+  @Post('update/department')
+  async upsertUserDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
+    const userId = body.userRequest.user.id;
+    const { clientExtra } = body.action;
+    const departmentId = clientExtra['departmentId'];
+    const template = await this.userService.upsertUserDepartment(
+      userId,
+      departmentId,
+    );
     return new ResponseDTO(template);
   }
 }

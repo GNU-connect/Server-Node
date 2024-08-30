@@ -9,5 +9,5 @@ export class CollegeEntity {
   name: string;
 
   @Column({ name: 'thumbnail_url' })
-  thumbnail_url: string;
+  thumbnailUrl: string;
 }

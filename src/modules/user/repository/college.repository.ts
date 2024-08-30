@@ -18,6 +18,7 @@ export class CollegeRepository {
     return await this.collegeRepository
       .createQueryBuilder('college')
       .where('college.campus_id = :campusId', { campusId })
+      .orderBy('college.name', 'ASC')
       .take(ListCardConfig.LIMIT)
       .skip(ListCardConfig.LIMIT * (page - 1))
       .getManyAndCount();
