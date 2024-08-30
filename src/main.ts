@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env' });
 dotenv.config({ path: '.env.dev' });
 import * as process from 'process';
 import { NestFactory } from '@nestjs/core';
