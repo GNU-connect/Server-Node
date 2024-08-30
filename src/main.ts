@@ -26,7 +26,7 @@ async function bootstrap() {
     });
   }
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/node');
   app.useGlobalInterceptors(
     new KakaoInterceptor(ResponseDTO),
     new SentryInterceptor(),
