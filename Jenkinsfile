@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Git 저장소에서 코드 체크아웃
-                checkout scm
+                git branch: 'main', url: 'https://github.com/GNU-connect/Server-Node'
             }
         }
 
