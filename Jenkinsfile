@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     // Docker Compose를 사용하여 애플리케이션 배포
-                    sh 'docker-compose -f down'
+                    sh 'docker-compose down'
                     sh 'docker-compose -f up -d backend_node_server'
                 }
             }
