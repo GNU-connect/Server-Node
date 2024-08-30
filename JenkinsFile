@@ -25,15 +25,6 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                script {
-                    // Docker 컨테이너에서 테스트 실행
-                    // sh 'docker run --rm ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} pnpm test'
-                }
-            }
-        }
-
         stage('Push') {
             steps {
                 script {
