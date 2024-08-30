@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 빌드
-                    sh 'docker-compose build {DOCKER_IMAGE_NAME}'
+                    sh 'docker-compose build backend_node_server'
                 }
             }
         }

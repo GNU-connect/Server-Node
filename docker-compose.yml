@@ -1,8 +1,8 @@
 services:
-  connect-gnu-node:
+  backend_node_server:
     build: .
     image: dongho18/connect-gnu-node:latest
-    container_name: connect-gnu-node
+    container_name: backend_node_server
     restart: always
     networks:
       - connect-gnu-network
