@@ -17,6 +17,17 @@ pipeline {
             }
         }
 
+        stage('Set ENV') {
+            steps {
+                withCredentials([file(credentialsId: 'Node-ENV', variable: 'configFile')]) {
+                    script {
+                        sh 'cp $configFile .env'
+                        sh 'ls -l .env'
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
