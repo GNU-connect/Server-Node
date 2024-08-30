@@ -21,7 +21,8 @@ pipeline {
                 withCredentials([file(credentialsId: 'Node-ENV', variable: 'configFile')]) {
                     script {
                         sh 'cp $configFile .env'
-                        sh 'ls -al'
+                        sh 'chmod 644 .env'
+                        sh 'ls -l .'
                     }
                 }
             }
@@ -39,7 +40,8 @@ pipeline {
         stage('Push') {
             steps {
                 script {
-                    sh 'docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
+                    // Docker 이미지 푸시
+                    sh 'docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                     sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                 }
             }
