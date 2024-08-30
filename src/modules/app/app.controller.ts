@@ -6,8 +6,8 @@ import { ResponseDTO } from '../../common/dto/response.dto';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Post()
-  getHello(): ResponseDTO {
-    return this.appService.getHello();
+  @Get('/debug-sentry')
+  getError() {
+    throw new Error('My first Sentry error!');
   }
 }

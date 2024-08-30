@@ -1,0 +1,14 @@
+services:
+  backend_node_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: backend_node_server
+    restart: always
+    ports:
+      - '5000:5000'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      TZ: 'Asia/Seoul'

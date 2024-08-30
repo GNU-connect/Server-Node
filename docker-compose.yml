@@ -1,0 +1,15 @@
+services:
+  backend_node_server:
+    build: .
+    image: dongho18/connect-gnu-node:latest
+    container_name: backend_node_server
+    restart: always
+    networks:
+      - connect-gnu-network
+    ports:
+      - '5200:5200'
+    environment:
+      TZ: 'Asia/Seoul'
+networks:
+  connect-gnu-network:
+    external: true
