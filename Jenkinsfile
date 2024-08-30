@@ -22,7 +22,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'Node-ENV', variable: 'configFile')]) {
                     script {
                         sh 'cp $configFile .env'
-                        sh 'pwd'
+                        sh 'ls -al'
                     }
                 }
             }
