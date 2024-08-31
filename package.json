@@ -29,6 +29,7 @@
     "@sentry/minimal": "^6.19.7",
     "@sentry/nestjs": "^8.27.0",
     "@sentry/profiling-node": "^8.27.0",
+    "@sentry/tracing": "^7.114.0",
     "@slack/client": "^5.0.2",
     "@supabase/supabase-js": "^2.45.1",
     "class-transformer": "^0.5.1",
