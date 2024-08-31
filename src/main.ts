@@ -14,6 +14,7 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const nodeEnv = process.env.NODE_ENV;
+  console.log('dsn', process.env.SENTRY_DSN);
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     integrations: [nodeProfilingIntegration()],
