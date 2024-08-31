@@ -17,6 +17,7 @@ async function bootstrap() {
 
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
+    integrations: [nodeProfilingIntegration()],
     tracesSampleRate: 1.0,
   });
 
