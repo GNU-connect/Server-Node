@@ -8,13 +8,15 @@ import { UserModule } from '../user/user.module';
 import { SupabaseModule } from '../supabase/supabase.module';
 import { validationSchema } from 'src/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
+import { CafeteriaModule } from '../cafeteria/cafeteria.module';
 
 @Module({
   imports: [
     SentryModule.forRoot(),
-    UserModule,
     SupabaseModule,
     UtilsModule,
+    UserModule,
+    CafeteriaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env.dev',
