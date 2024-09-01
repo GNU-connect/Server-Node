@@ -9,15 +9,15 @@ export class CafeteriaController {
   async getCafeteriaDietNutritionalIngredients(
     @Body() body: SkillPayload,
   ): Promise<any> {
-    const { clientExtra } = body.action;
-    const cafeteriaId = clientExtra['cafeteriaId'];
-    const day = clientExtra['day'];
-    const time = clientExtra['time'];
-    const template =
-      await this.cafeteriaService.getCafeteriaDietNutritionalIngredientsSimpleText(
-        cafeteriaId,
-        day,
-        time,
-      );
+    // const { clientExtra } = body.action;
+    // const cafeteriaId = clientExtra['cafeteriaId'];
+    // const day = clientExtra['day'];
+    // const time = clientExtra['time'];
+    // const template =
+    //   await this.cafeteriaService.getCafeteriaDietNutritionalIngredientsSimpleText(
+    //     cafeteriaId,
+    //     day,
+    //     time,
+    //   );
   }
 }
