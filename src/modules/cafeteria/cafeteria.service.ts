@@ -32,7 +32,11 @@ export class CafeteriaService {
       };
     }
 
-    const simpleText: SimpleText = createSimpleText(content[0].content);
+    const simpleText: SimpleText = createSimpleText(
+      content[0].content +
+        '\n\n' +
+        '⚠️ 주의: 본 내용은 AI가 분석한 결과이며, 실제 영양성분과 다를 수 있어! ⚠️',
+    );
 
     return {
       outputs: [simpleText],
