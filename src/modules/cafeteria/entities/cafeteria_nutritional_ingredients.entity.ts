@@ -8,8 +8,8 @@ export class CafeteriaNutritionalIngredientsEntity {
   @Column({ name: 'cafeteria_id' })
   cafeteriaId: number;
 
-  @Column({ name: 'day' })
-  day: string;
+  @Column({ name: 'date' })
+  date: Date;
 
   @Column({ name: 'time' })
   time: string;

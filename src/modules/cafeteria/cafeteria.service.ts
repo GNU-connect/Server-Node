@@ -12,15 +12,25 @@ export class CafeteriaService {
 
   async getCafeteriaDietNutritionalIngredientsSimpleText(
     cafeteriaId: number,
-    day: string,
+    date: Date,
     time: string,
   ): Promise<SkillTemplate> {
     const content =
       await this.cafeteriaNutritionalIngredientsRepository.findByTime(
         cafeteriaId,
-        day,
+        date,
         time,
       );
+
+    if (content.length === 0) {
+      return {
+        outputs: [
+          createSimpleText(
+            '아직 영양성분 정보가 업데이트 되지 않았어. 조금만 기다려줘!',
+          ),
+        ],
+      };
+    }
 
     const simpleText: SimpleText = createSimpleText(content[0].content);
 

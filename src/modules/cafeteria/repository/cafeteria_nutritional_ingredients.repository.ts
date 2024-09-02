@@ -12,12 +12,12 @@ export class CafeteriaNutritionalIngredientsRepository {
 
   async findByTime(
     cafeteriaId: number,
-    day: string,
+    date: Date,
     time: string,
   ): Promise<CafeteriaNutritionalIngredientsEntity[]> {
     return await this.cafeteriaNutritionalIngredientsRepository.find({
       select: ['content'],
-      where: { cafeteriaId, day, time },
+      where: { cafeteriaId, date, time },
     });
   }
 }

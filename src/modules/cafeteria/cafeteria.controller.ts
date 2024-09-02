@@ -10,17 +10,15 @@ export class CafeteriaController {
   async getCafeteriaDietNutritionalIngredients(
     @Body() body: SkillPayload,
   ): Promise<ResponseDTO> {
-    // const { clientExtra } = body.action;
-    // const cafeteriaId = clientExtra['cafeteriaId'];
-    // const day = clientExtra['day'];
-    // const time = clientExtra['time'];
-    const cafeteriaId = 1;
-    const day = '월';
-    const time = '아침';
+    const { clientExtra } = body.action;
+    const cafeteriaId = clientExtra['cafeteriaId'];
+    const date = clientExtra['date'];
+    const time = clientExtra['time'];
+    console.log(cafeteriaId, date, time);
     const template =
       await this.cafeteriaService.getCafeteriaDietNutritionalIngredientsSimpleText(
         cafeteriaId,
-        day,
+        date,
         time,
       );
     return new ResponseDTO(template);
