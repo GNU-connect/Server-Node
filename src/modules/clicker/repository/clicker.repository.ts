@@ -14,6 +14,7 @@ export class ClickerRepository {
     return await this.clickerRepository.find({
       where: {
         campusId: campusId,
+        isActive: true,
       },
     });
   }

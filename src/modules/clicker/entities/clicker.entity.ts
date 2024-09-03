@@ -16,4 +16,7 @@ export class ClickerEntity {
 
   @Column({ name: 'total_seats' })
   totalSeats: number;
+
+  @Column({ name: 'is_active' })
+  isActive: boolean;
 }

@@ -4,7 +4,7 @@ import { CollegeRepository } from './repository/college.repository';
 import { DepartmentRepository } from './repository/department.repository';
 import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { ApiTags } from '@nestjs/swagger';
-import { ListItem } from 'src/common/interfaces/response/fields/etc';
+import { Button, ListItem } from 'src/common/interfaces/response/fields/etc';
 import { BlockId, ListCardConfig } from 'src/common/utils/constants';
 import { ListCard } from 'src/common/interfaces/response/fields/component';
 import { createListCard } from 'src/common/utils/component';
