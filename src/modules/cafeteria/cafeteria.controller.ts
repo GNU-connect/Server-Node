@@ -2,7 +2,9 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { CafeteriaService } from './cafeteria.service';
 import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
 import { ResponseDTO } from 'src/common/dto/response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cafeteria')
 @Controller('cafeteria')
 export class CafeteriaController {
   constructor(private readonly cafeteriaService: CafeteriaService) {}

@@ -2,14 +2,22 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDTO } from 'src/common/dto/response.dto';
 import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
+import { ApiTags } from '@nestjs/swagger';
+import { CommonService } from '../common/common.service';
+import { BlockId } from 'src/common/utils/constants';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly commonService: CommonService,
+  ) {}
 
   @Post('get/campus')
   async getCampus(): Promise<ResponseDTO> {
-    const template = await this.userService.getCampusListCard();
+    const blockId = BlockId.COLLEGE_LIST;
+    const template = await this.commonService.getCampusListCard(blockId);
     return new ResponseDTO(template);
   }
 
@@ -18,7 +26,12 @@ export class UserController {
     const { clientExtra } = body.action;
     const capmusId = clientExtra['campusId'];
     const page = clientExtra['page'];
-    const template = await this.userService.getCollegeListCard(capmusId, page);
+    const blockId = BlockId.DEPARTMENT_LIST;
+    const template = await this.commonService.getCollegeListCard(
+      capmusId,
+      page,
+      blockId,
+    );
     return new ResponseDTO(template);
   }
 
@@ -27,9 +40,11 @@ export class UserController {
     const { clientExtra } = body.action;
     const collegeId = clientExtra['collegeId'];
     const page = clientExtra['page'];
-    const template = await this.userService.getDepartmentListCard(
+    const blockId = BlockId.UPDATE_DEPARTMENT;
+    const template = await this.commonService.getDepartmentListCard(
       collegeId,
       page,
+      blockId,
     );
     return new ResponseDTO(template);
   }
