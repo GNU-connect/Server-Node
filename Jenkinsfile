@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'Node-ENV', variable: 'configFile')]) {
                     script {
-                        sh 'chmod -R rwx .'
+                        sh 'chmod 644 .'
                         sh 'cp ${configFile} .env'
                         sh 'chmod 644 .env'
                         sh 'cat .env'
