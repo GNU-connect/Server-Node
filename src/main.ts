@@ -15,12 +15,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const nodeEnv = process.env.NODE_ENV;
 
-  Sentry.init({
-    dsn: process.env.SENTRY_NODE_DSN,
-    integrations: [nodeProfilingIntegration()],
-    tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
-  });
+  if (nodeEnv == 'prod') {
+    Sentry.init({
+      dsn: process.env.SENTRY_NODE_DSN,
+      integrations: [nodeProfilingIntegration()],
+      tracesSampleRate: 1.0,
+      profilesSampleRate: 1.0,
+    });
+  }
 
   app.setGlobalPrefix('api/node');
   app.useGlobalInterceptors(
