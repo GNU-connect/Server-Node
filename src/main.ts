@@ -17,7 +17,7 @@ async function bootstrap() {
 
   if (nodeEnv == 'prod') {
     Sentry.init({
-      dsn: process.env.SENTRY_DSN,
+      dsn: process.env.SENTRY_NODE_DSN,
       integrations: [nodeProfilingIntegration()],
       tracesSampleRate: 1.0,
       profilesSampleRate: 1.0,
