@@ -6,6 +6,7 @@ pipeline {
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'dongho18'
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub-flask')
     }
 
     stages {
@@ -48,6 +49,7 @@ pipeline {
                 script {
                     // Docker 이미지 푸시
                     sh 'docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
+                    sh 'docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}'
                     sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                 }
             }
