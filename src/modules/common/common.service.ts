@@ -139,7 +139,8 @@ export class CommonService {
         action: 'block',
         blockId: BlockId.DEPARTMENT_LIST,
         extra: {
-          collegeId: collegeId,
+          campusId,
+          collegeId,
           page: page - 1,
         },
       });
@@ -151,7 +152,8 @@ export class CommonService {
         action: 'block',
         blockId: BlockId.DEPARTMENT_LIST,
         extra: {
-          collegeId: collegeId,
+          campusId,
+          collegeId,
           page: page + 1,
         },
       });
