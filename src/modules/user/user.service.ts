@@ -9,16 +9,17 @@ export class UserService {
 
   async upsertUserDepartment(
     userId: string,
+    campusId: number,
     departmentId: number,
   ): Promise<SkillTemplate> {
     let simpleText = null;
 
     const isExist = await this.userRepository.findOne(userId);
     if (isExist) {
-      await this.userRepository.updateUserInfo(userId, departmentId);
+      await this.userRepository.updateUserInfo(userId, campusId, departmentId);
       simpleText = createSimpleText('학과 정보를 수정했어!');
     } else {
-      await this.userRepository.createUserInfo(userId, departmentId);
+      await this.userRepository.createUserInfo(userId, campusId, departmentId);
       simpleText = createSimpleText('학과 정보를 등록했어!');
     }
     return {

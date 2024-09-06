@@ -5,6 +5,9 @@ export class UserEntity {
   @PrimaryColumn()
   id: string;
 
+  @Column({ name: 'campus_id' })
+  campusId: number;
+
   @Column({ name: 'department_id' })
   departmentId: number;
 

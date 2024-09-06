@@ -38,10 +38,12 @@ export class UserController {
   @Post('get/department')
   async getDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
     const { clientExtra } = body.action;
+    const campusId = clientExtra['campusId'];
     const collegeId = clientExtra['collegeId'];
     const page = clientExtra['page'];
     const blockId = BlockId.UPDATE_DEPARTMENT;
     const template = await this.commonService.getDepartmentListCard(
+      campusId,
       collegeId,
       page,
       blockId,
@@ -53,9 +55,11 @@ export class UserController {
   async upsertUserDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
     const userId = body.userRequest.user.id;
     const { clientExtra } = body.action;
+    const campusId = clientExtra['campusId'];
     const departmentId = clientExtra['departmentId'];
     const template = await this.userService.upsertUserDepartment(
       userId,
+      campusId,
       departmentId,
     );
     return new ResponseDTO(template);

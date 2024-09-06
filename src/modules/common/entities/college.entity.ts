@@ -8,6 +8,9 @@ export class CollegeEntity {
   @Column({ name: 'college_ko' })
   name: string;
 
+  @Column({ name: 'campus_id' })
+  campusId: number;
+
   @Column({ name: 'thumbnail_url' })
   thumbnailUrl: string;
 }

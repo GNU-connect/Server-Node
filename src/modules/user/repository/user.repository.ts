@@ -18,15 +18,25 @@ export class UserRepository {
     });
   }
 
-  async createUserInfo(userId: string, departmentId: number): Promise<void> {
+  async createUserInfo(
+    userId: string,
+    campusId: number,
+    departmentId: number,
+  ): Promise<void> {
     await this.userRepository.insert({
       id: userId,
+      campusId,
       departmentId,
     });
   }
 
-  async updateUserInfo(userId: string, departmentId: number): Promise<void> {
+  async updateUserInfo(
+    userId: string,
+    campusId: number,
+    departmentId: number,
+  ): Promise<void> {
     await this.userRepository.update(userId, {
+      campusId,
       departmentId,
     });
   }

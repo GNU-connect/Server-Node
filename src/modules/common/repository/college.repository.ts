@@ -11,13 +11,10 @@ export class CollegeRepository {
     private readonly collegeRepository: Repository<CollegeEntity>, // Inject the repository here
   ) {}
 
-  async findByCampusId(
-    campusId: number,
-    page: number,
-  ): Promise<[CollegeEntity[], number]> {
+  async findAll(page: number): Promise<[CollegeEntity[], number]> {
     return await this.collegeRepository
       .createQueryBuilder('college')
-      .where('college.campus_id = :campusId', { campusId })
+      .where("college.name != '공통'")
       .orderBy('college.name', 'ASC')
       .take(ListCardConfig.LIMIT)
       .skip(ListCardConfig.LIMIT * (page - 1))

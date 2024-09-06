@@ -49,9 +49,7 @@ export class CommonService {
     page: number = 1,
     blockId: string,
   ): Promise<SkillTemplate> {
-    const [collegeEntities, total] =
-      await this.collegeRepository.findByCampusId(campusId, page);
-    console.log('total', total);
+    const [collegeEntities, total] = await this.collegeRepository.findAll(page);
 
     const header: ListItem = {
       title: '단과대학 선택',
@@ -64,6 +62,7 @@ export class CommonService {
         action: 'block',
         blockId,
         extra: {
+          campusId: campusId,
           collegeId: collegeEntity.id,
         },
       };
@@ -105,6 +104,7 @@ export class CommonService {
   }
 
   async getDepartmentListCard(
+    campusId: number,
     collegeId: number,
     page: number = 1,
     blockId: string,
@@ -122,6 +122,7 @@ export class CommonService {
         action: 'block',
         blockId,
         extra: {
+          campusId,
           departmentId: departmentEntity.id,
         },
       };
