@@ -64,4 +64,11 @@ export class UserController {
     );
     return new ResponseDTO(template);
   }
+
+  @Post('get/profile')
+  async getUserProfile(@Body() body: SkillPayload): Promise<ResponseDTO> {
+    const userId = body.userRequest.user.id;
+    const template = await this.userService.getUserProfile(userId);
+    return new ResponseDTO(template);
+  }
 }

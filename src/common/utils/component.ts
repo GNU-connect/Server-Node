@@ -16,6 +16,7 @@ import {
   ListCard,
   ItemCard,
   Component,
+  TextCard,
 } from '../interfaces/response/fields/component';
 
 // SimpleText 생성 함수
@@ -96,6 +97,21 @@ export function createListCard(
     listCard: {
       header,
       items,
+      buttons,
+    },
+  };
+}
+
+// TextCard 생성 함수
+export function createTextCard(
+  title?: string,
+  description?: string,
+  buttons?: Array<Button>,
+): TextCard {
+  return {
+    textCard: {
+      title,
+      description,
       buttons,
     },
   };

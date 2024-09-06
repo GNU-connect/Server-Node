@@ -18,4 +18,13 @@ export class CampusRepository {
       },
     });
   }
+
+  async getCampusName(campusId: number): Promise<string> {
+    const campus = await this.campusRepository.findOne({
+      where: {
+        id: campusId,
+      },
+    });
+    return campus.name;
+  }
 }

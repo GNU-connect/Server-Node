@@ -15,6 +15,7 @@ export class UserRepository {
       where: {
         id: userId,
       },
+      relations: ['campus', 'department', 'department.college'],
     });
   }
 

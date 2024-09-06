@@ -12,6 +12,7 @@ import {
 export type Component =
   | SimpleText
   | SimpleImage
+  | TextCard
   | BasicCard
   | CommerceCard
   | ListCard
@@ -27,6 +28,14 @@ export interface SimpleImage {
   simpleImage: {
     imageUrl: string;
     altText: string;
+  };
+}
+
+export interface TextCard {
+  textCard: {
+    title?: string;
+    description?: string;
+    buttons?: Array<Button>;
   };
 }
 
