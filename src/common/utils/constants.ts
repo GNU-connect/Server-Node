@@ -9,6 +9,9 @@ export const enum BlockId {
   // CLICKER
   READING_ROOM_LIST = '665dc46a27a8f26cde73d835',
   READING_ROOM_DETAIL = '665db50ec1cc536ebe70d1bf',
+
+  // PROFILE
+  CHANGE_PROFILE = '66cf0c8ae5715f75b254dfea',
 }
 
 export const enum ListCardConfig {

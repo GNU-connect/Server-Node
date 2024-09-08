@@ -6,6 +6,8 @@ import {
   SimpleText,
   TextCard,
 } from 'src/common/interfaces/response/fields/component';
+import { BlockId } from 'src/common/utils/constants';
+import { Button } from 'src/common/interfaces/response/fields/etc';
 
 @Injectable()
 export class UserService {
@@ -33,23 +35,26 @@ export class UserService {
 
   async getUserProfile(userId: string): Promise<SkillTemplate> {
     let affiliation = '미등록';
+    let campus = '미등록';
     const user = await this.userRepository.findOne(userId);
-    const campus = user.campus ? user.campus.name : '미등록';
-
     if (user) {
+      campus = user.campus.name;
       affiliation = user.department.college.name + ' ' + user.department.name;
     }
-    const textCard: TextCard = createTextCard(
-      '내 정보',
-      `[ID]\n${user.id}\n\n[캠퍼스]\n${campus}\n\n[전공]\n${affiliation}\n\n[부전공]\n미지원`,
-    );
-    const buttons = [
+
+    const buttons: Array<Button> = [
       {
-        label: '학과 정보 수정',
+        label: '캠퍼스 및 학과 변경',
         action: 'block',
-        blockId: '학과 정보 수정',
+        blockId: BlockId.CHANGE_PROFILE,
       },
     ];
+
+    const textCard: TextCard = createTextCard(
+      '내 정보',
+      `[ID]\n${userId}\n\n[캠퍼스]\n${campus}\n\n[전공]\n${affiliation}\n\n[부전공]\n미지원`,
+      buttons,
+    );
 
     return {
       outputs: [textCard],
