@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { NewsRepository } from './repository/news.repository';
-import { ListItem } from 'src/common/interfaces/response/fields/etc';
+import { Button, ListItem } from 'src/common/interfaces/response/fields/etc';
 import { createListCard } from 'src/common/utils/component';
 import { ListCard } from 'src/common/interfaces/response/fields/component';
 
@@ -25,7 +25,15 @@ export class NewsService {
       };
     });
 
-    const newsListCard: ListCard = createListCard(header, items);
+    const buttons: Array<Button> = [
+      {
+        label: '더보기',
+        action: 'webLink',
+        webLinkUrl: 'https://www.gnunews.kr/',
+      },
+    ];
+
+    const newsListCard: ListCard = createListCard(header, items, buttons);
 
     return {
       outputs: [newsListCard],
