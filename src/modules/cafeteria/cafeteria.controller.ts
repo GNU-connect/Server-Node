@@ -16,7 +16,6 @@ export class CafeteriaController {
     const cafeteriaId = clientExtra['cafeteriaId'];
     const date = clientExtra['date'];
     const time = clientExtra['time'];
-    console.log(cafeteriaId, date, time);
     const template =
       await this.cafeteriaService.getCafeteriaDietNutritionalIngredientsSimpleText(
         cafeteriaId,
