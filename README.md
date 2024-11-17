@@ -12,9 +12,8 @@
 - 서비스 링크: [`https://pf.kakao.com/_bikxiG`](https://pf.kakao.com/_bikxiG)
 - Github 링크
     - 웹 스크래핑: https://github.com/GNU-connect/web-scraping
-    - 챗봇 API 서버: https://github.com/GNU-connect/Server-JavaSpring
-    - 학과 인증 API 서버: https://github.com/GNU-connect/studentID_OCR
-    - CI/CD 서버: https://github.com/GNU-connect/DevOps
+    - 챗봇 API 서버(Spring): https://github.com/GNU-connect/Server-JavaSpring
+    - 챗봇 API 서버(NestJS): https://github.com/GNU-connect/Server-Node
 
 # 2.  기술 스택
 
