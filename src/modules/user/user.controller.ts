@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDTO } from 'src/common/dto/response.dto';
 import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
 
@@ -21,6 +21,26 @@ export class UserController {
     return new ResponseDTO(template);
   }
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'object',
+          properties: {
+            clientExtra: {
+              type: 'object',
+              properties: {
+                campusId: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+  })
   @Post('get/college')
   async getCollege(@Body() body: SkillPayload): Promise<ResponseDTO> {
     const { clientExtra } = body.action;

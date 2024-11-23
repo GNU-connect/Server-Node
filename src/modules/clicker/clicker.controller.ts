@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ClickerService } from './clicker.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
 import { ResponseDTO } from 'src/common/dto/response.dto';

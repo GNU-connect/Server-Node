@@ -22,12 +22,14 @@ async function bootstrap() {
       tracesSampleRate: 1.0,
       profilesSampleRate: 1.0,
     });
+    app.useGlobalInterceptors(
+      new SentryInterceptor(),
+    )
   }
 
   app.setGlobalPrefix('api/node');
   app.useGlobalInterceptors(
-    new KakaoInterceptor(ResponseDTO),
-    new SentryInterceptor(),
+    new KakaoInterceptor(ResponseDTO)
   );
 
   const config = new DocumentBuilder()
