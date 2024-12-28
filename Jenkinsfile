@@ -6,7 +6,7 @@ pipeline {
         DOCKER_TAG = 'latest'
         DOCKER_REGISTRY = 'dongho18'
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-        DOCKERHUB_CREDENTIALS = credentials('docker-hub-flask')
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub')
     }
 
     stages {
