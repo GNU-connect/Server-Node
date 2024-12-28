@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 빌드
-                    sh 'docker-compose build backend_node_server'
+                    sh 'sudo docker-compose build backend_node_server'
                 }
             }
         }
@@ -49,9 +49,9 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    sh 'docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
-                    sh 'docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}'
-                    sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
+                    sh 'sudo docker tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME} ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
+                    sh 'sudo docker login -u ${DOCKERHUB_CREDENTIALS_USR} -p ${DOCKERHUB_CREDENTIALS_PSW}'
+                    sh 'sudo docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG}'
                 }
             }
         }
@@ -60,8 +60,8 @@ pipeline {
             steps {
                 script {
                     // Docker Compose를 사용하여 애플리케이션 배포
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d backend_node_server'
+                    sh 'sudo docker-compose down'
+                    sh 'sudo docker-compose up -d backend_node_server'
                 }
             }
         }
@@ -70,7 +70,7 @@ pipeline {
     post {
         always {
             // 빌드 후 항상 실행되는 단계 (예: 클린업)
-            sh 'docker system prune -af'
+            sh 'sudo docker system prune -af'
         }
         success {
             // 성공적인 빌드 후 실행되는 단계
