@@ -25,7 +25,7 @@ pipeline {
 
         stage('Set ENV') {
             steps {
-                withCredentials([file(credentialsId: 'Node-ENV', variable: 'configFile')]) {
+                withCredentials([file(credentialsId: 'node-prod-env', variable: 'configFile')]) {
                     script {
                         sh 'chmod 644 .'
                         sh 'cp ${configFile} .env'
