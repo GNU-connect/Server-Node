@@ -20,10 +20,10 @@ services:
       deploy:
         resources:
           limits:
-            memory: 256Mi
+            memory: 256m
             cpus: '0.25'
           reservations:
-            memory: 128Mi
+            memory: 128m
             cpus: '0.1'
 
 networks:
