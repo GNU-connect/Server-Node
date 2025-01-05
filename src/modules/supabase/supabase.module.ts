@@ -18,6 +18,10 @@ import * as path from 'path';
         entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
         logging: true,
         timezone: 'local',
+        extra: {
+          max: 10,
+          connectionTimeoutMillis: 5000,
+        }
       }),
     }),
   ],
