@@ -20,11 +20,11 @@ services:
       deploy:
         resources:
           limits:
-            memory: 512Mi
-            cpus: '0.5'
-          reservations:
             memory: 256Mi
             cpus: '0.25'
+          reservations:
+            memory: 128Mi
+            cpus: '0.1'
 
 networks:
   connect-gnu-network:
