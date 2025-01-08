@@ -1,0 +1,23 @@
+name: CI/CD Pipeline
+
+on:
+  # main 브랜치에 커밋된 경우, CI/CD 파이프라인 실행
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. 환경변수(.env) 파일 생성
+      - name: Set Environment File
+        run: |
+          echo "${{ secrets.PROD_ENV }}" > .env
+          chmod 644 .env
+          cat .env
