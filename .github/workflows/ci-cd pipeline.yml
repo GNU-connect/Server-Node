@@ -8,9 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REGISTRY: dongho18
+  DOCKER_SERVICE_NAME: backend_node_server
   DOCKER_IMAGE_NAME: connect-gnu-node
-  DOCKER_TAG: latest
 
 jobs:
   build:
@@ -42,8 +41,8 @@ jobs:
       # 5. 도커 허브에 이미지 푸시
       - name: Push Docker Image
         run: |
-          docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
-          docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
+          docker tag $DOCKER_SERVICE_NAME ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE_NAME:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/$DOCKER_IMAGE_NAME:latest
 
       # 6. GCP Compute Engine SSH로 배포
       - name: Deploy to GCP Compute Engine
