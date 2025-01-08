@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  # 수동으로 실행 가능하도록 추가
+  workflow_dispatch:
 
 jobs:
   build:
