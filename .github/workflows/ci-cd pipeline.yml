@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+env:
+  DOCKER_REGISTRY: dongho18
+  DOCKER_IMAGE_NAME: connect-gnu-node
+  DOCKER_TAG: latest
 
 jobs:
   build:
@@ -26,9 +32,33 @@ jobs:
       - name: Build Docker Image
         run: docker compose build backend_node_server
 
-      # 4. 도커허브 로그인 및 이미지 푸시
+      # 4. 도커허브 로그인
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. 도커 허브에 이미지 푸시
+      - name: Push Docker Image
+        run: |
+          docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
+          docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
+
+      # 6. 구글 클라우드 인증
+      - name: Authenticate with Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      # 7. GCP Compute Engine SSH로 배포
+      - name: Deploy to GCP Compute Engine
+        id: 'compute-ssh'
+        uses: 'google-github-actions/ssh-compute@v1'
+        with:
+          instance_name: ${{ secrets.GCP_INSTANCE_NAME }}
+          zone: ${{ secrets.GCP_INSTANCE_ZONE }}
+          ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          command: 'echo Hello world'
+            
