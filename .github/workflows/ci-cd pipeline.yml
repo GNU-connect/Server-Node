@@ -24,7 +24,7 @@ jobs:
 
       # 3. 도커 이미지 빌드
       - name: Build Docker Image
-        run: docker-compose build backend_node_server
+        run: docker compose build backend_node_server
 
       # 4. 도커허브 로그인 및 이미지 푸시
       - name: Login to DockerHub
