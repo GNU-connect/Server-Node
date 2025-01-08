@@ -45,14 +45,7 @@ jobs:
           docker tag $DOCKER_IMAGE_NAME $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
           docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_TAG
 
-      # 6. 구글 클라우드 인증
-      - name: Authenticate with Google Cloud
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
-      # 7. GCP Compute Engine SSH로 배포
+      # 6. GCP Compute Engine SSH로 배포
       - name: Deploy to GCP Compute Engine
         id: 'compute-ssh'
         uses: 'google-github-actions/ssh-compute@v1'
