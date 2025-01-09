@@ -20,9 +20,9 @@ jobs:
       pull-requests : write
 
     steps:
-      # # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
-      # - name: Checkout Repository
-      #   uses: actions/checkout@v3
+      # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       # # 2. 환경변수(.env) 파일 생성
       # - name: Set Environment File
