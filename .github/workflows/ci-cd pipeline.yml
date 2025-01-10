@@ -63,13 +63,17 @@ jobs:
           zone: ${{ secrets.GCP_INSTANCE_ZONE }}
           ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
           command: |
-            sudo docker-compose down
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-            sudo docker-compose up -d
-            sudo docker image prune -a -f
+            mkdir ./${{ github.repository }}
+            cd ./${{ github.repository }}
+            ls -al
+            sudo curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
+            # sudo docker-compose down
+            # sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            # sudo docker-compose up -d
+            # sudo docker image prune -a -f
 
-      # # Example of using the output
-      # - id: 'debug'
-      #   run: |-
-      #     echo '${{ steps.compute-ssh.outputs.stdout }}'
-      #     echo '${{ steps.compute-ssh.outputs.stderr }}'
+      # Example of using the output
+      - id: 'debug'
+        run: |-
+          echo '${{ steps.compute-ssh.outputs.stdout }}'
+          echo '${{ steps.compute-ssh.outputs.stderr }}'
