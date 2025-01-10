@@ -50,31 +50,33 @@ jobs:
       - name: Encode docker-compose file
         run: |
           echo "COMPOSE_CONTENT=$(base64 -w 0 docker/docker-compose.yml)" >> $GITHUB_ENV
+          echo "Decoded content:"
+          echo "$COMPOSE_CONTENT" | base64 -d
 
-      # 5. GCP 인증
-      - name: Authenticate to GCP
-        id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }} # 생성한 워크로드 아이덴티티 풀의 ID
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }} # IAM 서비스 계정
+      # # 5. GCP 인증
+      # - name: Authenticate to GCP
+      #   id: 'auth'
+      #   uses: 'google-github-actions/auth@v2'
+      #   with:
+      #     workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }} # 생성한 워크로드 아이덴티티 풀의 ID
+      #     service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }} # IAM 서비스 계정
 
-      # 6. GCP Compute Engine SSH로 배포
-      - name: Deploy to GCP Compute Engine
-        id: 'compute-ssh'
-        uses: 'google-github-actions/ssh-compute@v1'
-        with:
-          instance_name: ${{ secrets.GCP_INSTANCE_NAME }}
-          zone: ${{ secrets.GCP_INSTANCE_ZONE }}
-          ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          command: |
-            mkdir -p ./${{ github.repository }}
-            echo "${{ env.COMPOSE_CONTENT }}" | base64 -d > ./${{ github.repository }}/docker-compose.yml
-            cd ./${{ github.repository }}
-            cat docker-compose.yml
+      # # 6. GCP Compute Engine SSH로 배포
+      # - name: Deploy to GCP Compute Engine
+      #   id: 'compute-ssh'
+      #   uses: 'google-github-actions/ssh-compute@v1'
+      #   with:
+      #     instance_name: ${{ secrets.GCP_INSTANCE_NAME }}
+      #     zone: ${{ secrets.GCP_INSTANCE_ZONE }}
+      #     ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+      #     command: |
+      #       mkdir -p ./${{ github.repository }}
+      #       echo "${{ env.COMPOSE_CONTENT }}" | base64 -d > ./${{ github.repository }}/docker-compose.yml
+      #       cd ./${{ github.repository }}
+      #       cat docker-compose.yml
 
-      # Example of using the output
-      - id: 'debug'
-        run: |-
-          echo '${{ steps.compute-ssh.outputs.stdout }}'
-          echo '${{ steps.compute-ssh.outputs.stderr }}'
+      # # Example of using the output
+      # - id: 'debug'
+      #   run: |-
+      #     echo '${{ steps.compute-ssh.outputs.stdout }}'
+      #     echo '${{ steps.compute-ssh.outputs.stderr }}'
