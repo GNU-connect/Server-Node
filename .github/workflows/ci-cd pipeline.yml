@@ -1,7 +1,10 @@
 name: CI/CD Pipeline
 
+# main 브랜치에 대한 Pull request 및 Merge
 on:
-  # main 브랜치에 커밋된 경우, CI/CD 파이프라인 실행
+  pull_request :
+    branches :
+      - main
   push:
     branches:
       - main
@@ -10,35 +13,48 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    permissions :
+      id-token : write
+      contents : read
+      pull-requests : write
 
     steps:
       # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2. 환경변수(.env) 파일 생성
-      - name: Set Environment File
-        run: |
-          echo "${{ secrets.PROD_ENV }}" > .env
-          chmod 644 .env
-          cat .env
+      # # 2. 환경변수(.env) 파일 생성
+      # - name: Set Environment File
+      #   run: |
+      #     echo "${{ secrets.PROD_ENV }}" > .env
+      #     chmod 644 .env
+      #     cat .env
 
-      # 3. 도커허브 로그인
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+      # # 3. 도커허브 로그인
+      # - name: Login to DockerHub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # # 4. 도커 허브에 이미지 푸시
+      # - name: Push Docker Image
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     push: true
+      #     context: .
+      #     tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+
+      # 5. GCP 인증
+      - name: Authenticate to GCP
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }} # 생성한 워크로드 아이덴티티 풀의 ID
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }} # IAM 서비스 계정
 
-      # 4. 도커 허브에 이미지 푸시
-      - name: Push Docker Image
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          context: .
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-
-      # 5. GCP Compute Engine SSH로 배포
+      # 6. GCP Compute Engine SSH로 배포
       - name: Deploy to GCP Compute Engine
         id: 'compute-ssh'
         uses: 'google-github-actions/ssh-compute@v1'
@@ -46,5 +62,18 @@ jobs:
           instance_name: ${{ secrets.GCP_INSTANCE_NAME }}
           zone: ${{ secrets.GCP_INSTANCE_ZONE }}
           ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          command: 'echo Hello world'
-            
+          command: |
+            mkdir ./${{ github.repository }}
+            cd ./${{ github.repository }}
+            ls -al
+            sudo curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
+            # sudo docker-compose down
+            # sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+            # sudo docker-compose up -d
+            # sudo docker image prune -a -f
+
+      # Example of using the output
+      - id: 'debug'
+        run: |-
+          echo '${{ steps.compute-ssh.outputs.stdout }}'
+          echo '${{ steps.compute-ssh.outputs.stderr }}'
