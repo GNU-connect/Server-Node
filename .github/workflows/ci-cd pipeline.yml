@@ -49,7 +49,7 @@ jobs:
       # 5. docker-compose.yml 파일을 base64로 인코딩
       - name: Encode docker-compose file
         run: |
-          echo "COMPOSE_CONTENT=$(base64 -w 0 docker/docker-compose.yml)" >> $GITHUB_ENV
+          echo "COMPOSE_CONTENT=$(base64 -w 0 ./docker-compose.yml)" >> $GITHUB_ENV
           echo "Decoded content:"
           echo "$COMPOSE_CONTENT" | base64 -d
 
