@@ -67,4 +67,11 @@ jobs:
           instance_name: ${{ secrets.GCP_INSTANCE_NAME }}
           zone: ${{ secrets.GCP_INSTANCE_ZONE }}
           ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
-          command: 'pwd'
+          command: |
+            'pwd'
+
+      # Example of using the output
+      - id: 'debug'
+        run: |-
+          echo '${{ steps.compute-ssh.outputs.stdout }}'
+          echo '${{ steps.compute-ssh.outputs.stderr }}'
