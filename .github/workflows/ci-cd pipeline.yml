@@ -68,7 +68,9 @@ jobs:
           zone: ${{ secrets.GCP_INSTANCE_ZONE }}
           ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
           command: |
-            'pwd'
+            echo "${{ env.COMPOSE_CONTENT }}" | base64 -d > ./${{ github.repository }}/docker-compose.yml
+            cd ./${{ github.repository }}
+            cat docker-compose.yml
 
       # Example of using the output
       - id: 'debug'
