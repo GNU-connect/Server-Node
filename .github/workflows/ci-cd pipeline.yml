@@ -51,7 +51,7 @@ jobs:
         run: |
           echo "COMPOSE_CONTENT=$(base64 -w 0 ./docker-compose.yml)" >> $GITHUB_ENV
           echo "Decoded content:"
-          echo "$COMPOSE_CONTENT" | base64 -d
+          echo "${{ env.COMPOSE_CONTENT }}" | base64 -d
 
       # # 5. GCP 인증
       # - name: Authenticate to GCP
