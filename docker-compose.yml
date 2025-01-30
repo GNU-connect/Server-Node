@@ -1,7 +1,7 @@
 services:
   connect-gnu-node:
-    build: .
     image: dongho18/connect-gnu-node:latest
+    pull_policy: always
     container_name: connect-gnu-node
     restart: always
     networks:
