@@ -21,26 +21,6 @@ export class UserController {
     return new ResponseDTO(template);
   }
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        action: {
-          type: 'object',
-          properties: {
-            clientExtra: {
-              type: 'object',
-              properties: {
-                campusId: {
-                  type: 'number',
-                },
-              },
-            },
-          },
-        },
-      },
-    }
-  })
   @Post('get/college')
   async getCollege(@Body() body: SkillPayload): Promise<ResponseDTO> {
     const { clientExtra } = body.action;
