@@ -17,6 +17,11 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_DATABASE: ${DB_DATABASE}
+    deploy:
+      resources:
+        limits:
+          memory: 192m
+          cpus: '0.25'
 
 networks:
   connect-gnu-network:
