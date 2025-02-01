@@ -59,7 +59,7 @@ export class AppService implements OnModuleInit {
   }
 
   // Cron을 이용한 주기적인 warm-up 호출
-  @Cron('0 * * * *') // 매 정각마다 실행
+  @Cron('*/10 * * * *')
   handleCron() {
     if (process.env.NODE_ENV === 'prod') {
       console.log('Triggering server warm-up...');
