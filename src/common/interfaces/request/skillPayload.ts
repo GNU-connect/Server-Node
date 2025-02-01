@@ -8,5 +8,5 @@ export interface SkillPayload {
   intent: Intent;
   action: Action;
   userRequest: UserRequest;
-  contexts?: any[]; // contexts가 빈 배열일 수 있기 때문에 any[]로 정의
+  contexts?: any[];
 }

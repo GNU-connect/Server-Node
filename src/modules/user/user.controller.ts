@@ -5,6 +5,7 @@ import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
+import { RequestDTO } from 'src/common/dto/request.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -66,7 +67,7 @@ export class UserController {
   }
 
   @Post('get/profile')
-  async getUserProfile(@Body() body: SkillPayload): Promise<ResponseDTO> {
+  async getUserProfile(@Body() body: RequestDTO): Promise<ResponseDTO> {
     const userId = body.userRequest.user.id;
     const template = await this.userService.getUserProfile(userId);
     return new ResponseDTO(template);
