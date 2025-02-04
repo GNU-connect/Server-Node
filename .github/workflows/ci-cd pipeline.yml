@@ -22,7 +22,9 @@ jobs:
     steps:
       # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. 환경변수(.env) 파일 생성
       - name: Set Environment File
@@ -76,3 +78,15 @@ jobs:
         run: |-
           echo '${{ steps.compute-ssh.outputs.stdout }}'
           echo '${{ steps.compute-ssh.outputs.stderr }}'
+
+      # 7. Sentry 설정
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          inject: true
+          sourcemaps: "./dist"
