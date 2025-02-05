@@ -14,7 +14,7 @@ Sentry.init({
   // Add Performance Monitoring by setting tracesSampleRate
   // The value is automatically adjusted depending on the environment
   // Learn more about sampling here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/sampling/
-  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  tracesSampleRate: 1.0,
 
   // Set sampling rate for profiling - this is relative to tracesSampleRate
   profilesSampleRate: 1.0,
