@@ -22,7 +22,9 @@ services:
         limits:
           memory: 256m
           cpus: '0.25'
-    memswap_limit: 0
+        reservations:
+          memory: 128m
+          cpus: '0.1'
 
 networks:
   connect-gnu-network:
