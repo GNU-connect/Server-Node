@@ -11,31 +11,29 @@ import { SentryInterceptor } from './interceptors/sentry.interceptor.js';
 import * as Sentry from '@sentry/nestjs';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { SentryFilter } from './common/filter/sentry.filter';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 async function bootstrap() {
+  initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
   const nodeEnv = process.env.NODE_ENV;
   console.log(nodeEnv);
 
-  if (nodeEnv == 'prod' ) {
+  if (nodeEnv == 'prod') {
     Sentry.init({
       dsn: process.env.SENTRY_NODE_DSN,
       integrations: [nodeProfilingIntegration()],
       tracesSampleRate: 1.0,
       profilesSampleRate: 1.0,
     });
-    app.useGlobalInterceptors(
-      new SentryInterceptor(),
-    )
+    app.useGlobalInterceptors(new SentryInterceptor());
   }
 
-  app.useGlobalInterceptors(
-    new KakaoInterceptor(ResponseDTO)
-  );
+  app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new SentryFilter(httpAdapter));
-  
+
   app.setGlobalPrefix('api/node');
   const config = new DocumentBuilder()
     .setTitle('커넥트지누 노드 서버 API')

@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { createSimpleText, createTextCard } from 'src/common/utils/component';
 import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { UserRepository } from './repository/user.repository';
-import {
-  TextCard,
-} from 'src/common/interfaces/response/fields/component';
+import { TextCard } from 'src/common/interfaces/response/fields/component';
 import { BlockId } from 'src/common/utils/constants';
 import { Button } from 'src/common/interfaces/response/fields/etc';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
+  @Transactional()
   async upsertUserDepartment(
     userId: string,
     campusId: number,
