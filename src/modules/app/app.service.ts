@@ -8,7 +8,7 @@ export class AppService implements OnModuleInit {
   constructor(private readonly httpService: HttpService) {}
 
   onModuleInit() {
-    if (process.env.NODE_ENV === 'prod') {
+    if (process.env.NODE_ENV === 'production') {
       this.warmUpServer();
     }
   }
@@ -61,7 +61,7 @@ export class AppService implements OnModuleInit {
   // Cron을 이용한 주기적인 warm-up 호출
   @Cron('*/10 * * * *')
   handleCron() {
-    if (process.env.NODE_ENV === 'prod') {
+    if (process.env.NODE_ENV === 'production') {
       console.log('Triggering server warm-up...');
       this.warmUpServer(); // warm-up 메서드를 호출
     }

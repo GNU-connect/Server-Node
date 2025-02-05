@@ -1,3 +1,4 @@
+import './instrument';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env' });
 dotenv.config({ path: '.env.dev' });
@@ -8,8 +9,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { KakaoInterceptor } from './interceptors/kakao.interceptor';
 import { ResponseDTO } from './common/dto/response.dto';
 import { SentryInterceptor } from './interceptors/sentry.interceptor.js';
-import * as Sentry from '@sentry/nestjs';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { SentryFilter } from './common/filter/sentry.filter';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 
@@ -17,17 +16,8 @@ async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
   const nodeEnv = process.env.NODE_ENV;
-  console.log(nodeEnv);
 
-  if (nodeEnv == 'prod') {
-    Sentry.init({
-      dsn: process.env.SENTRY_NODE_DSN,
-      integrations: [nodeProfilingIntegration()],
-      tracesSampleRate: 1.0,
-      profilesSampleRate: 1.0,
-    });
-    app.useGlobalInterceptors(new SentryInterceptor());
-  }
+  app.useGlobalInterceptors(new SentryInterceptor());
 
   app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
 
@@ -44,7 +34,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api/node/docs', app, document);
-  await app.listen(nodeEnv == 'prod' ? 5200 : 5000);
+  await app.listen(nodeEnv == 'production' ? 5200 : 5000);
 }
 
 bootstrap();

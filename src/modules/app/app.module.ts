@@ -29,7 +29,7 @@ import { HttpModule } from '@nestjs/axios';
     NewsModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'prod' ? '.env.prod' : '.env.dev',
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
       validationSchema,
     }),
   ],
