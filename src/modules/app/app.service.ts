@@ -36,7 +36,6 @@ export class AppService implements OnModuleInit {
       await this.callApi('/api/node/user/get/campus', requestBody);
       await this.callApi('/api/node/user/get/profile', requestBody);
       await this.callApi('/api/node/clicker/get/campus', requestBody);
-      await this.callApi('/api/node/news/get/news', requestBody);
 
       console.log('All API calls are completed for warm-up.');
     } catch (error) {

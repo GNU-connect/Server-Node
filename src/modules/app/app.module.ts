@@ -11,7 +11,6 @@ import { APP_FILTER } from '@nestjs/core';
 import { CafeteriaModule } from '../cafeteria/cafeteria.module';
 import { CommonModule } from '../common/common.module';
 import { ClickerModule } from '../clicker/clicker.module';
-import { NewsModule } from '../news/news.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 
@@ -26,7 +25,6 @@ import { HttpModule } from '@nestjs/axios';
     UserModule,
     CafeteriaModule,
     ClickerModule,
-    NewsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
