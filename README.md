@@ -1,7 +1,10 @@
 <div align="center">
-  <img src="https://github.com/GNU-connect/.github/raw/main/profile/image/logo.png" alt="logo" width="200px">
+  <img src="https://private-user-images.githubusercontent.com/29221823/423061248-9fa79573-198c-4943-8983-1f0637e353d9.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMzAyMTgsIm5iZiI6MTc0MjAyOTkxOCwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNjEyNDgtOWZhNzk1NzMtMTk4Yy00OTQzLTg5ODMtMWYwNjM3ZTM1M2Q5LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA5MTE1OFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWE1N2Y5ODhlMDIwYzNiYTE2MDNlMTRjZGE2NGQ1OGQ3NThmZWVhN2E4ZDNhNWQ4ZjBhYzdmYzMxMjY1ZWI2MzImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.C5iwo4GR1mtG9Dl4aM-WihhiGX1JTw5ZbWij_Bl26uc" alt="logo" width="200px">
   <br><br>
-  <b>경상국립대 학생들을 위한 교내 정보 제공 카카오톡 챗봇 서비스</b>
+  <b>경상국립대 학우들을 위한 교내 정보 제공 카카오톡 챗봇 서비스</b>
+  <br><br>
+
+  [서비스 링크](https://pf.kakao.com/_bikxiG) &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; [API 명세서](https://github.com/GNU-connect/.github/wiki/API-%EB%AA%85%EC%84%B8%EC%84%9C)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[DB 스키마](https://github.com/GNU-connect/.github/wiki/DB-%EC%8A%A4%ED%82%A4%EB%A7%88)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;[컨벤션](https://github.com/GNU-connect/.github/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98)
 
   <br> 2025.03.04 친구 수 2,000명 돌파 🎉
   <br> 2025.02.11 친구 수 1,500명 돌파 🎉
@@ -16,37 +19,54 @@
 
 <div align="center">
   <h3>학교 & 학과 공지사항 조회</h3>
-  <img src="https://github.com/GNU-connect/.github/raw/main/profile/image/notice.gif" alt="notice" width="750px">
+  <img src="https://private-user-images.githubusercontent.com/29221823/423052158-643706b2-d58b-4177-8f03-0b62e6c2b3c1.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMjczMzMsIm5iZiI6MTc0MjAyNzAzMywicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTIxNTgtNjQzNzA2YjItZDU4Yi00MTc3LThmMDMtMGI2MmU2YzJiM2MxLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA4MjM1M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWFiOTQ4NjFkNmExOWEwOTRhNzY2ZDYzZWQ4MzhiNjMzMTBlMjgxYjIzY2VhOGI5YmVjMjM0MzY2ZjZjMDhlMDQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0._M4unuvuAocfEPYbWBsdimJkJqnd-sPyov7fxz6PKPA" alt="notice" width="750px">
 </div>
+<br>
+
+- 116개의 학과, 169개의 게시판에서 실시간으로 공지사항을 스크래핑하여 제공합니다.
+- 사용자는 자신의 단과대학 및 학과를 선택하여 맞춤형 공지사항을 제공받을 수 있습니다.
+- 공지사항을 클릭하면 원본 게시글로 이동할 수 있습니다.
 
 <br><br>
 
 <div align="center">
   <h3>학식 메뉴 조회</h3>
-  <img src="https://github.com/GNU-connect/.github/raw/main/profile/image/diet.gif" alt="diet" width="750px">
+  <img src="https://private-user-images.githubusercontent.com/29221823/423060841-b8eb4bcd-42c2-45c5-b036-6c455bc33d72.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMzAxMDQsIm5iZiI6MTc0MjAyOTgwNCwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNjA4NDEtYjhlYjRiY2QtNDJjMi00NWM1LWIwMzYtNmM0NTViYzMzZDcyLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA5MTAwNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTg5ZDE0NjdhMGU0NDRhZjk2NjM4MDMxN2QzYjljMTMwZTc3NTU4ZGM4Zjc0OWNhNzBlYWNhNmI0MDQzZmRjNzkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.rJI1LdnA-KrFaLBHmLKMXyJyQseE-RH2r4j7yf1Sr_c" alt="diet" width="750px">
 </div>
+<br>
+
+- 4개 캠퍼스, 9개의 식당 학식 메뉴를 조회할 수 있습니다.
+- 원하는 캠퍼스 및 식당을 선택하면 해당 날짜의 메뉴를 한눈에 확인할 수 있습니다.
+- 매주 새로운 학식 메뉴가 자동으로 업데이트됩니다.
 
 <div align="center">
   <h3>학사일정</h3>
+  <img src="https://private-user-images.githubusercontent.com/29221823/423051871-35e27156-b2c4-4ce8-8a82-145836428c10.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMjczMzMsIm5iZiI6MTc0MjAyNzAzMywicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTE4NzEtMzVlMjcxNTYtYjJjNC00Y2U4LThhODItMTQ1ODM2NDI4YzEwLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA4MjM1M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTZhN2ZkNjc5YWQ4NWIwNjIwOTUxYjJlNGRmZjg0M2MwZTI4YzI1YjU0NDEzMDRiZGFjYThiMjI0ZGFkNTQ0NDMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.lBFGlwWvNfgiBZzWCTK2P25qMjXKMCYFnNcDprAoNWY" alt="calendar" width="750px">
 </div>
+<br>
 
-<br><br>
-
-<div align="center">
-  <h3>셔틀버스</h3>
-</div>
+- 매월 주요 학사 일정을 한눈에 확인할 수 있습니다.
+- 개강, 중간·기말고사, 수강신청 등 중요한 일정을 놓치지 않도록 도와줍니다.
+- 학사 일정이 업데이트되면 자동으로 반영됩니다.
 
 <br><br>
 
 <div align="center">
   <h3>열람실 좌석</h3>
+  <img src="https://private-user-images.githubusercontent.com/29221823/423051860-a58e572c-837d-4fb3-9d2e-6b9bc11fb8fc.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMjczMzMsIm5iZiI6MTc0MjAyNzAzMywicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTE4NjAtYTU4ZTU3MmMtODM3ZC00ZmIzLTlkMmUtNmI5YmMxMWZiOGZjLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA4MjM1M1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTVkZWQ4NTNiOWVlZjc2ZjgxMDkwODc2NjFiMmM1NGQwNTQ5YjA1ODQ3ODgxMGQ0Y2UxZDA3NWQxZmUxZWM5NjkmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.OZjWuWtvqEfyENWXrVsVkf21hd1UjtNdW6BK67trkzk" alt="library" width="750px">
 </div>
+<br>
+
+- 실시간으로 도서관 열람실의 잔여 좌석을 확인할 수 있습니다.
+- Selenium 스크린샷 메서드를 활용하여 5분 간격으로 열람실 좌석 정보를 캡쳐하여 Supabase Stroage에 저장합니다.
+
+<br><br>
 
 # ⚙️ 프로젝트 구조
 
 ## 시스템 아키텍처
 
-![alt text](https://github.com/GNU-connect/.github/raw/main/profile/image/architecture.png)
+![alt text](https://private-user-images.githubusercontent.com/29221823/423052783-a45c21f3-b7f9-456b-8877-9b5dfd781342.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMjcyODEsIm5iZiI6MTc0MjAyNjk4MSwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTI3ODMtYTQ1YzIxZjMtYjdmOS00NTZiLTg4NzctOWI1ZGZkNzgxMzQyLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA4MjMwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY2YzMwMjNhYjVhMDRiY2NhNWI5MDI4MjIwY2EyMDM3NzE2NWU4NWZiYzNmMDAzZTY5NjA5ZDE3YWE2ODNiYWQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.TbsE-8fKFbtdkiG9UPq4JySx7ZmvxiDkTnS8RnvMmiE)
 <br><br>
 
 ## 기술 스택
