@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://private-user-images.githubusercontent.com/29221823/423061248-9fa79573-198c-4943-8983-1f0637e353d9.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMzAyMTgsIm5iZiI6MTc0MjAyOTkxOCwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNjEyNDgtOWZhNzk1NzMtMTk4Yy00OTQzLTg5ODMtMWYwNjM3ZTM1M2Q5LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA5MTE1OFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWE1N2Y5ODhlMDIwYzNiYTE2MDNlMTRjZGE2NGQ1OGQ3NThmZWVhN2E4ZDNhNWQ4ZjBhYzdmYzMxMjY1ZWI2MzImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.C5iwo4GR1mtG9Dl4aM-WihhiGX1JTw5ZbWij_Bl26uc" alt="logo" width="200px">
+  <img src="https://github.com/GNU-connect/.github/blob/main/profile/image/logo.png?raw=true" alt="logo" width="200px">
   <br><br>
   <b>경상국립대 학우들을 위한 교내 정보 제공 카카오톡 챗봇 서비스</b>
   <br><br>
@@ -19,7 +19,7 @@
 
 <div align="center">
   <h3>학교 & 학과 공지사항 조회</h3>
-  <img src="https://private-user-images.githubusercontent.com/29221823/423052158-643706b2-d58b-4177-8f03-0b62e6c2b3c1.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwNDA1NzYsIm5iZiI6MTc0MjA0MDI3NiwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTIxNTgtNjQzNzA2YjItZDU4Yi00MTc3LThmMDMtMGI2MmU2YzJiM2MxLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDEyMDQzNlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTIyN2Q0NDk2ZTk1MzhiN2M3YmQ1MDIwMjc1OWVjNDczOGQyZmMyMTgyYTVjYzlmNGNlYzIxNDQxMjdhNmIyOWEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.telHx5VaQQ1_YS6ygg0HQ0f5r9hrlhuywjFIXc093uw" alt="notice" width="750px">
+  <img src="https://github.com/GNU-connect/.github/blob/main/profile/image/notice.gif?raw=true" alt="notice" width="750px">
 </div>
 <br>
 
@@ -31,7 +31,7 @@
 
 <div align="center">
   <h3>학식 메뉴 조회</h3>
-  <img src="https://private-user-images.githubusercontent.com/29221823/423060841-b8eb4bcd-42c2-45c5-b036-6c455bc33d72.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwNDA2MjYsIm5iZiI6MTc0MjA0MDMyNiwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNjA4NDEtYjhlYjRiY2QtNDJjMi00NWM1LWIwMzYtNmM0NTViYzMzZDcyLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDEyMDUyNlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWZkNmIzYTg4NDE1YjNkNGIzOTNkNDYxN2UzZmYwMDVmMWE0MDA0OWYxMWZiZThkZjM3YTE2YzIzODNlYTFjYTMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.3QwhFUhjfShZfACFmKzotb7sEm5ppGu0ySGPw8KB4nk" alt="diet" width="750px">
+  <img src="https://github.com/GNU-connect/.github/blob/main/profile/image/diet.gif?raw=true" alt="diet" width="750px">
 </div>
 <br>
 
@@ -41,7 +41,7 @@
 
 <div align="center">
   <h3>학사일정</h3>
-  <img src="https://private-user-images.githubusercontent.com/29221823/423051871-35e27156-b2c4-4ce8-8a82-145836428c10.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwNDA2MjYsIm5iZiI6MTc0MjA0MDMyNiwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTE4NzEtMzVlMjcxNTYtYjJjNC00Y2U4LThhODItMTQ1ODM2NDI4YzEwLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDEyMDUyNlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTE4MjY0MmVkYTcyNzQ1NWI2MTZjMjhjYjNiYzdiMmRjZmJhYmQxYzUwMWIwMzFkNThiNzA0N2RjOWVlY2JmZTgmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.8VCB1rCrUbEsynVMxDk3MncO_DY5CRLbPB_UyUNwX9U" alt="calendar" width="750px">
+  <img src="https://github.com/GNU-connect/.github/blob/main/profile/image/calendar.gif?raw=true" alt="calendar" width="750px">
 </div>
 <br>
 
@@ -53,7 +53,7 @@
 
 <div align="center">
   <h3>열람실 좌석</h3>
-  <img src="https://private-user-images.githubusercontent.com/29221823/423051860-a58e572c-837d-4fb3-9d2e-6b9bc11fb8fc.gif?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwNDA2MjYsIm5iZiI6MTc0MjA0MDMyNiwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTE4NjAtYTU4ZTU3MmMtODM3ZC00ZmIzLTlkMmUtNmI5YmMxMWZiOGZjLmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDEyMDUyNlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTUxZjM1NThmNTJmNjFmOTlkMmYyMDg2ZjFhZTczNDljZjVhYTg5MzRhYWRmMzNlZjBmN2U4OGIxYWEyMDM4MzImWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0._AcOER3hcaaSqR-7h_dl58n21DySTtJci48ctenFhtA" alt="library" width="750px">
+  <img src="https://github.com/GNU-connect/.github/blob/main/profile/image/library.gif?raw=true" alt="library" width="750px">
 </div>
 <br>
 
@@ -66,7 +66,7 @@
 
 ## 시스템 아키텍처
 
-![alt text](https://private-user-images.githubusercontent.com/29221823/423052783-a45c21f3-b7f9-456b-8877-9b5dfd781342.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDIwMjcyODEsIm5iZiI6MTc0MjAyNjk4MSwicGF0aCI6Ii8yOTIyMTgyMy80MjMwNTI3ODMtYTQ1YzIxZjMtYjdmOS00NTZiLTg4NzctOWI1ZGZkNzgxMzQyLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMTUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzE1VDA4MjMwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY2YzMwMjNhYjVhMDRiY2NhNWI5MDI4MjIwY2EyMDM3NzE2NWU4NWZiYzNmMDAzZTY5NjA5ZDE3YWE2ODNiYWQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.TbsE-8fKFbtdkiG9UPq4JySx7ZmvxiDkTnS8RnvMmiE)
+![alt text](https://raw.githubusercontent.com/GNU-connect/.github/refs/heads/main/profile/image/architecture.png)
 <br><br>
 
 ## 기술 스택
