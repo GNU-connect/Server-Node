@@ -46,7 +46,7 @@ export class CommonService {
 
   async getCollegeListCard(
     campusId: number,
-    page: number = 1,
+    page: number,
     blockId: string,
   ): Promise<SkillTemplate> {
     const [collegeEntities, total] = await this.collegeRepository.findAll(page);

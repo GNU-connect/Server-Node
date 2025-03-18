@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDTO } from 'src/common/dto/response.dto';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
 import { GetCollegeDto, GetDepartmentDto, GetProfileDto, UpdateDepartmentDto } from './dtos/user.dto';
@@ -24,6 +24,7 @@ export class UserController {
   @Post('get/college')
   async getCollege(@Body() body: GetCollegeDto): Promise<ResponseDTO> {
     const { campusId, page } = body;
+    console.log(campusId, page);
     const blockId = BlockId.DEPARTMENT_LIST;
     const template = await this.commonService.getCollegeListCard(
       campusId,

@@ -11,17 +11,30 @@ import { ResponseDTO } from './common/dto/response.dto';
 import { SentryInterceptor } from './interceptors/sentry.interceptor.js';
 import { SentryFilter } from './common/filter/sentry.filter';
 import { initializeTransactionalContext } from 'typeorm-transactional';
+import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 
 async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
   const nodeEnv = process.env.NODE_ENV;
 
-  app.useGlobalInterceptors(new SentryInterceptor());
+  if (nodeEnv == 'production') {
+    app.useGlobalInterceptors(new SentryInterceptor());
+    const { httpAdapter } = app.get(HttpAdapterHost);
+    app.useGlobalFilters(new SentryFilter(httpAdapter));
+  } else {
+    app.useGlobalFilters(new HttpExceptionFilter());
+  }
   app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
 
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new SentryFilter(httpAdapter));
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: false,
+    forbidNonWhitelisted: false,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true }
+  }))
+
 
   app.setGlobalPrefix('api/node');
   const config = new DocumentBuilder()

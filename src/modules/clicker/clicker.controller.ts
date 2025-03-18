@@ -5,6 +5,7 @@ import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
 import { ResponseDTO } from 'src/common/dto/response.dto';
 import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
+import { GetReadingRoomDetailDto, GetReadingRoomDto } from './dtos/clicker.dto';
 
 @ApiTags('clicker')
 @Controller('clicker')
@@ -22,9 +23,8 @@ export class ClickerController {
   }
 
   @Post('get/reading-room')
-  async getReadingRoom(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const { clientExtra } = body.action;
-    const campusId = clientExtra['campusId'];
+  async getReadingRoom(@Body() body: GetReadingRoomDto): Promise<ResponseDTO> {
+    const { campusId } = body;
     const blockId = BlockId.READING_ROOM_DETAIL;
     const template = await this.clickerService.getReadingRoomListCard(
       campusId,
@@ -34,9 +34,8 @@ export class ClickerController {
   }
 
   @Post('get/reading-room-detail')
-  async getReadingRoomDetail(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const { clientExtra } = body.action;
-    const readingRoomId = clientExtra['readingRoomId'];
+  async getReadingRoomDetail(@Body() body: GetReadingRoomDetailDto): Promise<ResponseDTO> {
+    const { readingRoomId } = body
     const template = await this.clickerService.getReadingRoomDetailCard(
       readingRoomId,
     );
