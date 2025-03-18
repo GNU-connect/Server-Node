@@ -8,11 +8,11 @@ import { UserModule } from '../user/user.module';
 import { SupabaseModule } from '../supabase/supabase.module';
 import { validationSchema } from 'src/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
-import { CafeteriaModule } from '../cafeteria/cafeteria.module';
 import { CommonModule } from '../common/common.module';
 import { ClickerModule } from '../clicker/clicker.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { HttpModule } from '@nestjs/axios';
     UtilsModule,
     CommonModule,
     UserModule,
-    CafeteriaModule,
     ClickerModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',

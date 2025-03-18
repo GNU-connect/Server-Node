@@ -18,7 +18,6 @@ async function bootstrap() {
   const nodeEnv = process.env.NODE_ENV;
 
   app.useGlobalInterceptors(new SentryInterceptor());
-
   app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
 
   const { httpAdapter } = app.get(HttpAdapterHost);
@@ -29,12 +28,27 @@ async function bootstrap() {
     .setTitle('커넥트지누 노드 서버 API')
     .setDescription('커넥트지누 노드 서버 API 문서입니다.')
     .setVersion('1.0')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'X-USER-ID',
+        in: 'header',
+        description: 'userId를 입력하세요 (예: 123456)',
+      },
+      'X-USER-ID',
+    )
+    .addSecurityRequirements('X-USER-ID')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('api/node/docs', app, document);
-  await app.listen(nodeEnv == 'production' ? 5200 : 5000);
+  SwaggerModule.setup('api/node/docs', app, document,
+    {
+      swaggerOptions: {
+        persistAuthorization: true, // 새로고침해도 인증 정보 유지
+      }
+    }
+  );
+  await app.listen(nodeEnv == 'production' ? 5200 : 5001);
 }
 
 bootstrap();

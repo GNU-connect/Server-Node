@@ -1,11 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDTO } from 'src/common/dto/response.dto';
-import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
-import { RequestDTO } from 'src/common/dto/request.dto';
+import { GetCollegeDto, GetDepartmentDto, GetProfileDto, UpdateDepartmentDto } from './dtos/user.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -23,13 +22,11 @@ export class UserController {
   }
 
   @Post('get/college')
-  async getCollege(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const { clientExtra } = body.action;
-    const capmusId = clientExtra['campusId'];
-    const page = clientExtra['page'];
+  async getCollege(@Body() body: GetCollegeDto): Promise<ResponseDTO> {
+    const { campusId, page } = body;
     const blockId = BlockId.DEPARTMENT_LIST;
     const template = await this.commonService.getCollegeListCard(
-      capmusId,
+      campusId,
       page,
       blockId,
     );
@@ -37,11 +34,8 @@ export class UserController {
   }
 
   @Post('get/department')
-  async getDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const { clientExtra } = body.action;
-    const campusId = clientExtra['campusId'];
-    const collegeId = clientExtra['collegeId'];
-    const page = clientExtra['page'];
+  async getDepartment(@Body() body: GetDepartmentDto): Promise<ResponseDTO> {
+    const { campusId, collegeId, page } = body;
     const blockId = BlockId.UPDATE_DEPARTMENT;
     const template = await this.commonService.getDepartmentListCard(
       campusId,
@@ -53,11 +47,8 @@ export class UserController {
   }
 
   @Post('update/department')
-  async upsertUserDepartment(@Body() body: SkillPayload): Promise<ResponseDTO> {
-    const userId = body.userRequest.user.id;
-    const { clientExtra } = body.action;
-    const campusId = clientExtra['campusId'];
-    const departmentId = clientExtra['departmentId'];
+  async upsertUserDepartment(@Body() body: UpdateDepartmentDto): Promise<ResponseDTO> {
+    const { userId, campusId, departmentId } = body;
     const template = await this.userService.upsertUserDepartment(
       userId,
       campusId,
@@ -67,8 +58,8 @@ export class UserController {
   }
 
   @Post('get/profile')
-  async getUserProfile(@Body() body: RequestDTO): Promise<ResponseDTO> {
-    const userId = body.userRequest.user.id;
+  async getUserProfile(@Body() body: GetProfileDto): Promise<ResponseDTO> {
+    const { userId } = body;
     const template = await this.userService.getUserProfile(userId);
     return new ResponseDTO(template);
   }
