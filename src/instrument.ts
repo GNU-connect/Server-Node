@@ -27,7 +27,7 @@ Sentry.init({
   enableTracing: process.env.NODE_ENV !== 'development',
 
   // Enable debug mode to log event submission
-  debug: process.env.NODE_ENV === 'development',
+  // debug: process.env.NODE_ENV === 'development',
 
   // Advanced, optional: Called for message and error events
   beforeSend(event) {

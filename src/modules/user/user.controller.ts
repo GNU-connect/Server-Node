@@ -1,10 +1,13 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseDTO } from 'src/common/dto/response.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHideProperty, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
-import { GetCollegeDto, GetDepartmentDto, GetProfileDto, UpdateDepartmentDto } from './dtos/user.dto';
+import { GetCollegeDto, GetDepartmentDto, UpdateDepartmentDto } from './dtos/user.dto';
+import { SkillPayloadDto } from 'src/common/dto/request/skill-payload.dto';
+import { plainToInstance } from 'class-transformer';
+import { ApiSkillBody } from 'src/common/decorators/api-skill-body.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -20,23 +23,25 @@ export class UserController {
     const template = await this.commonService.getCampusListCard(blockId);
     return new ResponseDTO(template);
   }
-
+  
   @Post('get/college')
-  async getCollege(@Body() body: GetCollegeDto): Promise<ResponseDTO> {
-    const { campusId, page } = body;
-    console.log(campusId, page);
+  @ApiSkillBody(GetCollegeDto)
+  async getCollege(@Body() body: SkillPayloadDto): Promise<ResponseDTO> {
+    const { campusId, page } = plainToInstance(GetCollegeDto, body.action.clientExtra);
     const blockId = BlockId.DEPARTMENT_LIST;
     const template = await this.commonService.getCollegeListCard(
       campusId,
       page,
       blockId,
     );
+    console.log(template.quickReplies);
     return new ResponseDTO(template);
   }
 
   @Post('get/department')
-  async getDepartment(@Body() body: GetDepartmentDto): Promise<ResponseDTO> {
-    const { campusId, collegeId, page } = body;
+  @ApiSkillBody(GetDepartmentDto)
+  async getDepartment(@Body() body: SkillPayloadDto): Promise<ResponseDTO> {
+    const { campusId, collegeId, page } = plainToInstance(GetDepartmentDto, body.action.clientExtra);
     const blockId = BlockId.UPDATE_DEPARTMENT;
     const template = await this.commonService.getDepartmentListCard(
       campusId,
@@ -48,8 +53,10 @@ export class UserController {
   }
 
   @Post('update/department')
-  async upsertUserDepartment(@Body() body: UpdateDepartmentDto): Promise<ResponseDTO> {
-    const { userId, campusId, departmentId } = body;
+  @ApiSkillBody(UpdateDepartmentDto)
+  async upsertUserDepartment(@Req() req: Request, @Body() body: SkillPayloadDto): Promise<ResponseDTO> {
+    const userId = req['userId'];
+    const { campusId, departmentId } = plainToInstance(UpdateDepartmentDto, body.action.clientExtra);
     const template = await this.userService.upsertUserDepartment(
       userId,
       campusId,
@@ -59,8 +66,8 @@ export class UserController {
   }
 
   @Post('get/profile')
-  async getUserProfile(@Body() body: GetProfileDto): Promise<ResponseDTO> {
-    const { userId } = body;
+  async getUserProfile(@Req() req: Request): Promise<ResponseDTO> {
+    const userId = req['userId'];
     const template = await this.userService.getUserProfile(userId);
     return new ResponseDTO(template);
   }

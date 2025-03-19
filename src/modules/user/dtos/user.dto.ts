@@ -1,62 +1,41 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { ClientExtraDto } from 'src/common/dto/request';
 
-export class GetCollegeDto {
+export class GetCollegeDto extends ClientExtraDto {
+  @ApiProperty({ description: '캠퍼스 ID', example: 1 })
   @IsNumber()
   campusId: number;
 
   @IsOptional()
-  @Transform(({ value, obj }) => {
-    console.log('value:', value);
-    console.log('obj:', obj);
-    return value ?? obj?.action?.clientExtra?.page;
-  })
+  @ApiProperty({ description: '페이지 번호', example: 1 })
   @IsNumber()
-  @ApiProperty({
-    description: '페이지 번호',
-    default: 1
-  })
   page?: number = 1;
 }
 
 export class GetDepartmentDto {
+  @IsOptional()
+  @ApiProperty({ description: '캠퍼스 ID', example: 1 })
   @IsNumber()
-  @Transform(({ obj }) => obj.action.clientExtra?.campusId)
-  @ApiProperty({
-    description: '캠퍼스 ID',
-    default: 1
-  })
   campusId: number;
 
+  @IsOptional()
   @IsNumber()
-  @Transform(({ obj }) => obj.action.clientExtra?.collegeId)
   @ApiProperty({
     description: '단과대학 ID',
     default: 1
   })
   collegeId: number;
-
+  
+  @IsOptional()
+  @ApiProperty({ description: '페이지 번호', example: 1 })
   @IsNumber()
-  @Transform(({ obj }) => obj.action.clientExtra?.page)
-  @ApiProperty({
-    description: '페이지 번호',
-    default: 1
-  })
-  page: number;
-}
-
-export class GetProfileDto {
-  @IsString()
-  userId: string;
+  page?: number = 1;
 }
 
 export class UpdateDepartmentDto {
-  @IsString()
-  userId: string;
-
   @IsNumber()
-  @Transform(({ obj }) => obj.action.clientExtra?.campusId)
   @ApiProperty({
     description: '캠퍼스 ID',
     default: 1
@@ -64,7 +43,6 @@ export class UpdateDepartmentDto {
   campusId: number;
 
   @IsNumber()
-  @Transform(({ obj }) => obj.action.clientExtra?.departmentId)
   @ApiProperty({
     description: '학과 ID',
     default: 1

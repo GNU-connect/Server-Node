@@ -32,7 +32,7 @@ async function bootstrap() {
     whitelist: false,
     forbidNonWhitelisted: false,
     transform: true,
-    transformOptions: { enableImplicitConversion: true }
+    //transformOptions: { enableImplicitConversion: true }
   }))
 
 
@@ -58,6 +58,7 @@ async function bootstrap() {
     {
       swaggerOptions: {
         persistAuthorization: true, // 새로고침해도 인증 정보 유지
+        defaultModelsExpandDepth: -1
       }
     }
   );

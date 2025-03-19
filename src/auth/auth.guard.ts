@@ -7,7 +7,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const userId = request.headers['x-user-id'] || request.body.userRequest.user?.id;
     if (userId) {
-      request.body = { ...request.body, userId }; // 기존 body에 userId 강제 삽입
+      request['userId'] = userId;
     }
 
     return !!userId;

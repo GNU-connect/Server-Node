@@ -4,7 +4,6 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
 import { BlockId } from 'src/common/utils/constants';
 import { ResponseDTO } from 'src/common/dto/response.dto';
-import { SkillPayload } from 'src/common/interfaces/request/skillPayload';
 import { GetReadingRoomDetailDto, GetReadingRoomDto } from './dtos/clicker.dto';
 
 @ApiTags('clicker')

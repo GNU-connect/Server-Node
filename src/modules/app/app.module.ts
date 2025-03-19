@@ -37,10 +37,6 @@ import { AuthModule } from 'src/auth/auth.module';
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
     },
-    {
-      provide: APP_PIPE,
-      useClass: ValidationPipe,
-    },
     AppService,
   ],
 })

@@ -1,24 +1,21 @@
 import { Expose, Exclude } from 'class-transformer';
-import { ContextControl } from 'src/common/interfaces/response/fields/context';
-import { SkillResponse } from 'src/common/interfaces/response/response';
-import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 
-export class ResponseDTO<T = any> implements SkillResponse<T> {
+export class ResponseDTO<T = any> {
   @Exclude()
   version: string;
 
   @Expose()
-  template: SkillTemplate;
+  template: any;
 
   @Expose()
-  context?: ContextControl;
+  context?: any;
 
   @Expose()
   data?: Map<string, T>;
 
   constructor(
-    template: SkillTemplate,
-    context?: ContextControl,
+    template: any,
+    context?: any,
     data?: Map<string, T>,
   ) {
     this.version = '2.0'; // 버전은 고정값
