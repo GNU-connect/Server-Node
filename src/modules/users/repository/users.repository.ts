@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from '../entities/user.entity';
+import { User } from '../entities/users.entity';
 
 @Injectable()
-export class UserRepository {
+export class UsersRepository {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findUserProfile(userId: string): Promise<UserEntity> {
-    return await this.userRepository.createQueryBuilder('user')
+  async findUserProfile(userId: string): Promise<User> {
+    return await this.usersRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.campus', 'campus')
       .leftJoinAndSelect('user.department', 'department')
       .leftJoinAndSelect('department.college', 'college')
@@ -27,7 +27,7 @@ export class UserRepository {
   }
 
   async isExistUser(userId: string): Promise<boolean> {
-    return (await this.userRepository.findOne({ where: { id: userId } })) !== null;
+    return (await this.usersRepository.findOne({ where: { id: userId } })) !== null;
   }
 
   async createUserInfo(
@@ -35,7 +35,7 @@ export class UserRepository {
     campusId: number,
     departmentId: number,
   ): Promise<void> {
-    await this.userRepository.insert({
+    await this.usersRepository.insert({
       id: userId,
       campusId,
       departmentId,
@@ -47,7 +47,7 @@ export class UserRepository {
     campusId: number,
     departmentId: number,
   ): Promise<void> {
-    await this.userRepository.update(userId, {
+    await this.usersRepository.update(userId, {
       campusId,
       departmentId,
     });

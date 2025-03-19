@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClickerService } from './clicker.service';
+import { ClickerService } from './clickers.service';
 
 describe('ClickerService', () => {
   let service: ClickerService;

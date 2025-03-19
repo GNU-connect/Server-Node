@@ -1,16 +1,16 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ClickerService } from './clicker.service';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ClickersService } from './clickers.service';
+import { ApiTags } from '@nestjs/swagger';
 import { CommonService } from '../common/common.service';
-import { BlockId } from 'src/common/utils/constants';
-import { ResponseDTO } from 'src/common/dto/response.dto';
-import { GetReadingRoomDetailDto, GetReadingRoomDto } from './dtos/clicker.dto';
+import { BlockId } from 'src/modules/common/utils/constants';
+import { ResponseDTO } from 'src/modules/common/dtos/response.dto';
+import { GetReadingRoomDetailDto, GetReadingRoomDto } from './dtos/clickers.dto';
 
-@ApiTags('clicker')
-@Controller('clicker')
-export class ClickerController {
+@ApiTags('clickers')
+@Controller('clickers')
+export class ClickersController {
   constructor(
-    private readonly clickerService: ClickerService,
+    private readonly clickersService: ClickersService,
     private readonly commonService: CommonService,
   ) {}
 
@@ -25,7 +25,7 @@ export class ClickerController {
   async getReadingRoom(@Body() body: GetReadingRoomDto): Promise<ResponseDTO> {
     const { campusId } = body;
     const blockId = BlockId.READING_ROOM_DETAIL;
-    const template = await this.clickerService.getReadingRoomListCard(
+    const template = await this.clickersService.getReadingRoomListCard(
       campusId,
       blockId,
     );
@@ -35,7 +35,7 @@ export class ClickerController {
   @Post('get/reading-room-detail')
   async getReadingRoomDetail(@Body() body: GetReadingRoomDetailDto): Promise<ResponseDTO> {
     const { readingRoomId } = body
-    const template = await this.clickerService.getReadingRoomDetailCard(
+    const template = await this.clickersService.getReadingRoomDetailCard(
       readingRoomId,
     );
     return new ResponseDTO(template);

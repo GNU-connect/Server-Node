@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { ClickerRepository } from './repository/clicker.repository';
-import { ListItem } from 'src/common/interfaces/response/fields/etc';
-import { ListCard } from 'src/common/interfaces/response/fields/component';
+import { ClickersRepository } from './repositories/clickers.repository';
+import { ListItem } from 'src/modules/common/interfaces/response/fields/etc';
+import { ListCard } from 'src/modules/common/interfaces/response/fields/component';
 import {
   createListCard,
   createSimpleImage,
   createSimpleText,
-} from 'src/common/utils/component';
+} from 'src/modules/common/utils/component';
 
 @Injectable()
-export class ClickerService {
-  constructor(private readonly clickerRepository: ClickerRepository) {}
+export class ClickersService {
+  constructor(private readonly clickersRepository: ClickersRepository) {}
 
   async getReadingRoomListCard(
     campusId: number,
@@ -24,7 +24,7 @@ export class ClickerService {
       };
     }
 
-    const readingRoomEntities = await this.clickerRepository.findByCampusId(
+    const readingRoomEntities = await this.clickersRepository.findByCampusId(
       campusId,
     );
 

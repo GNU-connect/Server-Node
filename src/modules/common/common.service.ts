@@ -1,38 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { CampusRepository } from './repository/campus.repository';
-import { CollegeRepository } from './repository/college.repository';
-import { DepartmentRepository } from './repository/department.repository';
-import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
+import { CampusesRepository } from './repositories/campuses.repository';
+import { CollegesRepository } from './repositories/colleges.repository';
+import { DepartmentsRepository } from './repositories/departments.repository';
+import { SkillTemplate } from 'src/modules/common/interfaces/response/fields/template';
 import { ApiTags } from '@nestjs/swagger';
-import { Button, ListItem } from 'src/common/interfaces/response/fields/etc';
-import { BlockId, ListCardConfig } from 'src/common/utils/constants';
-import { ListCard } from 'src/common/interfaces/response/fields/component';
-import { createListCard } from 'src/common/utils/component';
+import { ListItem } from 'src/modules/common/interfaces/response/fields/etc';
+import { BlockId, ListCardConfig } from 'src/modules/common/utils/constants';
+import { ListCard } from 'src/modules/common/interfaces/response/fields/component';
+import { createListCard } from 'src/modules/common/utils/component';
 
 @ApiTags('common')
 @Injectable()
 export class CommonService {
   constructor(
-    private readonly campusRepository: CampusRepository,
-    private readonly collegeRepository: CollegeRepository,
-    private readonly departmentRepository: DepartmentRepository,
+    private readonly campusesRepository: CampusesRepository,
+    private readonly collegesRepository: CollegesRepository,
+    private readonly departmentsRepository: DepartmentsRepository,
   ) {}
 
   async getCampusListCard(blockId: string): Promise<SkillTemplate> {
-    const campusEntities = await this.campusRepository.findAll();
+    const campuses = await this.campusesRepository.findAll();
 
     const header: ListItem = {
       title: '캠퍼스 선택',
     };
 
-    const items: ListItem[] = campusEntities.map((campusEntity) => {
+    const items: ListItem[] = campuses.map((campus) => {
       return {
-        title: campusEntity.name,
-        imageUrl: campusEntity.thumbnailUrl,
+        title: campus.name,
+        imageUrl: campus.thumbnailUrl,
         action: 'block',
         blockId,
         extra: {
-          campusId: campusEntity.id,
+          campusId: campus.id,
         },
       };
     });
@@ -49,21 +49,21 @@ export class CommonService {
     page: number,
     blockId: string,
   ): Promise<SkillTemplate> {
-    const [collegeEntities, total] = await this.collegeRepository.findAll(page);
+    const [colleges, total] = await this.collegesRepository.findAll(page);
 
     const header: ListItem = {
       title: '단과대학 선택',
     };
 
-    const items: ListItem[] = collegeEntities.map((collegeEntity) => {
+    const items: ListItem[] = colleges.map((college) => {
       return {
-        title: collegeEntity.name,
-        imageUrl: collegeEntity.thumbnailUrl,
+        title: college.name,
+        imageUrl: college.thumbnailUrl,
         action: 'block',
         blockId,
         extra: {
           campusId: campusId,
-          collegeId: collegeEntity.id,
+          collegeId: college.id,
         },
       };
     });
@@ -109,21 +109,21 @@ export class CommonService {
     page: number = 1,
     blockId: string,
   ): Promise<SkillTemplate> {
-    const [departmentEntities, total] =
-      await this.departmentRepository.findByCollegeId(collegeId, page);
+    const [departments, total] =
+      await this.departmentsRepository.findByCollegeId(collegeId, page);
 
     const header: ListItem = {
       title: '학과 선택',
     };
 
-    const items: ListItem[] = departmentEntities.map((departmentEntity) => {
+    const items: ListItem[] = departments.map((department) => {
       return {
-        title: departmentEntity.name,
+        title: department.name,
         action: 'block',
         blockId,
         extra: {
           campusId,
-          departmentId: departmentEntity.id,
+          departmentId: department.id,
         },
       };
     });

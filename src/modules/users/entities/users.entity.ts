@@ -1,25 +1,25 @@
-import { CampusEntity } from 'src/modules/common/entities/campus.entity';
-import { DepartmentEntity } from 'src/modules/common/entities/department.entity';
+import { Campus } from 'src/modules/common/entities/campus.entity';
+import { Department } from 'src/modules/common/entities/department.entity';
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('kakao-user')
-export class UserEntity {
+export class User {
   @PrimaryColumn()
   id: string;
 
   @Column({ name: 'campus_id' })
   campusId: number;
 
-  @ManyToOne(() => CampusEntity, (campus) => campus.id)
+  @ManyToOne(() => Campus, (campus) => campus.id)
   @JoinColumn({ name: 'campus_id' })
-  campus: CampusEntity;
+  campus: Campus;
 
   @Column({ name: 'department_id' })
   departmentId: number;
 
-  @ManyToOne(() => DepartmentEntity, (department) => department.id)
+  @ManyToOne(() => Department, (department) => department.id)
   @JoinColumn({ name: 'department_id' })
-  department: DepartmentEntity;
+  department: Department;
 
   @Column({ name: 'user_type' })
   userType: number;

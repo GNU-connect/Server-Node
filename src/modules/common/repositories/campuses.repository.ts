@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { CampusEntity } from '../entities/campus.entity';
+import { Campus } from '../entities/campus.entity';
 
 @Injectable()
-export class CampusRepository {
+export class CampusesRepository {
   constructor(
-    @InjectRepository(CampusEntity)
-    private readonly campusRepository: Repository<CampusEntity>, // Inject the repository here
+    @InjectRepository(Campus)
+    private readonly campusesRepository: Repository<Campus>,
   ) {}
 
-  async findAll(): Promise<CampusEntity[]> {
-    return await this.campusRepository.find({
+  async findAll(): Promise<Campus[]> {
+    return await this.campusesRepository.find({
       select: ['id', 'name', 'thumbnailUrl'],
       where: {
         id: In([1, 2, 3, 4]),
@@ -20,7 +20,7 @@ export class CampusRepository {
   }
 
   async getCampusName(campusId: number): Promise<string> {
-    const campus = await this.campusRepository.findOne({
+    const campus = await this.campusesRepository.findOne({
       where: {
         id: campusId,
       },

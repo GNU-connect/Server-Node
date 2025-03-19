@@ -6,13 +6,13 @@ import * as process from 'process';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { KakaoInterceptor } from './interceptors/kakao.interceptor';
-import { ResponseDTO } from './common/dto/response.dto';
-import { SentryInterceptor } from './interceptors/sentry.interceptor.js';
-import { SentryFilter } from './common/filter/sentry.filter';
+import { KakaoInterceptor } from './modules/interceptors/kakao.interceptor';
+import { ResponseDTO } from './modules/common/dtos/response.dto';
+import { SentryInterceptor } from './modules/interceptors/sentry.interceptor.js';
+import { SentryFilter } from './modules/common/filters/sentry.filter';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { HttpExceptionFilter } from './modules/common/filters/http-exception.filter';
 
 async function bootstrap() {
   initializeTransactionalContext();

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CollegeEntity } from '../entities/college.entity';
-import { ListCardConfig } from 'src/common/utils/constants';
+import { College } from '../entities/college.entity';
+import { ListCardConfig } from 'src/modules/common/utils/constants';
 
 @Injectable()
-export class CollegeRepository {
+export class CollegesRepository {
   constructor(
-    @InjectRepository(CollegeEntity)
-    private readonly collegeRepository: Repository<CollegeEntity>, // Inject the repository here
+    @InjectRepository(College)
+    private readonly collegesRepository: Repository<College>,
   ) {}
 
-  async findAll(page: number): Promise<[CollegeEntity[], number]> {
-    return await this.collegeRepository
+  async findAll(page: number): Promise<[College[], number]> {
+    return await this.collegesRepository
       .createQueryBuilder('college')
       .where("college.name != '공통'")
       .orderBy('college.name', 'ASC')
