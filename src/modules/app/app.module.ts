@@ -13,7 +13,7 @@ import { ReadingRoomsModule } from '../reading-rooms/reading-rooms.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from 'src/modules/auth/auth.module';
-
+import { DiscoveryModule } from '@nestjs/core';
 @Module({
   imports: [
     SentryModule.forRoot(),
@@ -21,6 +21,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
     HttpModule,
     SupabaseModule,
     UtilsModule,
+    DiscoveryModule,
     CommonModule,
     UsersModule,
     ReadingRoomsModule,
