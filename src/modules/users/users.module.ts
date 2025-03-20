@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { SupabaseModule } from '../supabase/supabase.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersRepository } from './repository/users.repository';
+import { UsersRepository } from './repositories/users.repository';
 import { User } from './entities/users.entity';
 import { CommonModule } from '../common/common.module';
 

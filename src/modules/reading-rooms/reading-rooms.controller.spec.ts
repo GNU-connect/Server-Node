@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ClickerController } from './clickers.controller';
-import { ClickerService } from './clickers.service';
+import { ClickerController } from './reading-rooms.controller';
+import { ClickerService } from './reading-rooms.service';
 
 describe('ClickerController', () => {
   let controller: ClickerController;

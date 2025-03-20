@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('reading_room')
-export class Clicker {
+export class ReadingRoom {
   @PrimaryGeneratedColumn()
   id: number;
 

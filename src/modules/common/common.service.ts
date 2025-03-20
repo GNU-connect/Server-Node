@@ -18,7 +18,7 @@ export class CommonService {
     private readonly departmentsRepository: DepartmentsRepository,
   ) {}
 
-  async getCampusListCard(blockId: string): Promise<SkillTemplate> {
+  public async campusesListCard(blockId: string): Promise<SkillTemplate> {
     const campuses = await this.campusesRepository.findAll();
 
     const header: ListItem = {
@@ -44,7 +44,7 @@ export class CommonService {
     };
   }
 
-  async getCollegeListCard(
+  public async collegesListCard(
     campusId: number,
     page: number,
     blockId: string,
@@ -103,7 +103,7 @@ export class CommonService {
     };
   }
 
-  async getDepartmentListCard(
+  public async departmentsListCard(
     campusId: number,
     collegeId: number,
     page: number = 1,

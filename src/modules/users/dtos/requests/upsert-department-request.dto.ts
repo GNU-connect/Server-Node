@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber } from "class-validator";
-import { ClientExtraDto } from "src/modules/common/dtos/request";
+import { ClientExtraDto } from "src/modules/common/dtos/requests";
 
 export class UpsertDepartmentRequestDto extends ClientExtraDto {
   @IsNotEmpty()

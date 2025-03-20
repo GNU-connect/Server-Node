@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createSimpleText, createTextCard } from 'src/modules/common/utils/component';
 import { SkillTemplate } from 'src/modules/common/interfaces/response/fields/template';
-import { UsersRepository } from './repository/users.repository';
+import { UsersRepository } from './repositories/users.repository';
 import { TextCard } from 'src/modules/common/interfaces/response/fields/component';
 import { BlockId } from 'src/modules/common/utils/constants';
 import { Button } from 'src/modules/common/interfaces/response/fields/etc';
@@ -12,30 +12,28 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   @Transactional()
-  async upsertUserDepartment(
+  public async upsertDepartment(
     userId: string,
     campusId: number,
     departmentId: number,
   ): Promise<SkillTemplate> {
-    let simpleText = null;
-
-    const isExist = await this.usersRepository.isExistUser(userId);
+    await this.usersRepository.save(userId, campusId, departmentId);
+    const isExist = await this.usersRepository.existsByUserId(userId);
+    let message: string;
     if (isExist) {
-      await this.usersRepository.updateUserInfo(userId, campusId, departmentId);
-      simpleText = createSimpleText('학과 정보를 수정했어!');
+      message = '학과 정보를 수정했어!';
     } else {
-      await this.usersRepository.createUserInfo(userId, campusId, departmentId);
-      simpleText = createSimpleText('학과 정보를 등록했어!');
+      message = '학과 정보를 등록했어!';
     }
     return {
-      outputs: [simpleText],
+      outputs: [createSimpleText(message)],
     };
   }
 
-  async getUserProfile(userId: string): Promise<SkillTemplate> {
+  public async profileTextCard(userId: string): Promise<SkillTemplate> {
     let affiliation = '미등록';
     let campus = '미등록';
-    const user = await this.usersRepository.findUserProfile(userId);
+    const user = await this.usersRepository.findByUserId(userId);
     if (user) {
       campus = user.campus.name;
       affiliation = user.department.college.name + ' ' + user.department.name;

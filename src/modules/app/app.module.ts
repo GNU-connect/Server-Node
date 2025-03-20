@@ -1,5 +1,5 @@
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
-import { Module, ValidationPipe } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UtilsModule } from 'src/modules/common/utils/utils.module';
@@ -9,7 +9,7 @@ import { SupabaseModule } from '../supabase/supabase.module';
 import { validationSchema } from 'src/modules/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
 import { CommonModule } from '../common/common.module';
-import { ClickersModule } from '../clickers/clickers.module';
+import { ReadingRoomsModule } from '../reading-rooms/reading-rooms.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from 'src/modules/auth/auth.module';
@@ -23,7 +23,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
     UtilsModule,
     CommonModule,
     UsersModule,
-    ClickersModule,
+    ReadingRoomsModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,

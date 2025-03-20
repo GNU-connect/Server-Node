@@ -10,7 +10,11 @@ export class UsersRepository {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findUserProfile(userId: string): Promise<User> {
+  async save(userId: string, campusId: number, departmentId: number): Promise<User> {
+    return await this.usersRepository.save({id: userId, campusId, departmentId});
+  }
+
+  async findByUserId(userId: string): Promise<User> {
     return await this.usersRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.campus', 'campus')
       .leftJoinAndSelect('user.department', 'department')
@@ -26,30 +30,7 @@ export class UsersRepository {
       .getOne();
   }
 
-  async isExistUser(userId: string): Promise<boolean> {
+  async existsByUserId(userId: string): Promise<boolean> {
     return (await this.usersRepository.findOne({ where: { id: userId } })) !== null;
-  }
-
-  async createUserInfo(
-    userId: string,
-    campusId: number,
-    departmentId: number,
-  ): Promise<void> {
-    await this.usersRepository.insert({
-      id: userId,
-      campusId,
-      departmentId,
-    });
-  }
-
-  async updateUserInfo(
-    userId: string,
-    campusId: number,
-    departmentId: number,
-  ): Promise<void> {
-    await this.usersRepository.update(userId, {
-      campusId,
-      departmentId,
-    });
   }
 }
