@@ -18,8 +18,13 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
         database: configService.get('DB_DATABASE'),
         synchronize: false,
         entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
-        logging: true,
-        timezone: 'local',
+        logging: process.env.NODE_ENV === 'development',
+        poolSize: process.env.NODE_ENV === 'production' ? 5 : 1, // 풀 사이즈 조절
+        extra: {
+          max: 20, // 최대 연결 수
+          idleTimeoutMillis: 100000, // 유휴 연결 타임아웃
+          connectionTimeoutMillis: 2000, // 연결 타임아웃
+        },
       }),
       async dataSourceFactory(option) {
         if (!option) throw new Error('Invalid options passed');
