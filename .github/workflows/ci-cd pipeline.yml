@@ -2,8 +2,8 @@ name: CI/CD Pipeline
 
 # main 브랜치에 대한 Pull request 및 Merge
 on:
-  pull_request :
-    branches :
+  pull_request:
+    branches:
       - main
   push:
     branches:
@@ -13,11 +13,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    permissions :
-      id-token : write
-      contents : read
-      pull-requests : write
+
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
 
     steps:
       # 1. 레포지토리 소스 코드 작업 환경으로 가져오기
@@ -67,11 +67,10 @@ jobs:
           command: |
             mkdir ./${{ github.repository }}
             cd ./${{ github.repository }}
-            ls -al
             sudo curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
-            sudo docker-compose down
-            sudo docker-compose up -d ${{ secrets.DOCKER_IMAGE_NAME }}
-            sudo docker image prune -a -f
+            cd ../DevOps
+            chmod 777 ./deploy-node.sh
+            ./deploy-node.sh
 
       # Example of using the output
       - id: 'debug'
@@ -89,4 +88,4 @@ jobs:
         with:
           environment: production
           inject: true
-          sourcemaps: "./dist"
+          sourcemaps: './dist'
