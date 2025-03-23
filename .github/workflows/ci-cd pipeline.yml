@@ -68,8 +68,8 @@ jobs:
             cd ./${{ github.repository }}
             sudo curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
             cd ../DevOps
-            chmod 777 ./deploy-node.sh
-            ./deploy-node.sh
+            sudo chmod 777 ./deploy-node.sh
+            sudo ./deploy-node.sh
 
       # Example of using the output
       - id: 'debug'
