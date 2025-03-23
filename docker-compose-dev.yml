@@ -11,13 +11,13 @@ services:
     <<: *common-settings
     container_name: connect-gnu-node-blue
     ports:
-      - '5200:5200'
+      - '5200:5001'
 
   connect-gnu-node-green:
     <<: *common-settings
     container_name: connect-gnu-node-green
     ports:
-      - '5201:5200'
+      - '5201:5001'
 
 networks:
   connect-gnu-network:
