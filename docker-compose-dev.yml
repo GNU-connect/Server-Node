@@ -1,14 +1,39 @@
+x-defaults: &common-settings
+  image: dongho18/connect-gnu-node:latest
+  pull_policy: always
+  restart: always
+  networks:
+    - connect-gnu-network
+  environment:
+    TZ: 'Asia/Seoul'
+    SLACK_WEBHOOK: ${SLACK_WEBHOOK}
+    SENTRY_NODE_DSN: ${SENTRY_NODE_DSN}
+    DB_HOST: ${DB_HOST}
+    DB_PORT: ${DB_PORT}
+    DB_USERNAME: ${DB_USERNAME}
+    DB_PASSWORD: ${DB_PASSWORD}
+    DB_DATABASE: ${DB_DATABASE}
+  deploy:
+    resources:
+      limits:
+        memory: 256m
+        cpus: '0.25'
+      reservations:
+        memory: 128m
+        cpus: '0.1'
 services:
-  backend_node_server:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: backend_node_server
-    restart: always
+  connect-gnu-node-blue:
+    <<: *common-settings
+    container_name: connect-gnu-node-blue
     ports:
-      - '5000:5000'
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      TZ: 'Asia/Seoul'
+      - '5200:5200'
+
+  connect-gnu-node-green:
+    <<: *common-settings
+    container_name: connect-gnu-node-green
+    ports:
+      - '5201:5200'
+
+networks:
+  connect-gnu-network:
+    external: true

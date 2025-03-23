@@ -10,25 +10,24 @@ import { validationSchema } from 'src/modules/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
 import { CommonModule } from '../common/common.module';
 import { ReadingRoomsModule } from '../reading-rooms/reading-rooms.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { AuthModule } from 'src/modules/auth/auth.module';
-import { DiscoveryModule } from '@nestjs/core';
+import { HealthModule } from '../health/health.module';
 @Module({
   imports: [
     SentryModule.forRoot(),
-    ScheduleModule.forRoot(),
+    HealthModule,
     HttpModule,
     SupabaseModule,
     UtilsModule,
-    DiscoveryModule,
     CommonModule,
     UsersModule,
     ReadingRoomsModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
       validationSchema,
     }),
   ],

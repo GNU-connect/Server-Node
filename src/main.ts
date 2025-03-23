@@ -6,9 +6,9 @@ import * as process from 'process';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { KakaoInterceptor } from './modules/interceptors/kakao.interceptor';
+import { KakaoInterceptor } from './modules/common/interceptors/kakao.interceptor';
 import { ResponseDTO } from './modules/common/dtos/response.dto';
-import { SentryInterceptor } from './modules/interceptors/sentry.interceptor.js';
+import { SentryInterceptor } from './modules/common/interceptors/sentry.interceptor.js';
 import { SentryFilter } from './modules/common/filters/sentry.filter';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { ValidationPipe } from '@nestjs/common';
@@ -26,15 +26,18 @@ async function bootstrap() {
   } else {
     app.useGlobalFilters(new HttpExceptionFilter());
   }
-  app.useGlobalInterceptors(new KakaoInterceptor(ResponseDTO));
+  app.useGlobalInterceptors(
+    new KakaoInterceptor(ResponseDTO, ['/api/node/health']),
+  );
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: false,
-    forbidNonWhitelisted: false,
-    transform: true,
-    //transformOptions: { enableImplicitConversion: true }
-  }))
-
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: false,
+      forbidNonWhitelisted: false,
+      transform: true,
+      //transformOptions: { enableImplicitConversion: true }
+    }),
+  );
 
   app.setGlobalPrefix('api/node');
   const config = new DocumentBuilder()
@@ -54,14 +57,12 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/node/docs', app, document,
-    {
-      swaggerOptions: {
-        persistAuthorization: true, // 새로고침해도 인증 정보 유지
-        defaultModelsExpandDepth: -1
-      }
-    }
-  );
+  SwaggerModule.setup('api/node/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true, // 새로고침해도 인증 정보 유지
+      defaultModelsExpandDepth: -1,
+    },
+  });
   await app.listen(nodeEnv == 'production' ? 5200 : 5001);
 }
 
