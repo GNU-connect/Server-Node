@@ -3,7 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
+import {
+  addTransactionalDataSource,
+  getDataSourceByName,
+} from 'typeorm-transactional';
 
 @Module({
   imports: [
@@ -26,10 +29,13 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
           connectionTimeoutMillis: 2000, // 연결 타임아웃
         },
       }),
-      async dataSourceFactory(option) {
-        if (!option) throw new Error('Invalid options passed');
+      async dataSourceFactory(options) {
+        if (!options) throw new Error('Invalid options passed');
 
-        return addTransactionalDataSource(new DataSource(option));
+        return (
+          getDataSourceByName('default') ||
+          addTransactionalDataSource(new DataSource(options))
+        );
       },
     }),
   ],
