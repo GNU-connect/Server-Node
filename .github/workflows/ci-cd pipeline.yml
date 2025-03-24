@@ -2,12 +2,11 @@ name: CI/CD Pipeline
 
 # main 브랜치에 대한 Pull request 및 Merge
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
+    paths-ignore:
+      - ".github/**"
   workflow_dispatch:
 
 jobs:
