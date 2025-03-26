@@ -25,7 +25,7 @@ import {
         poolSize: process.env.NODE_ENV === 'production' ? 5 : 1, // 풀 사이즈 조절
         extra: {
           max: 20, // 최대 연결 수
-          idleTimeoutMillis: 100000, // 유휴 연결 타임아웃
+          idleTimeoutMillis: 30000, // 유휴 연결 타임아웃
           connectionTimeoutMillis: 2000, // 연결 타임아웃
         },
       }),
