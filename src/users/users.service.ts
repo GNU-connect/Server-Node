@@ -12,14 +12,8 @@ import { User } from './entities/users.entity';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  public async findOneByUserId(userId: string): Promise<User> {
-    const user = await this.usersRepository.findOneByUserId(userId);
-
-    if (!user) {
-      throw new NotFoundException('존재하지 않는 유저입니다.');
-    }
-
-    return user;
+  public findOneByUserId(userId: string): Promise<User> {
+    return this.usersRepository.findOneByUserId(userId);
   }
 
   @Transactional()
@@ -29,13 +23,7 @@ export class UsersService {
     departmentId: number,
   ): Promise<SkillTemplate> {
     await this.usersRepository.save(userId, campusId, departmentId);
-    const isExist = await this.usersRepository.existsByUserId(userId);
-    let message: string;
-    if (isExist) {
-      message = '학과 정보를 수정했어!';
-    } else {
-      message = '학과 정보를 등록했어!';
-    }
+    const message = '학과 정보를 등록했어!';
     return {
       outputs: [createSimpleText(message)],
     };
@@ -44,7 +32,8 @@ export class UsersService {
   public async profileTextCard(user: User): Promise<SkillTemplate> {
     let affiliation = '미등록';
     let campus = '미등록';
-    if (user) {
+
+    if (user.campus && user.department) {
       campus = user.campus.name;
       affiliation = user.department.college.name + ' ' + user.department.name;
     }
@@ -59,7 +48,7 @@ export class UsersService {
 
     const textCard: TextCard = createTextCard(
       '내 정보',
-      `[ID]\n${user.id}\n\n[캠퍼스]\n${campus}\n\n[전공]\n${affiliation}\n\n[부전공]\n미지원`,
+      `[ID]\n${user.id}\n\n[캠퍼스]\n${campus}\n\n[전공]\n${affiliation}`,
       buttons,
     );
 

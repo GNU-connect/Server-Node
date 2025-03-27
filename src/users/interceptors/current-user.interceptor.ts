@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users.service';
 
@@ -14,9 +15,13 @@ export class CurrentUserInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const userId =
       request.headers['x-user-id'] || request.body.userRequest.user?.id;
-    if (userId) {
-      const user = await this.usersService.findOneByUserId(userId);
+    const user = await this.usersService.findOneByUserId(userId);
+    if (user) {
       request.currentUser = user;
+    } else {
+      request.currentUser = {
+        id: userId,
+      };
     }
     return next.handle();
   }

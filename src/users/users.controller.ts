@@ -70,18 +70,18 @@ export class UsersController {
   }
 
   @Post('department/upsert')
+  @UseInterceptors(CurrentUserInterceptor)
   @ApiSkillBody(UpsertDepartmentRequestDto)
   async upsertDepartment(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Body() body: SkillPayloadDto,
   ): Promise<ResponseDTO> {
-    const userId = req['userId'];
     const { campusId, departmentId } = plainToInstance(
       UpsertDepartmentRequestDto,
       body.action.clientExtra,
     );
     const template = await this.usersService.upsertDepartment(
-      userId,
+      user.id,
       campusId,
       departmentId,
     );
