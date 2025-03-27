@@ -32,6 +32,7 @@ export class UsersService {
   public async profileTextCard(user: User): Promise<SkillTemplate> {
     let affiliation = '미등록';
     let campus = '미등록';
+    console.log(user);
 
     if (user.campus && user.department) {
       campus = user.campus.name;
