@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Department } from '../entities/department.entity';
+import { Department } from '../../departments/entities/department.entity';
 import { ListCardConfig } from 'src/common/utils/constants';
 
 @Injectable()

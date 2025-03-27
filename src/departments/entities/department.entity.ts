@@ -5,17 +5,17 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { College } from './college.entity';
+import { College } from '../../colleges/entities/college.entity';
 
 @Entity('department')
 export class Department {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => College, (college) => college.id)
-  @JoinColumn({ name: 'college_id' })
-  college: College;
-
   @Column({ name: 'department_ko' })
   name: string;
+
+  @ManyToOne(() => College, (college) => college.id, { eager: true })
+  @JoinColumn({ name: 'college_id' })
+  college: College;
 }

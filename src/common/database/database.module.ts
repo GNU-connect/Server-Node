@@ -20,7 +20,7 @@ import {
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         synchronize: false,
-        entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
+        entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
         logging: process.env.NODE_ENV === 'development',
         poolSize: process.env.NODE_ENV === 'production' ? 5 : 1, // 풀 사이즈 조절
         extra: {
@@ -42,4 +42,4 @@ import {
   controllers: [],
   providers: [],
 })
-export class SupabaseModule {}
+export class DatabaseModule {}
