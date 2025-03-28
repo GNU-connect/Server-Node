@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { SupabaseModule } from '../supabase/supabase.module';
+import { SupabaseModule } from '../common/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRepository } from './repositories/users.repository';
 import { User } from './entities/users.entity';

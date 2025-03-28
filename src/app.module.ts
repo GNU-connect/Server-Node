@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { UtilsModule } from 'src/common/utils/utils.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
-import { SupabaseModule } from './supabase/supabase.module';
+import { SupabaseModule } from './common/database/database.module';
 import { validationSchema } from 'src/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
 import { CommonModule } from './common/common.module';

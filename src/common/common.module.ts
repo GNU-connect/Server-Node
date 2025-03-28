@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CommonService } from './common.service';
-import { SupabaseModule } from '../supabase/supabase.module';
+import { SupabaseModule } from './database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Campus } from './entities/campus.entity';
 import { College } from './entities/college.entity';
