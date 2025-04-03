@@ -2,7 +2,7 @@ import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { Observable, map } from 'rxjs';
 
-export class KakaoInterceptor implements NestInterceptor {
+export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any, private excludePaths: string[] = []) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

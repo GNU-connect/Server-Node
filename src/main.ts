@@ -5,7 +5,7 @@ dotenv.config({ path: '.env.dev' });
 import * as process from 'process';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { KakaoInterceptor } from './common/interceptors/kakao.interceptor';
+import { SerializeInterceptor } from './common/interceptors/serialize.interceptor';
 import { ResponseDTO } from './common/dtos/response.dto';
 import { SentryInterceptor } from './common/interceptors/sentry.interceptor.js';
 import { SentryFilter } from './common/filters/sentry.filter';
@@ -26,16 +26,15 @@ async function bootstrap() {
   } else {
     app.useGlobalFilters(new HttpExceptionFilter());
   }
-  app.useGlobalInterceptors(
-    new KakaoInterceptor(ResponseDTO, ['/api/node/health']),
-  );
+  // app.useGlobalInterceptors(
+  //   new SerializeInterceptor(ResponseDTO, ['/api/node/health']),
+  // );
 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: false,
       forbidNonWhitelisted: false,
       transform: true,
-      //transformOptions: { enableImplicitConversion: true }
     }),
   );
 

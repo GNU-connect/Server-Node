@@ -1,26 +1,15 @@
-import { Expose, Exclude } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
-export class ResponseDTO<T = any> {
-  @Exclude()
+export class ResponseDTO {
+  @ApiProperty({ example: '2.0' })
   version: string;
 
-  @Expose()
+  @ApiProperty()
   template: any;
 
-  @Expose()
-  context?: any;
-
-  @Expose()
-  data?: Map<string, T>;
-
-  constructor(
-    template: any,
-    context?: any,
-    data?: Map<string, T>,
-  ) {
-    this.version = '2.0'; // 버전은 고정값
+  constructor(template: any) {
+    this.version = '2.0';
     this.template = template;
-    this.context = context;
-    this.data = data;
   }
 }

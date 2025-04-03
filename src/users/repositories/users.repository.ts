@@ -22,7 +22,7 @@ export class UsersRepository {
     });
   }
 
-  findOneByUserId(userId: string): Promise<User> {
+  findOne(userId: string): Promise<User> {
     return this.usersRepository.findOne({ where: { id: userId } });
   }
 }
