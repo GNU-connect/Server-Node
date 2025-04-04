@@ -62,12 +62,4 @@ export class UsersService {
   ): Promise<User> {
     return this.usersRepository.save(userId, extra);
   }
-
-  @Transactional()
-  public upsertDepartment(
-    userId: string,
-    extra: UpsertDepartmentRequestDto,
-  ): Promise<User> {
-    return this.usersRepository.save(userId, extra);
-  }
 }
