@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ListCard } from 'src/common/interfaces/response/fields/component';
 import { ListItem } from 'src/common/interfaces/response/fields/etc';
+import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import {
   createListCard,
   createSimpleImage,
@@ -15,7 +16,7 @@ export class ReadingRoomMessagesService {
     readingRooms: ReadingRoom[],
     campusId: number,
     blockId: string,
-  ): Promise<any> {
+  ): Promise<SkillTemplate> {
     if (campusId === 4) {
       return {
         outputs: [
@@ -55,7 +56,7 @@ export class ReadingRoomMessagesService {
 
   public async readingRoomDetailComplexCard(
     extra: GetReadingRoomDetailRequestDto,
-  ): Promise<any> {
+  ): Promise<SkillTemplate> {
     const imageUrl = `https://zppxqcdwhqqzbwpmcjjt.supabase.co/storage/v1/object/public/clicker/clicker/${extra.readingRoomId}.png`;
     return {
       outputs: [
