@@ -10,8 +10,8 @@ export class CampusesRepository {
     private readonly campusesRepository: Repository<Campus>,
   ) {}
 
-  async findAll(): Promise<Campus[]> {
-    return await this.campusesRepository.find({
+  findAll(): Promise<Campus[]> {
+    return this.campusesRepository.find({
       select: ['id', 'name', 'thumbnailUrl'],
       where: {
         id: In([1, 2, 3, 4]),
