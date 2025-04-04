@@ -8,10 +8,10 @@ import { User } from './entities/users.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
-import { UserMessageService } from 'src/users/user-message.service';
 import { CampusesModule } from 'src/campuses/campuses.module';
 import { CollegesModule } from 'src/colleges/colleges.module';
 import { DepartmentsModule } from 'src/departments/departments.module';
+import { MessagesModule } from 'src/message-templates/messages.module';
 
 @Module({
   imports: [
@@ -20,6 +20,7 @@ import { DepartmentsModule } from 'src/departments/departments.module';
     CampusesModule,
     CollegesModule,
     DepartmentsModule,
+    MessagesModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -30,7 +31,6 @@ import { DepartmentsModule } from 'src/departments/departments.module';
       useClass: AuthGuard,
     },
     CurrentUserInterceptor,
-    UserMessageService,
   ],
 })
 export class UsersModule {}

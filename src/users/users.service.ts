@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { CampusesService } from 'src/campuses/campuses.service';
+import { CollegesService } from 'src/colleges/colleges.service';
 import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
-import { UserMessageService } from 'src/users/user-message.service';
+import { BlockId } from 'src/common/utils/constants';
+import { DepartmentsService } from 'src/departments/departments.service';
+import { CommonMessagesService } from 'src/message-templates/common-messages.service';
+import { UserMessageService } from 'src/message-templates/user-messages.service';
+import { ListCollegesRequestDto } from 'src/users/dtos/requests/list-college-request.dto';
+import { ListDepartmentsRequestDto } from 'src/users/dtos/requests/list-department-request.dto';
+import { UpsertDepartmentRequestDto } from 'src/users/dtos/requests/upsert-department-request.dto';
 import { Transactional } from 'typeorm-transactional';
 import { User } from './entities/users.entity';
 import { UsersRepository } from './repositories/users.repository';
-import { BlockId } from 'src/common/utils/constants';
-import { CampusesService } from 'src/campuses/campuses.service';
-import { CollegesService } from 'src/colleges/colleges.service';
-import { DepartmentsService } from 'src/departments/departments.service';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -16,6 +21,7 @@ export class UsersService {
     private readonly campusesService: CampusesService,
     private readonly collegesService: CollegesService,
     private readonly departmentsService: DepartmentsService,
+    private readonly commonMessagesService: CommonMessagesService,
   ) {}
 
   public async campusesListCard(): Promise<SkillTemplate> {
@@ -24,45 +30,36 @@ export class UsersService {
   }
 
   public async collegesListCard(
-    campusId: number,
-    page: number,
+    extra: ListCollegesRequestDto,
   ): Promise<SkillTemplate> {
     const blockId = BlockId.DEPARTMENT_LIST;
-    return this.collegesService.collegesListCard(campusId, page, blockId);
+    return this.collegesService.collegesListCard(extra, blockId);
   }
 
   public async departmentsListCard(
-    campusId: number,
-    collegeId: number,
-    page: number,
+    extra: ListDepartmentsRequestDto,
   ): Promise<SkillTemplate> {
     const blockId = BlockId.UPDATE_DEPARTMENT;
-    return this.departmentsService.departmentsListCard(
-      campusId,
-      collegeId,
-      page,
-      blockId,
-    );
+    return this.departmentsService.departmentsListCard(extra, blockId);
   }
 
   public findOne(userId: string): Promise<User> {
     return this.usersRepository.findOne(userId);
   }
 
-  public async profileTextCard(user: User): Promise<SkillTemplate> {
-    const textCard = this.userMessageService.createProfileMessage(user);
+  public profileTextCard(user: User): SkillTemplate {
+    return this.userMessageService.createProfileMessage(user);
+  }
 
-    return {
-      outputs: [textCard],
-    };
+  public upsertTextCard(): SkillTemplate {
+    return this.commonMessagesService.createSimpleText('학과 정보를 등록했어!');
   }
 
   @Transactional()
-  public upsertDepartment(
+  public upsert(
     userId: string,
-    campusId: number,
-    departmentId: number,
+    extra: UpsertDepartmentRequestDto,
   ): Promise<User> {
-    return this.usersRepository.save(userId, campusId, departmentId);
+    return this.usersRepository.save(userId, extra);
   }
 }
