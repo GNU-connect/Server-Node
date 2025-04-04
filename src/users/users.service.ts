@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
-import { UserMessageService } from 'src/message-templates/user-messages.service';
-import { Transactional } from 'typeorm-transactional';
-import { User } from './entities/users.entity';
-import { UsersRepository } from './repositories/users.repository';
-import { BlockId } from 'src/common/utils/constants';
 import { CampusesService } from 'src/campuses/campuses.service';
 import { CollegesService } from 'src/colleges/colleges.service';
+import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
+import { BlockId } from 'src/common/utils/constants';
 import { DepartmentsService } from 'src/departments/departments.service';
 import { CommonMessagesService } from 'src/message-templates/common-messages.service';
+import { UserMessageService } from 'src/message-templates/user-messages.service';
 import { ListCollegesRequestDto } from 'src/users/dtos/requests/list-college-request.dto';
 import { ListDepartmentsRequestDto } from 'src/users/dtos/requests/list-department-request.dto';
 import { UpsertDepartmentRequestDto } from 'src/users/dtos/requests/upsert-department-request.dto';
+import { Transactional } from 'typeorm-transactional';
+import { User } from './entities/users.entity';
+import { UsersRepository } from './repositories/users.repository';
 
 @Injectable()
 export class UsersService {
@@ -57,6 +57,14 @@ export class UsersService {
 
   @Transactional()
   public upsert(
+    userId: string,
+    extra: UpsertDepartmentRequestDto,
+  ): Promise<User> {
+    return this.usersRepository.save(userId, extra);
+  }
+
+  @Transactional()
+  public upsertDepartment(
     userId: string,
     extra: UpsertDepartmentRequestDto,
   ): Promise<User> {

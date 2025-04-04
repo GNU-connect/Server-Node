@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Department } from 'src/departments/entities/department.entity';
-import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { ListCard } from 'src/common/interfaces/response/fields/component';
 import { ListItem } from 'src/common/interfaces/response/fields/etc';
+import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { createListCard } from 'src/common/utils/component';
 import { BlockId, ListCardConfig } from 'src/common/utils/constants';
+import { Department } from 'src/departments/entities/department.entity';
 import { ListDepartmentsRequestDto } from 'src/users/dtos/requests/list-department-request.dto';
 
 @Injectable()
