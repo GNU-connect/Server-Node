@@ -60,7 +60,7 @@ export class ReadingRoomMessagesService {
   public readingRoomDetailComplexCard(
     extra: GetReadingRoomDetailRequestDto,
   ): SkillTemplate {
-    const baseUrl = this.configService.get<string>('SUPABASE_STORAGE_URL');
+    const baseUrl = this.configService.get<string>('DB_STORAGE_URL');
     const imageUrl = `${baseUrl}/clicker/clicker/${extra.readingRoomId}.png`;
     return {
       outputs: [
