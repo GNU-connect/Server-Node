@@ -1,8 +1,8 @@
 import { Campus } from 'src/campuses/entities/campus.entity';
 import { Department } from 'src/departments/entities/department.entity';
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
-@Entity('kakao-user')
+@Entity('user')
 export class User {
   @PrimaryColumn()
   id: string;
