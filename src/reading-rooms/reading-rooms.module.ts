@@ -6,12 +6,13 @@ import { ReadingRoomsController } from './reading-rooms.controller';
 import { ReadingRoomsService } from './reading-rooms.service';
 import { ReadingRoomsRepository } from './repositories/reading-rooms.repository';
 import { CampusesModule } from 'src/campuses/campuses.module';
-
+import { MessagesModule } from 'src/message-templates/messages.module';
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forFeature([ReadingRoom]),
     CampusesModule,
+    MessagesModule,
   ],
   controllers: [ReadingRoomsController],
   providers: [ReadingRoomsService, ReadingRoomsRepository],

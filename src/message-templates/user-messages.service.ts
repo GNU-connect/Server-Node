@@ -4,10 +4,11 @@ import { createTextCard } from 'src/common/utils/component';
 import { BlockId } from 'src/common/utils/constants';
 import { Button } from 'src/common/interfaces/response/fields/etc';
 import { User } from 'src/users/entities/users.entity';
+import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 
 @Injectable()
 export class UserMessageService {
-  createProfileMessage(user: User): TextCard {
+  createProfileMessage(user: User): SkillTemplate {
     const campus = user.campus.name || '미등록';
     const affiliation =
       user.department.college.name + ' ' + user.department.name || '미등록';
@@ -26,6 +27,8 @@ export class UserMessageService {
       buttons,
     );
 
-    return textCard;
+    return {
+      outputs: [textCard],
+    };
   }
 }

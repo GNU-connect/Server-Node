@@ -1,11 +1,8 @@
-import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 import { ApiSkillBody } from 'src/common/decorators/api-skill-body.decorator';
-import { SkillPayloadDto } from 'src/common/dtos/requests/skill-payload.dto';
+import { SkillExtra } from 'src/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/common/dtos/response.dto';
-import { createSimpleText } from 'src/common/utils/component';
-import { ProfileResponseDto } from 'src/users/dtos/responses/profile-response.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { ListCollegesRequestDto } from './dtos/requests/list-college-request.dto';
 import { ListDepartmentsRequestDto } from './dtos/requests/list-department-request.dto';
@@ -21,8 +18,8 @@ export class UsersController {
 
   @Post('profile/get')
   @UseInterceptors(CurrentUserInterceptor)
-  async getProfile(@CurrentUser() user: User): Promise<ProfileResponseDto> {
-    const template = await this.usersService.profileTextCard(user);
+  getProfile(@CurrentUser() user: User): ResponseDTO {
+    const template = this.usersService.profileTextCard(user);
     return new ResponseDTO(template);
   }
 
@@ -34,28 +31,19 @@ export class UsersController {
 
   @Post('colleges/list')
   @ApiSkillBody(ListCollegesRequestDto)
-  async listColleges(@Body() body: SkillPayloadDto): Promise<ResponseDTO> {
-    const { campusId, page } = plainToInstance(
-      ListCollegesRequestDto,
-      body.action.clientExtra,
-    );
-    const template = await this.usersService.collegesListCard(campusId, page);
+  async listColleges(
+    @SkillExtra(ListCollegesRequestDto) extra: ListCollegesRequestDto,
+  ): Promise<ResponseDTO> {
+    const template = await this.usersService.collegesListCard(extra);
     return new ResponseDTO(template);
   }
 
   @Post('departments/list')
   @ApiSkillBody(ListDepartmentsRequestDto)
-  async listDepartments(@Body() body: SkillPayloadDto): Promise<ResponseDTO> {
-    const { campusId, collegeId, page } = plainToInstance(
-      ListDepartmentsRequestDto,
-      body.action.clientExtra,
-    );
-
-    const template = await this.usersService.departmentsListCard(
-      campusId,
-      collegeId,
-      page,
-    );
+  async listDepartments(
+    @SkillExtra(ListDepartmentsRequestDto) extra: ListDepartmentsRequestDto,
+  ): Promise<ResponseDTO> {
+    const template = await this.usersService.departmentsListCard(extra);
     return new ResponseDTO(template);
   }
 
@@ -64,16 +52,10 @@ export class UsersController {
   @ApiSkillBody(UpsertDepartmentRequestDto)
   async upsert(
     @CurrentUser() user: User,
-    @Body() body: SkillPayloadDto,
+    @SkillExtra(UpsertDepartmentRequestDto) extra: UpsertDepartmentRequestDto,
   ): Promise<ResponseDTO> {
-    const { campusId, departmentId } = plainToInstance(
-      UpsertDepartmentRequestDto,
-      body.action.clientExtra,
-    );
-    await this.usersService.upsertDepartment(user.id, campusId, departmentId);
-    const template = {
-      outputs: [createSimpleText('학과 정보를 등록했어!')],
-    };
+    await this.usersService.upsert(user.id, extra);
+    const template = this.usersService.upsertTextCard();
     return new ResponseDTO(template);
   }
 }

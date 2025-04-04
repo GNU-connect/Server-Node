@@ -7,6 +7,7 @@ import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
 import { createListCard } from 'src/common/utils/component';
 import { BlockId, ListCardConfig } from 'src/common/utils/constants';
 import { CollegeMessagesService } from 'src/message-templates/college-messages.service';
+import { ListCollegesRequestDto } from 'src/users/dtos/requests/list-college-request.dto';
 
 @Injectable()
 export class CollegesService {
@@ -16,16 +17,15 @@ export class CollegesService {
   ) {}
 
   public async collegesListCard(
-    campusId: number,
-    page: number,
+    extra: ListCollegesRequestDto,
     blockId: string,
   ): Promise<SkillTemplate> {
-    const [colleges, total] = await this.findAll(page);
+    const [colleges, total] = await this.findAll(extra.page);
     return this.collegeMessagesService.collegesListCard(
       colleges,
       total,
-      campusId,
-      page,
+      extra.campusId,
+      extra.page,
       blockId,
     );
   }

@@ -7,6 +7,7 @@ import { BlockId, ListCardConfig } from 'src/common/utils/constants';
 import { Department } from 'src/departments/entities/department.entity';
 import { DepartmentsRepository } from 'src/departments/repositories/departments.repository';
 import { DepartmentMessagesService } from 'src/message-templates/department-messages.service';
+import { ListDepartmentsRequestDto } from 'src/users/dtos/requests/list-department-request.dto';
 
 @Injectable()
 export class DepartmentsService {
@@ -16,26 +17,21 @@ export class DepartmentsService {
   ) {}
 
   public async departmentsListCard(
-    campusId: number,
-    collegeId: number,
-    page: number,
+    extra: ListDepartmentsRequestDto,
     blockId: string,
   ): Promise<SkillTemplate> {
-    const [departments, total] = await this.findAll(collegeId, page);
+    const [departments, total] = await this.findAll(extra);
     return this.departmentMessagesService.departmentsListCard(
       departments,
       total,
-      campusId,
-      collegeId,
-      page,
+      extra,
       blockId,
     );
   }
 
   private findAll(
-    collegeId: number,
-    page: number,
+    extra: ListDepartmentsRequestDto,
   ): Promise<[Department[], number]> {
-    return this.departmentsRepository.findByCollegeId(collegeId, page);
+    return this.departmentsRepository.findByCollegeId(extra);
   }
 }
