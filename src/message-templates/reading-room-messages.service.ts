@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ListCard } from 'src/common/interfaces/response/fields/component';
 import { ListItem } from 'src/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/common/interfaces/response/fields/template';
@@ -12,6 +13,8 @@ import { ReadingRoom } from 'src/reading-rooms/entities/reading-rooms.entity';
 
 @Injectable()
 export class ReadingRoomMessagesService {
+  constructor(private readonly configService: ConfigService) {}
+
   public async readingRoomsListCard(
     readingRooms: ReadingRoom[],
     campusId: number,
@@ -54,10 +57,11 @@ export class ReadingRoomMessagesService {
     };
   }
 
-  public async readingRoomDetailComplexCard(
+  public readingRoomDetailComplexCard(
     extra: GetReadingRoomDetailRequestDto,
-  ): Promise<SkillTemplate> {
-    const imageUrl = `https://zppxqcdwhqqzbwpmcjjt.supabase.co/storage/v1/object/public/clicker/clicker/${extra.readingRoomId}.png`;
+  ): SkillTemplate {
+    const baseUrl = this.configService.get<string>('SUPABASE_STORAGE_URL');
+    const imageUrl = `${baseUrl}/clicker/clicker/${extra.readingRoomId}.png`;
     return {
       outputs: [
         createSimpleImage(imageUrl, '열람실 좌석 사진'),
