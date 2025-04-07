@@ -26,7 +26,7 @@ import {
         extra: {
           max: 20, // 최대 연결 수
           idleTimeoutMillis: 30000, // 유휴 연결 타임아웃
-          connectionTimeoutMillis: 2000, // 연결 타임아웃
+          connectionTimeoutMillis: 4000, // 연결 타임아웃
         },
       }),
       async dataSourceFactory(options) {
