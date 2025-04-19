@@ -1,18 +1,17 @@
-import './instrument';
+import { HttpService } from '@nestjs/axios';
+import { ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
+import * as process from 'process';
+import { initializeTransactionalContext } from 'typeorm-transactional';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { SentryFilter } from './common/filters/sentry.filter';
+import { SentryInterceptor } from './common/interceptors/sentry.interceptor.js';
+import './instrument';
 dotenv.config({ path: '.env' });
 dotenv.config({ path: '.env.dev' });
-import * as process from 'process';
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SerializeInterceptor } from './common/interceptors/serialize.interceptor';
-import { ResponseDTO } from './common/dtos/response.dto';
-import { SentryInterceptor } from './common/interceptors/sentry.interceptor.js';
-import { SentryFilter } from './common/filters/sentry.filter';
-import { initializeTransactionalContext } from 'typeorm-transactional';
-import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { AppModule } from './app.module';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -26,9 +25,6 @@ async function bootstrap() {
   } else {
     app.useGlobalFilters(new HttpExceptionFilter());
   }
-  // app.useGlobalInterceptors(
-  //   new SerializeInterceptor(ResponseDTO, ['/api/node/health']),
-  // );
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -58,11 +54,24 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/node/docs', app, document, {
     swaggerOptions: {
-      persistAuthorization: true, // 새로고침해도 인증 정보 유지
+      persistAuthorization: true,
       defaultModelsExpandDepth: -1,
     },
   });
-  await app.listen(nodeEnv == 'production' ? 5200 : 5001);
+
+  const port = nodeEnv == 'production' ? 5200 : 5001;
+  await app.listen(port);
+
+  // 서버 시작 후 헬스체크 실행
+  const httpService = app.get(HttpService);
+  try {
+    const response = await httpService.axiosRef.get(
+      `http://localhost:${port}/api/node/health`,
+    );
+    console.log('Health check passed successfully:', response.data);
+  } catch (error) {
+    console.error('Health check failed:', error.message);
+  }
 }
 
 bootstrap();
