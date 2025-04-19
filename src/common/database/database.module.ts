@@ -21,7 +21,8 @@ import {
         database: configService.get('DB_DATABASE'),
         synchronize: false,
         entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
-        logging: 'all',
+        logging:
+          process.env.NODE_ENV === 'production' ? ['error', 'warn'] : 'all',
         logger: 'advanced-console',
         poolSize: process.env.NODE_ENV === 'production' ? 5 : 1, // 풀 사이즈 조절
         maxQueryExecutionTime: 3000, // 롱 쿼리 로그 출력 시간
