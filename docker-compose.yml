@@ -23,17 +23,11 @@ x-defaults: &common-settings
         cpus: '0.1'
 
 services:
-  connect-gnu-node-blue:
+  connect-gnu-node:
     <<: *common-settings
     container_name: connect-gnu-node-blue
     ports:
       - '5200:5200'
-
-  connect-gnu-node-green:
-    <<: *common-settings
-    container_name: connect-gnu-node-green
-    ports:
-      - '5201:5200'
 
 networks:
   connect-gnu-network:
