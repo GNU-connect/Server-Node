@@ -25,7 +25,7 @@ x-defaults: &common-settings
 services:
   connect-gnu-node:
     <<: *common-settings
-    container_name: connect-gnu-node-blue
+    container_name: connect-gnu-node
     ports:
       - '5200:5200'
 
