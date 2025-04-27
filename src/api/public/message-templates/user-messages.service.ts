@@ -9,7 +9,6 @@ import { User } from 'src/type-orm/entities/users/users.entity';
 @Injectable()
 export class UserMessageService {
   createProfileMessage(user: User): SkillTemplate {
-    console.log(user);
     const campus = user.campus.name || '미등록';
     const affiliation =
       user.department.college.name + ' ' + user.department.name || '미등록';
