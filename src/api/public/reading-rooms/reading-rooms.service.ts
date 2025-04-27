@@ -17,7 +17,7 @@ export class ReadingRoomsService {
   ) {}
 
   public findAll(extra: ListReadingRoomsRequestDto): Promise<ReadingRoom[]> {
-    return this.readingRoomsRepository.findAll(extra);
+    return this.readingRoomsRepository.findAll(extra.campusId);
   }
 
   public async campusesListCard(): Promise<SkillTemplate> {

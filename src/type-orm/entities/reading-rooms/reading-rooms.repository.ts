@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListReadingRoomsRequestDto } from 'src/api/public/reading-rooms/dtos/request/list-reading-rooms-request.dto';
 import { Repository } from 'typeorm';
 import { ReadingRoom } from './reading-rooms.entity';
 
@@ -11,10 +10,10 @@ export class ReadingRoomsRepository {
     private readonly readingRoomRepository: Repository<ReadingRoom>,
   ) {}
 
-  async findAll(extra: ListReadingRoomsRequestDto): Promise<ReadingRoom[]> {
+  async findAll(campusId: number): Promise<ReadingRoom[]> {
     return await this.readingRoomRepository.find({
       where: {
-        campusId: extra.campusId,
+        campusId,
         isActive: true,
       },
     });
