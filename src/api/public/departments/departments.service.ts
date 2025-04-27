@@ -28,6 +28,9 @@ export class DepartmentsService {
   private findAll(
     extra: ListDepartmentsRequestDto,
   ): Promise<[Department[], number]> {
-    return this.departmentsRepository.findByCollegeId(extra);
+    return this.departmentsRepository.findByCollegeId(
+      extra.collegeId,
+      extra.page,
+    );
   }
 }
