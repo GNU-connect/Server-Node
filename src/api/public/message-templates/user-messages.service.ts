@@ -9,9 +9,16 @@ import { User } from 'src/type-orm/entities/users/users.entity';
 @Injectable()
 export class UserMessageService {
   createProfileMessage(user: User): SkillTemplate {
-    const campus = user.campus.name || '미등록';
-    const affiliation =
-      user.department.college.name + ' ' + user.department.name || '미등록';
+    const campus = user.campus?.name || '미등록';
+    const college = user.department?.college?.name;
+    const department = user.department?.name;
+
+    let affiliation = '';
+    if (!college && !department) {
+      affiliation = '미등록';
+    } else {
+      affiliation = college + ' ' + department;
+    }
 
     const buttons: Array<Button> = [
       {

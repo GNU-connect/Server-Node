@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpsertDepartmentRequestDto } from 'src/api/public/users/dtos/requests/upsert-department-request.dto';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 
@@ -11,11 +10,15 @@ export class UsersRepository {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async save(userId: string, extra: UpsertDepartmentRequestDto): Promise<User> {
+  async save(
+    userId: string,
+    campusId: number,
+    departmentId: number,
+  ): Promise<User> {
     return await this.usersRepository.save({
       id: userId,
-      campusId: extra.campusId,
-      departmentId: extra.departmentId,
+      campus: { id: campusId },
+      department: { id: departmentId },
     });
   }
 

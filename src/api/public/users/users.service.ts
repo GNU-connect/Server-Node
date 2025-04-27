@@ -60,6 +60,10 @@ export class UsersService {
     userId: string,
     extra: UpsertDepartmentRequestDto,
   ): Promise<User> {
-    return this.usersRepository.save(userId, extra);
+    return this.usersRepository.save(
+      userId,
+      extra.campusId,
+      extra.departmentId,
+    );
   }
 }
