@@ -1,16 +1,16 @@
-import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { DatabaseModule } from './common/database/database.module';
-import { validationSchema } from 'src/common/utils/enviornment';
 import { APP_FILTER } from '@nestjs/core';
-import { ReadingRoomsModule } from './reading-rooms/reading-rooms.module';
-import { HttpModule } from '@nestjs/axios';
-import { HealthModule } from './health/health.module';
-import { CampusesModule } from './campuses/campuses.module';
-import { CollegesModule } from './colleges/colleges.module';
-import { DepartmentsModule } from './departments/departments.module';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { validationSchema } from './api/common/utils/enviornment';
+import { HealthModule } from './api/internal/health/health.module';
+import { CampusesModule } from './api/public/campuses/campuses.module';
+import { CollegesModule } from './api/public/colleges/colleges.module';
+import { DepartmentsModule } from './api/public/departments/departments.module';
+import { ReadingRoomsModule } from './api/public/reading-rooms/reading-rooms.module';
+import { UsersModule } from './api/public/users/users.module';
+import { DatabaseModule } from './type-orm/database.module';
 
 @Module({
   imports: [
