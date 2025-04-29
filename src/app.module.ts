@@ -2,6 +2,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { validationSchema } from './api/common/utils/enviornment';
 import { HealthModule } from './api/internal/health/health.module';
@@ -17,6 +18,7 @@ import { DatabaseModule } from './type-orm/database.module';
     SentryModule.forRoot(),
     HealthModule,
     HttpModule,
+    ScheduleModule.forRoot(),
     DatabaseModule,
     UsersModule,
     ReadingRoomsModule,
