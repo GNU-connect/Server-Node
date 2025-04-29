@@ -19,7 +19,7 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.db.pingCheck('database'),
+      () => this.db.pingCheck('database', { timeout: 3000 }),
       () => this.memory.checkHeap('memory_heap', 100 * 1024 * 1024),
       () => this.memory.checkRSS('memory_rss', 200 * 1024 * 1024),
     ]);

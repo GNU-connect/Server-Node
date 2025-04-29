@@ -20,7 +20,11 @@ export class HealthService {
         `http://localhost:${port}/api/node/health`,
       );
     } catch (error) {
-      this.logger.error('Health check failed:', error.message);
+      this.logger.error('Health check failed:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
     }
   }
 }
