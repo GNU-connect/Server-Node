@@ -25,10 +25,12 @@ import {
           process.env.NODE_ENV === 'production' ? ['error', 'warn'] : 'all',
         logger: 'advanced-console',
         poolSize: process.env.NODE_ENV === 'production' ? 5 : 1, // 풀 사이즈 조절
-        maxQueryExecutionTime: 3000, // 롱 쿼리 로그 출력 시간
+        maxQueryExecutionTime: 2000, // 롱 쿼리 로그 출력 시간
+        retryAttempts: 2,
+        retryDelay: 1000,
         extra: {
-          max: 10, // 최대 연결 수
-          connectionTimeoutMillis: 4000, // 최대 커넥션 대기 시간
+          max: 5, // 최대 연결 수
+          connectionTimeoutMillis: 3000, // 최대 커넥션 대기 시간
         },
       }),
       async dataSourceFactory(options) {
