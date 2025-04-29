@@ -8,7 +8,11 @@ export class HealthService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  @Cron('*/1 * * * *') // 1분마다 실행
+  @Cron('*/1 * * * *', {
+    name: 'health-check',
+    timeZone: 'Asia/Seoul',
+    disabled: process.env.NODE_ENV !== 'production',
+  }) // 1분마다 실행
   async handleHealthCheck() {
     try {
       const port = process.env.NODE_ENV === 'production' ? 5200 : 5001;

@@ -2,8 +2,8 @@ import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import {
   HealthCheck,
   HealthCheckService,
-  HttpHealthIndicator,
   MemoryHealthIndicator,
+  TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
 
 @Controller('health')
@@ -11,7 +11,7 @@ import {
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private http: HttpHealthIndicator,
+    private db: TypeOrmHealthIndicator,
     private memory: MemoryHealthIndicator,
   ) {}
 
@@ -19,7 +19,7 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.http.pingCheck('nestjs-docs', 'https://docs.nestjs.com'),
+      () => this.db.pingCheck('database'),
       () => this.memory.checkHeap('memory_heap', 100 * 1024 * 1024),
       () => this.memory.checkRSS('memory_rss', 200 * 1024 * 1024),
     ]);
