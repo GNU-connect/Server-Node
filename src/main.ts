@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -61,17 +60,6 @@ async function bootstrap() {
 
   const port = nodeEnv == 'production' ? 5200 : 5001;
   await app.listen(port);
-
-  // 서버 시작 후 헬스체크 실행
-  const httpService = app.get(HttpService);
-  try {
-    const response = await httpService.axiosRef.get(
-      `http://localhost:${port}/api/node/health`,
-    );
-    console.log('Health check passed successfully:', response.data);
-  } catch (error) {
-    console.error('Health check failed:', error.message);
-  }
 }
 
 bootstrap();
