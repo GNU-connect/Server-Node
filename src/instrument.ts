@@ -1,7 +1,4 @@
 import * as Sentry from '@sentry/node';
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '.env' });
-dotenv.config({ path: '.env.dev' });
 
 // Read more about the available options here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/options/
 Sentry.init({

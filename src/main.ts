@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as dotenv from 'dotenv';
 import * as process from 'process';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
@@ -9,8 +8,6 @@ import { SentryFilter } from './api/common/filters/sentry.filter';
 import { SentryInterceptor } from './api/common/interceptors/sentry.interceptor';
 import { AppModule } from './app.module';
 import './instrument';
-dotenv.config({ path: '.env' });
-dotenv.config({ path: '.env.dev' });
 
 async function bootstrap() {
   initializeTransactionalContext();

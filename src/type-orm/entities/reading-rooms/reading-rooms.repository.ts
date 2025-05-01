@@ -13,7 +13,9 @@ export class ReadingRoomsRepository {
   async findAll(campusId: number): Promise<ReadingRoom[]> {
     return await this.readingRoomRepository.find({
       where: {
-        campusId,
+        campus: {
+          id: campusId,
+        },
         isActive: true,
       },
     });
