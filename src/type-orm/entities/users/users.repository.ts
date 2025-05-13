@@ -23,14 +23,12 @@ export class UsersRepository {
   }
 
   findOne(userId: string): Promise<User> {
-    return this.usersRepository.findOne({
-      where: { id: userId },
-      relations: {
-        campus: true,
-        department: {
-          college: true,
-        },
-      },
-    });
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.campus', 'campus')
+      .leftJoinAndSelect('user.department', 'department')
+      .leftJoinAndSelect('department.college', 'college')
+      .where('user.id = :userId', { userId })
+      .getOne();
   }
 }

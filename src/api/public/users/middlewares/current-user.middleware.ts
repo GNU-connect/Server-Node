@@ -16,16 +16,20 @@ export class CurrentUserMiddleware implements NestMiddleware {
   constructor(private usersService: UsersService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    // 헬스체크 경로인 경우 미들웨어 로직 건너뛰기
-    if (req.baseUrl === '/api/node/health') {
+    const userId = req.headers['x-user-id'] || req.body?.userRequest?.user?.id;
+
+    if (!userId) {
       return next();
     }
 
-    const userId = req.headers['x-user-id'] || req.body?.userRequest?.user?.id;
-    const user = await this.usersService.findOne(userId);
-    if (user) {
-      req.currentUser = user;
-    } else {
+    try {
+      const user = await this.usersService.findOne(userId);
+      req.currentUser = user || {
+        id: userId,
+        campus: null,
+        department: null,
+      };
+    } catch (error) {
       req.currentUser = {
         id: userId,
         campus: null,
