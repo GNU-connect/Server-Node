@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { RedisModule } from 'src/cache/redis.module';
 import { validationSchema } from './api/common/utils/enviornment';
 import { HealthModule } from './api/internal/health/health.module';
 import { CampusesModule } from './api/public/campuses/campuses.module';
@@ -20,6 +21,7 @@ import { DatabaseModule } from './type-orm/database.module';
     HttpModule,
     ScheduleModule.forRoot(),
     DatabaseModule,
+    RedisModule,
     UsersModule,
     ReadingRoomsModule,
     ConfigModule.forRoot({

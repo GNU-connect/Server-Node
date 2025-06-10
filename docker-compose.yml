@@ -14,9 +14,6 @@ x-defaults: &common-settings
     DB_PASSWORD: ${DB_PASSWORD}
     DB_DATABASE: ${DB_DATABASE}
     DB_STORAGE_URL: ${DB_STORAGE_URL}
-  dns:
-    - 8.8.8.8
-    - 1.1.1.1
   deploy:
     resources:
       limits:
