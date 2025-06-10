@@ -7,6 +7,7 @@ import { DepartmentsModule } from 'src/api/public/departments/departments.module
 import { MessagesModule } from 'src/api/public/message-templates/messages.module';
 import { AuthGuard } from 'src/api/public/users/guards/auth.guard';
 import { CurrentUserMiddleware } from 'src/api/public/users/middlewares/current-user.middleware';
+import { RedisModule } from 'src/cache/redis.module';
 import { DatabaseModule } from '../../../type-orm/database.module';
 import { User } from '../../../type-orm/entities/users/users.entity';
 import { UsersRepository } from '../../../type-orm/entities/users/users.repository';
@@ -21,6 +22,7 @@ import { UsersService } from './users.service';
     CollegesModule,
     DepartmentsModule,
     MessagesModule,
+    RedisModule,
   ],
   controllers: [UsersController],
   providers: [
