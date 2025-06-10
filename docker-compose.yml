@@ -6,14 +6,8 @@ x-defaults: &common-settings
     - connect-gnu-network
   environment:
     TZ: 'Asia/Seoul'
-    SLACK_WEBHOOK: ${SLACK_WEBHOOK}
-    SENTRY_NODE_DSN: ${SENTRY_NODE_DSN}
-    DB_HOST: ${DB_HOST}
-    DB_PORT: ${DB_PORT}
-    DB_USERNAME: ${DB_USERNAME}
-    DB_PASSWORD: ${DB_PASSWORD}
-    DB_DATABASE: ${DB_DATABASE}
-    DB_STORAGE_URL: ${DB_STORAGE_URL}
+  env_file:
+    - .env
   deploy:
     resources:
       limits:
