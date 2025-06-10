@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { CACHEABLE_KEY } from 'src/cache/decorators/cache-key.decorator';
 import { RedisService } from 'src/cache/redis.service';
 
@@ -35,8 +35,12 @@ export class RedisInterceptor implements NestInterceptor {
     }
 
     return next.handle().pipe(
-      switchMap(async (data) => {
-        await this.redisService.set(cacheKey, data, cacheOptions.ttl);
+      tap((data) => {
+        this.redisService
+          .set(cacheKey, data, cacheOptions.ttl)
+          .catch((error) => {
+            console.error('Redis cache set error:', error);
+          });
         return data;
       }),
     );
@@ -46,7 +50,6 @@ export class RedisInterceptor implements NestInterceptor {
     const body = request.body || {};
     const clientExtra = body?.action?.clientExtra || {};
 
-    // clientExtra의 모든 키-값 쌍을 정렬된 배열로 변환
     const extraValues = Object.entries(clientExtra)
       .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
       .map(([_, value]) => value)
