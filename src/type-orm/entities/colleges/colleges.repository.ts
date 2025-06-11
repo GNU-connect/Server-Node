@@ -11,8 +11,8 @@ export class CollegesRepository {
     private readonly collegesRepository: Repository<College>,
   ) {}
 
-  async findAll(page: number): Promise<[College[], number]> {
-    return await this.collegesRepository
+  findAll(page: number): Promise<[College[], number]> {
+    return this.collegesRepository
       .createQueryBuilder('college')
       .where("college.name != '공통'")
       .orderBy('college.name', 'ASC')

@@ -11,11 +11,11 @@ export class DepartmentsRepository {
     private readonly departmentsRepository: Repository<Department>,
   ) {}
 
-  async findByCollegeId(
+  findByCollegeId(
     collegeId: number,
     page: number,
   ): Promise<[Department[], number]> {
-    return await this.departmentsRepository
+    return this.departmentsRepository
       .createQueryBuilder('department')
       .where('department.college_id = :collegeId', {
         collegeId,

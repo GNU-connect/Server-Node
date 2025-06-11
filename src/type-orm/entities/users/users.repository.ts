@@ -10,12 +10,8 @@ export class UsersRepository {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async save(
-    userId: string,
-    campusId: number,
-    departmentId: number,
-  ): Promise<User> {
-    return await this.usersRepository.save({
+  save(userId: string, campusId: number, departmentId: number): Promise<User> {
+    return this.usersRepository.save({
       id: userId,
       campus: { id: campusId },
       department: { id: departmentId },
