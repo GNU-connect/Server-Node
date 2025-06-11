@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { LoggerModule } from 'src/api/internal/logger/logger.module';
 import { RedisModule } from 'src/cache/redis.module';
 import { validationSchema } from './api/common/utils/enviornment';
 import { HealthModule } from './api/internal/health/health.module';
@@ -17,6 +18,7 @@ import { DatabaseModule } from './type-orm/database.module';
 @Module({
   imports: [
     SentryModule.forRoot(),
+    LoggerModule,
     HealthModule,
     HttpModule,
     ScheduleModule.forRoot(),

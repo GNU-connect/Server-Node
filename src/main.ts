@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
@@ -11,8 +12,12 @@ import './instrument';
 
 async function bootstrap() {
   initializeTransactionalContext();
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   const nodeEnv = process.env.NODE_ENV;
+
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   if (nodeEnv == 'production') {
     app.useGlobalInterceptors(new SentryInterceptor());
