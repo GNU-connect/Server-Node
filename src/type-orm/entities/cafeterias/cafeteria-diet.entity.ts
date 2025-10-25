@@ -9,7 +9,7 @@ import {
 
 @Entity('cafeteria_diet')
 export class CafeteriaDiet {
-  @PrimaryGeneratedColumn({ name: 'diet_id ' })
+  @PrimaryGeneratedColumn({ name: 'diet_id' })
   id: number;
 
   @Column()

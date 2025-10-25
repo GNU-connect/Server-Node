@@ -1,7 +1,7 @@
 import { Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
-import { SkillExtra } from 'src/api/common/decorators/skill-extra.decorator';
+import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { Cacheable } from 'src/cache/decorators/cache-key.decorator';
 import { RedisInterceptor } from 'src/cache/interceptors/redis.interceptor';
@@ -41,7 +41,7 @@ export class UsersController {
     ttl: 60 * 60 * 24,
   })
   async listColleges(
-    @SkillExtra(ListCollegesRequestDto) extra: ListCollegesRequestDto,
+    @ClientExtra(ListCollegesRequestDto) extra: ListCollegesRequestDto,
   ): Promise<ResponseDTO> {
     const template = await this.usersService.collegesListCard(extra);
     return new ResponseDTO(template);
@@ -54,7 +54,7 @@ export class UsersController {
     ttl: 60 * 60 * 24,
   })
   async listDepartments(
-    @SkillExtra(ListDepartmentsRequestDto) extra: ListDepartmentsRequestDto,
+    @ClientExtra(ListDepartmentsRequestDto) extra: ListDepartmentsRequestDto,
   ): Promise<ResponseDTO> {
     const template = await this.usersService.departmentsListCard(extra);
     return new ResponseDTO(template);
@@ -64,7 +64,7 @@ export class UsersController {
   @ApiSkillBody(UpsertDepartmentRequestDto)
   async upsert(
     @CurrentUser() user: User,
-    @SkillExtra(UpsertDepartmentRequestDto) extra: UpsertDepartmentRequestDto,
+    @ClientExtra(UpsertDepartmentRequestDto) extra: UpsertDepartmentRequestDto,
   ): Promise<ResponseDTO> {
     await this.usersService.upsert(user.id, extra);
     const template = this.usersService.upsertTextCard();

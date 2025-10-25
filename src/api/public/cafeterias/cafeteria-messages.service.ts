@@ -1,12 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ListCard } from 'src/api/common/interfaces/response/fields/component';
+import {
+  BasicCard,
+  ListCard,
+} from 'src/api/common/interfaces/response/fields/component';
 import {
   Button,
   ListItem,
+  QuickReply,
 } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
-import { createListCard } from 'src/api/common/utils/component';
+import {
+  createBasicCard,
+  createListCard,
+} from 'src/api/common/utils/component';
 import { BlockId } from 'src/api/common/utils/constants';
+import {
+  DietDate,
+  DietTime,
+} from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
+import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
 import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
 
 @Injectable()
@@ -24,6 +36,7 @@ export class CafeteriaMessagesService {
       blockId: BlockId.CAFETERIA_DIET_LIST,
       extra: {
         cafeteriaId: cafeteria.id,
+        date: '오늘',
       },
     }));
 
@@ -47,5 +60,52 @@ export class CafeteriaMessagesService {
     return {
       outputs: [cafeteriaDietListCard],
     };
+  }
+
+  public cafeteriaDietsListCard(
+    cafeteria: Cafeteria,
+    date: Date,
+    dishDateType: DietDate,
+    time: DietTime,
+    diets: CafeteriaDiet[],
+  ): SkillTemplate {
+    const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
+    let description = `${date.toLocaleDateString()} ${time} 메뉴\n\n`;
+
+    if (diets.length > 0) {
+      description += `${diets.map((diet) => diet.dishName).join('\n')}`;
+    } else {
+      description += '메뉴가 없습니다.';
+    }
+
+    const basicCard: BasicCard = createBasicCard(title, description, {
+      imageUrl: cafeteria.thumbnailUrl,
+    });
+
+    const quickReplies: QuickReply[] =
+      this.createDishDateQuickReplies(cafeteria);
+
+    return {
+      outputs: [basicCard],
+      quickReplies,
+    };
+  }
+
+  private createDishDateQuickReplies(cafeteria: Cafeteria): QuickReply[] {
+    const dishDateTypes: DietDate[] = ['오늘', '내일'];
+    const times: DietTime[] = ['아침', '점심', '저녁'];
+
+    return dishDateTypes.flatMap((dishDateType) =>
+      times.map((time) => ({
+        label: `${dishDateType} ${time}`,
+        action: 'block',
+        blockId: BlockId.CAFETERIA_DIET_LIST,
+        extra: {
+          cafeteriaId: cafeteria.id,
+          date: dishDateType,
+          time,
+        },
+      })),
+    );
   }
 }

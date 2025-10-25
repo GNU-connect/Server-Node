@@ -1,6 +1,5 @@
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, Type } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
-import { Type } from '@nestjs/common';
 
 export function ApiSkillBody(dto: Type<any>) {
   return applyDecorators(

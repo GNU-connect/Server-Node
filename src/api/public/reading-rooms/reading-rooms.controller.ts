@@ -1,7 +1,7 @@
 import { Controller, Post, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
-import { SkillExtra } from 'src/api/common/decorators/skill-extra.decorator';
+import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { Cacheable } from 'src/cache/decorators/cache-key.decorator';
 import { RedisInterceptor } from 'src/cache/interceptors/redis.interceptor';
@@ -32,7 +32,7 @@ export class ReadingRoomsController {
     ttl: 60 * 60 * 24,
   })
   public async listReadingRooms(
-    @SkillExtra(ListReadingRoomsRequestDto) extra: ListReadingRoomsRequestDto,
+    @ClientExtra(ListReadingRoomsRequestDto) extra: ListReadingRoomsRequestDto,
   ): Promise<ResponseDTO> {
     const template = await this.readingRoomsService.readingRoomsListCard(extra);
     return new ResponseDTO(template);
@@ -45,7 +45,7 @@ export class ReadingRoomsController {
     ttl: 60 * 60 * 24,
   })
   public async getReadingRoomDetail(
-    @SkillExtra(GetReadingRoomDetailRequestDto)
+    @ClientExtra(GetReadingRoomDetailRequestDto)
     extra: GetReadingRoomDetailRequestDto,
   ): Promise<ResponseDTO> {
     const template =

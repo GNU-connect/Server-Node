@@ -1,4 +1,14 @@
 import {
+  BasicCard,
+  CommerceCard,
+  Component,
+  ItemCard,
+  ListCard,
+  SimpleImage,
+  SimpleText,
+  TextCard,
+} from '../interfaces/response/fields/component';
+import {
   Button,
   Head,
   ImageTitle,
@@ -8,16 +18,6 @@ import {
   Profile,
   Thumbnail,
 } from '../interfaces/response/fields/etc';
-import {
-  SimpleText,
-  SimpleImage,
-  BasicCard,
-  CommerceCard,
-  ListCard,
-  ItemCard,
-  Component,
-  TextCard,
-} from '../interfaces/response/fields/component';
 
 // SimpleText 생성 함수
 export function createSimpleText(text: string): SimpleText {
