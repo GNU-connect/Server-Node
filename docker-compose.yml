@@ -11,11 +11,9 @@ x-defaults: &common-settings
   deploy:
     resources:
       limits:
-        memory: 256m
-        cpus: '0.25'
+        memory: 512m
       reservations:
-        memory: 128m
-        cpus: '0.1'
+        memory: 512m
 
 services:
   connect-gnu-node:
