@@ -18,6 +18,7 @@ import {
   DietDate,
   DietTime,
 } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
+import { getDayWeek } from 'src/api/public/cafeterias/utils/time';
 import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
 import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
 
@@ -70,7 +71,9 @@ export class CafeteriaMessagesService {
     diets: CafeteriaDiet[],
   ): SkillTemplate {
     const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
-    let description = `${date.toLocaleDateString()} ${time} 메뉴\n\n`;
+    let description = `${date.toLocaleDateString()}(${getDayWeek(
+      date,
+    )}) ${time} 메뉴\n\n`;
 
     if (diets.length > 0) {
       description += `${diets.map((diet) => diet.dishName).join('\n')}`;

@@ -28,3 +28,8 @@ export const getDietTime = (date: Date) => {
     return '저녁';
   }
 };
+
+export const getDayWeek = (date: Date) => {
+  const weeks = ['일', '월', '화', '수', '목', '금', '토'];
+  return weeks[date.getDay()];
+};
