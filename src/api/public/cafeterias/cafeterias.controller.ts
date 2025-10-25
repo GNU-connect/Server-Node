@@ -28,13 +28,13 @@ export class CafeteriasController {
     @CurrentUser() user: User,
     @ClientExtra(ListCafeteriaRequestDto) extra: ListCafeteriaRequestDto,
   ) {
-    const { id: userCampusId } = user.campus;
+    const userCampusId = user.campus?.id;
     const { campusId: requestedCampusId } = extra;
 
     let template = null;
 
     // '더보기' 버튼을 누르거나 사용자 정보가 없을 경우 캠퍼스 목록 카드 반환
-    if (requestedCampusId === -1 || userCampusId === null) {
+    if (requestedCampusId === -1 || !userCampusId) {
       template = await this.campusesService.campusesListCard(
         BlockId.CAFETERIA_LIST,
       );
