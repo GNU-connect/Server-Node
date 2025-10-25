@@ -53,6 +53,7 @@ export interface Button {
   phoneNumber?: string;
   blockId?: string;
   messageText?: string;
+  extra?: Record<string, any>;
 }
 
 export interface QuickReply {

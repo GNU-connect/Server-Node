@@ -1,3 +1,4 @@
+import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
 import { ReadingRoom } from 'src/type-orm/entities/reading-rooms/reading-rooms.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../users/users.entity';
@@ -18,4 +19,7 @@ export class Campus {
 
   @OneToMany(() => ReadingRoom, (readingRoom) => readingRoom.campus)
   readingRooms: ReadingRoom[];
+
+  @OneToMany(() => Cafeteria, (cafeterias) => cafeterias.campus)
+  cafeterias: Cafeteria[];
 }
