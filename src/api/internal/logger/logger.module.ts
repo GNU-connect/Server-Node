@@ -11,7 +11,9 @@ import * as winston from 'winston';
         transports: [
           new winston.transports.Console({
             level:
-              configService.get('NODE_ENV') === 'production' ? 'info' : 'silly',
+              configService.get('NODE_ENV') === 'production'
+                ? 'silly'
+                : 'silly',
             format: winston.format.combine(
               winston.format.timestamp(),
               utilities.format.nestLike('connect-gnu', {
