@@ -21,6 +21,9 @@ export class CafeteriasRepository {
           id: campusId,
         },
       },
+      order: {
+        name: 'ASC',
+      },
       relations: ['campus'],
     });
   }

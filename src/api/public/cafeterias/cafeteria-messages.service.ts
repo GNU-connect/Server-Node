@@ -71,7 +71,11 @@ export class CafeteriaMessagesService {
     diets: CafeteriaDiet[],
   ): SkillTemplate {
     const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
-    let description = `${date.toLocaleDateString()}(${getDayWeek(
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    let description = `${year}-${month}-${day}(${getDayWeek(
       date,
     )}) ${time} 메뉴\n\n`;
 
