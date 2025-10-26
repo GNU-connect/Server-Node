@@ -1,3 +1,17 @@
+export const getTodayOrTomorrow = () => {
+  const currentSeoulTime = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+  );
+
+  const currentSeoulTimeHours = currentSeoulTime.getHours();
+
+  if (currentSeoulTimeHours < 19) {
+    return '오늘';
+  } else {
+    return '내일';
+  }
+};
+
 export const getDietTime = (date: Date) => {
   // 서울 시간으로 변환
   const seoulTime = new Date(

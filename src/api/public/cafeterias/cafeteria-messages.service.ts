@@ -37,7 +37,6 @@ export class CafeteriaMessagesService {
       blockId: BlockId.CAFETERIA_DIET_LIST,
       extra: {
         cafeteriaId: cafeteria.id,
-        date: '오늘',
       },
     }));
 
@@ -66,7 +65,6 @@ export class CafeteriaMessagesService {
   public cafeteriaDietsListCard(
     cafeteria: Cafeteria,
     date: Date,
-    dishDateType: DietDate,
     time: DietTime,
     diets: CafeteriaDiet[],
   ): SkillTemplate {
@@ -80,7 +78,24 @@ export class CafeteriaMessagesService {
     )}) ${time} 메뉴\n\n`;
 
     if (diets.length > 0) {
-      description += `${diets.map((diet) => diet.dishName).join('\n')}`;
+      // dishCategory 또는 dishType 별로 그룹화
+      const grouped: Record<string, string[]> = {};
+      diets.forEach((diet) => {
+        const type = diet.dishCategory || diet.dishType || '';
+        if (!grouped[type]) grouped[type] = [];
+        grouped[type].push(diet.dishName);
+      });
+
+      // 출력
+      description += Object.entries(grouped)
+        .map(([type, names]) => {
+          if (type) {
+            return `[${type}]\n${names.join('\n')}`;
+          } else {
+            return names.join('\n');
+          }
+        })
+        .join('\n\n');
     } else {
       description += '메뉴가 없습니다.';
     }

@@ -7,7 +7,10 @@ import { BlockId } from 'src/api/common/utils/constants';
 import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
 import { ListCafeteriaDietExtraRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
 import { ListCafeteriaRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-request.dto';
-import { getDietTime } from 'src/api/public/cafeterias/utils/time';
+import {
+  getDietTime,
+  getTodayOrTomorrow,
+} from 'src/api/public/cafeterias/utils/time';
 import { CampusesService } from 'src/api/public/campuses/campuses.service';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { User } from 'src/type-orm/entities/users/users.entity';
@@ -53,11 +56,14 @@ export class CafeteriasController {
   @Post('diet')
   @ApiSkillBody(ListCafeteriaDietExtraRequestDto)
   async listCafeteriaDiets(
-    @CurrentUser() user: User,
     @ClientExtra(ListCafeteriaDietExtraRequestDto)
     extra: ListCafeteriaDietExtraRequestDto,
   ) {
     const { cafeteriaId } = extra;
+
+    if (!extra.date) {
+      extra.date = getTodayOrTomorrow();
+    }
 
     const date =
       extra.date === '오늘'
@@ -76,7 +82,6 @@ export class CafeteriasController {
     const template = this.cafeteriaMessagesService.cafeteriaDietsListCard(
       cafeteria,
       date,
-      extra.date,
       time,
       diets,
     );
