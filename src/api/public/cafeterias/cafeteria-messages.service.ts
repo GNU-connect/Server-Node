@@ -100,9 +100,23 @@ export class CafeteriaMessagesService {
       description += '메뉴가 없습니다.';
     }
 
-    const basicCard: BasicCard = createBasicCard(title, description, {
+    // 썸네일 이미지
+    const thumbnail = {
       imageUrl: cafeteria.thumbnailUrl,
-    });
+    };
+
+    // 공유하기 버튼
+    const shareButton: Button = {
+      label: '공유하기',
+      action: 'share',
+    };
+
+    const basicCard: BasicCard = createBasicCard(
+      title,
+      description,
+      thumbnail,
+      [shareButton],
+    );
 
     const quickReplies: QuickReply[] =
       this.createDishDateQuickReplies(cafeteria);
