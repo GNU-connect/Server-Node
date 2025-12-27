@@ -36,12 +36,22 @@ export class CafeteriasController {
 
     let template = null;
 
-    // '더보기' 버튼을 누르거나 사용자 정보가 없을 경우 캠퍼스 목록 카드 반환
-    if (requestedCampusId === -1 || !userCampusId) {
+    // '더보기' 버튼을 누른 경우
+    if (requestedCampusId === -1) {
       template = await this.campusesService.campusesListCard(
         BlockId.CAFETERIA_LIST,
       );
+      return new ResponseDTO(template);
+    }
 
+    // 캠퍼스 ID 결정: 요청된 캠퍼스 ID 우선, 없으면 사용자 캠퍼스 ID
+    const campusId = requestedCampusId ?? userCampusId;
+
+    // 캠퍼스 ID가 없으면 캠퍼스 선택 카드 반환
+    if (!campusId) {
+      template = await this.campusesService.campusesListCard(
+        BlockId.CAFETERIA_LIST,
+      );
       return new ResponseDTO(template);
     }
 
