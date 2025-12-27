@@ -1,17 +1,38 @@
-export const getTodayOrTomorrow = () => {
+import { DietDate } from "src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto";
+
+/**
+ * 내일 날짜를 반환하는 헬퍼 함수
+ */
+const getTomorrow = (): Date => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow;
+};
+
+/**
+ * 오늘 또는 내일 날짜 반환
+ * - dietDate가 제공되면 해당 날짜 반환
+ * - 제공되지 않으면 서울 시간 기준 19시 전후로 오늘/내일 결정
+ */
+export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
+  // 명시적으로 날짜가 지정된 경우
+  if (dietDate) {
+    return dietDate === '오늘' ? new Date() : getTomorrow(); // 오늘이면 오늘 날짜 반환, 내일이면 내일 날짜 반환
+  }
+
+  // 날짜가 지정되지 않은 경우 서울 시간 기준 19시 전후로 오늘/내일 결정
   const currentSeoulTime = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
   );
-
   const currentSeoulTimeHours = currentSeoulTime.getHours();
 
-  if (currentSeoulTimeHours < 19) {
-    return '오늘';
-  } else {
-    return '내일';
-  }
+  return currentSeoulTimeHours < 19 ? new Date() : getTomorrow();
 };
 
+/**
+ * 식단 시간 반환
+ * - 서울 시간으로 변환 후 19시 이전이면 아침, 이후면 점심/저녁 결정
+ */
 export const getDietTime = (date: Date) => {
   // 서울 시간으로 변환
   const seoulTime = new Date(
