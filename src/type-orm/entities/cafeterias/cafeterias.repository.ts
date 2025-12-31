@@ -37,12 +37,23 @@ export class CafeteriasRepository {
     });
   }
 
+  /**
+   * 식당 식단 조회
+   * - 식단 카테고리, 식단 타입, 식단 이름 조회
+   * 
+   * 커버링 인덱스를 사용해 쿼리 성능 향상
+   */
   findCafeteriaDietsByCafeteriaId(
     cafeteriaId: number,
     date: Date,
     time: DietTime,
   ): Promise<CafeteriaDiet[]> {
     return this.cafeteriaDietRepository.find({
+      select: {
+        dishCategory: true,
+        dishType: true,
+        dishName: true,
+      },
       where: {
         cafeteria: {
           id: cafeteriaId,
