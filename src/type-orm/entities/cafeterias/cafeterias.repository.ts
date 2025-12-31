@@ -48,19 +48,16 @@ export class CafeteriasRepository {
     date: Date,
     time: DietTime,
   ): Promise<CafeteriaDiet[]> {
-    return this.cafeteriaDietRepository.find({
-      select: {
-        dishCategory: true,
-        dishType: true,
-        dishName: true,
-      },
-      where: {
-        cafeteria: {
-          id: cafeteriaId,
-        },
-        date,
-        time,
-      },
-    });
+    return this.cafeteriaDietRepository
+    .createQueryBuilder('diet')
+    .select([
+      'diet.dishCategory',
+      'diet.dishType',
+      'diet.dishName',
+    ])
+    .where('diet.cafeteria_id = :cafeteriaId', { cafeteriaId })
+    .andWhere('diet.date = :date', { date })
+    .andWhere('diet.time = :time', { time })
+    .getMany();
   }
 }
