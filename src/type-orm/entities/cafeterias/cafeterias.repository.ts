@@ -55,8 +55,8 @@ export class CafeteriasRepository {
       'diet.dishType',
       'diet.dishName',
     ])
-    .where('diet.cafeteria_id = :cafeteriaId', { cafeteriaId })
-    .andWhere('diet.date = :date', { date })
+    .where('diet.date = :date', { date })
+    .andWhere('diet.cafeteria_id = :cafeteriaId', { cafeteriaId })
     .andWhere('diet.time = :time', { time })
     .getMany();
   }
