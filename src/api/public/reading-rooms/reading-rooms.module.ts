@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CampusesModule } from 'src/api/public/campuses/campuses.module';
 import { MessagesModule } from 'src/api/public/message-templates/messages.module';
-import { RedisModule } from 'src/cache/redis.module';
 import { DatabaseModule } from '../../../type-orm/database.module';
 import { ReadingRoom } from '../../../type-orm/entities/reading-rooms/reading-rooms.entity';
 import { ReadingRoomsRepository } from '../../../type-orm/entities/reading-rooms/reading-rooms.repository';
@@ -11,7 +10,6 @@ import { ReadingRoomsService } from './reading-rooms.service';
 @Module({
   imports: [
     DatabaseModule,
-    RedisModule,
     TypeOrmModule.forFeature([ReadingRoom]),
     CampusesModule,
     MessagesModule,
