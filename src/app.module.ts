@@ -30,7 +30,7 @@ import { DatabaseModule } from './type-orm/database.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
-        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
+        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env',
       validationSchema,
     }),
     CampusesModule,
@@ -45,4 +45,4 @@ import { DatabaseModule } from './type-orm/database.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
