@@ -1,5 +1,5 @@
 services:
-  app:
+  connect-gnu-node:
     image: dongho18/connect-gnu-node:latest
     restart: always
     container_name: connect-gnu-node
