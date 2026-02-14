@@ -15,7 +15,7 @@ export class HealthService {
   }) // 1분마다 실행
   async handleHealthCheck() {
     try {
-      const port = process.env.NODE_ENV === 'production' ? 5200 : 5001;
+      const port = Number(process.env.PORT) || 3000;
       await this.httpService.axiosRef.get(
         `http://localhost:${port}/api/node/health`,
       );
