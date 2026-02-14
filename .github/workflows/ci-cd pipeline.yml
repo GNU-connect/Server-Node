@@ -68,7 +68,7 @@ jobs:
             cd ./${{ github.repository }}
             ls -al
             sudo curl -o docker-compose.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
-            sudo docker-compose up -d connect-gnu-node --no-deps
+            sudo docker-compose up -d app --no-deps
             sudo docker image prune -af
 
       # Example of using the output

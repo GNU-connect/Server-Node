@@ -1,8 +1,8 @@
 services:
-  connect-gnu-node:
+  app:
     image: dongho18/connect-gnu-node:latest
+    pull_policy: always
     restart: always
-    container_name: connect-gnu-node
     expose:
       - '3000'
     env_file:
