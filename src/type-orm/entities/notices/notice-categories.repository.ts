@@ -60,4 +60,19 @@ export class NoticeCategoriesRepository {
       .andWhere('category.category IN (:...categoryNames)', { categoryNames })
       .getMany();
   }
+
+  /**
+   * 여러 학과의 모든 카테고리 조회
+   * @param departmentIds 학과 ID 배열
+   * @returns 카테고리 목록 (department relation 포함)
+   */
+  findByDepartmentIds(departmentIds: number[]): Promise<NoticeCategory[]> {
+    return this.noticeCategoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect('category.department', 'department')
+      .where('category.department_id IN (:...departmentIds)', { departmentIds })
+      .orderBy('category.department_id', 'ASC')
+      .addOrderBy('category.category', 'ASC')
+      .getMany();
+  }
 }
