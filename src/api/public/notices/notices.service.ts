@@ -5,6 +5,7 @@ import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
 import { NoticesRepository } from 'src/type-orm/entities/notices/notices.repository';
+import { User } from 'src/type-orm/entities/users/users.entity';
 import { CommonMessagesService } from '../message-templates/common-messages.service';
 
 @Injectable()
@@ -78,6 +79,63 @@ export class NoticesService {
 
     // 4. 캐러셀 응답 생성
     return this.noticeMessagesService.createUniversityNoticeCarousel(
+      noticesByCategoryEntity,
+    );
+  }
+
+  /**
+   * 학과 공지사항 템플릿 생성
+   * @param user 현재 사용자
+   * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
+   */
+  async getDepartmentNoticeTemplate(user: User): Promise<SkillTemplate> {
+    // 1. 학과 인증 체크
+    if (!user.department) {
+      return this.commonMessagesService.createDepartmentAuthRequiredMessage();
+    }
+
+    // 2. 학과 ID 수집 (본인 학과 + 상위 학과)
+    const departmentIds: number[] = [user.department.id];
+    if (user.department.parentDepartmentId) {
+      departmentIds.push(user.department.parentDepartmentId);
+    }
+
+    // 3. 카테고리 조회
+    const categories = await this.noticeCategoriesRepository.findByDepartmentIds(
+      departmentIds,
+    );
+
+    if (categories.length === 0) {
+      return this.commonMessagesService.createSimpleText(
+        '등록된 공지사항 게시판이 없습니다.',
+      );
+    }
+
+    // 4. 각 카테고리별 최신 공지 조회
+    const categoryIds = categories.map((category) => category.id);
+    const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
+      categoryIds,
+      this.CAROUSEL_ITEMS_LIMIT,
+    );
+
+    // 5. 카테고리와 공지사항을 매핑 (공지사항이 있는 것만)
+    const noticesByCategoryEntity = new Map<NoticeCategory, Notice[]>();
+    
+    for (const category of categories) {
+      const notices = noticesByCategory.get(category.id) || [];
+      if (notices.length > 0) {
+        noticesByCategoryEntity.set(category, notices);
+      }
+    }
+
+    if (noticesByCategoryEntity.size === 0) {
+      return this.commonMessagesService.createSimpleText(
+        '현재 등록된 공지사항이 없습니다.',
+      );
+    }
+
+    // 6. 캐러셀 응답 생성
+    return this.noticeMessagesService.createDepartmentNoticeCarousel(
       noticesByCategoryEntity,
     );
   }

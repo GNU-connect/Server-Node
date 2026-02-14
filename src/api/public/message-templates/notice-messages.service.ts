@@ -53,7 +53,66 @@ export class NoticeMessagesService {
   }
 
   /**
-   * 공지사항 URL 생성
+   * 학과 공지사항 캐러셀 생성
+   * @param noticesByCategory 카테고리별 공지사항 Map (department relation 포함)
+   * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
+   */
+  createDepartmentNoticeCarousel(
+    noticesByCategory: Map<NoticeCategory, Notice[]>,
+  ): SkillTemplate {
+    const carouselItems: ListCard['listCard'][] = [];
+
+    for (const [category, notices] of noticesByCategory) {
+      const header: ListItem = {
+        title: `${category.department.name} - ${category.category}`,
+      };
+
+      const items: ListItem[] = notices.map((notice) => ({
+        title: notice.title,
+        description: this.formatNoticeDate(notice.createdAt),
+        link: {
+          web: this.createDepartmentNoticeLinkUrl(
+            category.department.departmentEn,
+            category.mi,
+            category.bbsId,
+            notice.nttSn,
+          ),
+        },
+      }));
+
+      const buttons = [
+        {
+          label: '더보기',
+          action: 'webLink' as const,
+          webLinkUrl: this.createNoticeBoardListUrl(
+            category.department.departmentEn,
+            category.mi,
+            category.bbsId,
+          ),
+        },
+      ];
+
+      carouselItems.push({
+        header,
+        items,
+        buttons,
+      });
+    }
+
+    const carousel: Carousel = {
+      carousel: {
+        type: 'listCard',
+        items: carouselItems,
+      },
+    };
+
+    return {
+      outputs: [carousel],
+    };
+  }
+
+  /**
+   * 공지사항 URL 생성 (학교용)
    * @param mi notice_category.mi
    * @param bbsId notice_category.bbs_id
    * @param nttSn notice.ntt_sn
@@ -61,6 +120,38 @@ export class NoticeMessagesService {
    */
   private createNoticeLinkUrl(mi: number, bbsId: number, nttSn: number): string {
     return `https://www.gnu.ac.kr/main/na/ntt/selectNttInfo.do?mi=${mi}&bbsId=${bbsId}&nttSn=${nttSn}`;
+  }
+
+  /**
+   * 공지사항 URL 생성 (학과용)
+   * @param departmentEn department.department_en
+   * @param mi notice_category.mi
+   * @param bbsId notice_category.bbs_id
+   * @param nttSn notice.ntt_sn
+   * @returns 공지사항 URL
+   */
+  private createDepartmentNoticeLinkUrl(
+    departmentEn: string,
+    mi: number,
+    bbsId: number,
+    nttSn: number,
+  ): string {
+    return `https://www.gnu.ac.kr/${departmentEn}/na/ntt/selectNttInfo.do?mi=${mi}&bbsId=${bbsId}&nttSn=${nttSn}`;
+  }
+
+  /**
+   * 공지사항 게시판 목록 URL 생성
+   * @param departmentEn department.department_en
+   * @param mi notice_category.mi
+   * @param bbsId notice_category.bbs_id
+   * @returns 공지사항 게시판 목록 URL
+   */
+  private createNoticeBoardListUrl(
+    departmentEn: string,
+    mi: number,
+    bbsId: number,
+  ): string {
+    return `https://www.gnu.ac.kr/${departmentEn}/na/ntt/selectNttList.do?mi=${mi}&bbsId=${bbsId}`;
   }
 
   /**
