@@ -14,6 +14,7 @@ import { DepartmentsModule } from './api/public/departments/departments.module';
 import { ReadingRoomsModule } from './api/public/reading-rooms/reading-rooms.module';
 import { UsersModule } from './api/public/users/users.module';
 import { DatabaseModule } from './type-orm/database.module';
+import { NoticesModule } from './api/public/notices/notices.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DatabaseModule } from './type-orm/database.module';
     CollegesModule,
     DepartmentsModule,
     CafeteriasModule,
+    NoticesModule,
   ],
   providers: [
     {
