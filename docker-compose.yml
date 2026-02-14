@@ -1,26 +1,18 @@
-x-defaults: &common-settings
-  image: dongho18/connect-gnu-node:latest
-  pull_policy: always
-  restart: always
-  networks:
-    - connect-gnu-network
-  environment:
-    TZ: 'Asia/Seoul'
-  env_file:
-    - .env
-  deploy:
-    resources:
-      limits:
-        memory: 512m
-      reservations:
-        memory: 512m
-
 services:
-  connect-gnu-node:
-    <<: *common-settings
+  app:
+    image: dongho18/connect-gnu-node:latest
+    restart: always
     container_name: connect-gnu-node
-    ports:
-      - '5200:5200'
+    expose:
+      - '3000'
+    networks:
+      - connect-gnu-network
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+        reservations:
+          memory: 512m
 
 networks:
   connect-gnu-network:
