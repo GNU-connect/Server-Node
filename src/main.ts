@@ -60,7 +60,7 @@ async function bootstrap() {
     },
   });
 
-  const port = nodeEnv == 'production' ? 5200 : 5001;
+  const port = nodeEnv == 'production' ? 5200 : 3000;
   await app.listen(port);
 }
 

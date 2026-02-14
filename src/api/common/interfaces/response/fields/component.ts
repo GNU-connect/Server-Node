@@ -16,7 +16,20 @@ export type Component =
   | BasicCard
   | CommerceCard
   | ListCard
-  | ItemCard;
+  | ItemCard
+  | Carousel;
+
+export interface Carousel {
+  carousel: {
+    type: 'basicCard' | 'commerceCard' | 'listCard' | 'itemCard';
+    items: Array<
+      | BasicCard['basicCard']
+      | CommerceCard['commerceCard']
+      | ListCard['listCard']
+      | ItemCard['itemCard']
+    >;
+  };
+}
 
 export interface SimpleText {
   simpleText: {
