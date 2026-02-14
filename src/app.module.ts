@@ -6,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { LoggerModule } from 'src/api/internal/logger/logger.module';
 import { CafeteriasModule } from 'src/api/public/cafeterias/cafeterias.module';
-import { validationSchema } from './api/common/utils/enviornment';
 import { HealthModule } from './api/internal/health/health.module';
 import { CampusesModule } from './api/public/campuses/campuses.module';
 import { CollegesModule } from './api/public/colleges/colleges.module';
@@ -27,10 +26,7 @@ import { NoticesModule } from './api/public/notices/notices.module';
     UsersModule,
     ReadingRoomsModule,
     ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env',
-      validationSchema,
+      isGlobal: true
     }),
     CampusesModule,
     CollegesModule,
