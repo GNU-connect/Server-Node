@@ -1,0 +1,18 @@
+import { Module } from '@nestjs/common';
+import { CommonMessagesService } from 'src/api/public/message-templates/common-messages.service';
+import { ScheduleMessagesService } from 'src/api/public/message-templates/schedule-messages.service';
+import { AcademicCalendarsRepositoryModule } from 'src/type-orm/entities/academic-calendars/academic-calendars-repository.module';
+import { SchedulesService } from './schedules.service';
+import { SchedulesController } from 'src/api/public/schedules/schedules.controller';
+import { MessagesModule } from 'src/api/public/message-templates/messages.module';
+
+@Module({
+  imports: [AcademicCalendarsRepositoryModule, MessagesModule],
+  controllers: [SchedulesController],
+  providers: [
+    ScheduleMessagesService,
+    CommonMessagesService,
+  ],
+  exports: [SchedulesService],
+})
+export class SchedulesModule {}
