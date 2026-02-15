@@ -10,8 +10,8 @@ import { MessagesModule } from 'src/api/public/message-templates/messages.module
   imports: [AcademicCalendarsRepositoryModule, MessagesModule],
   controllers: [SchedulesController],
   providers: [
+    SchedulesService,
     ScheduleMessagesService,
-    CommonMessagesService,
   ],
   exports: [SchedulesService],
 })
