@@ -16,6 +16,9 @@ export const enum BlockId {
 
   // PROFILE
   CHANGE_PROFILE = '66cf0c8ae5715f75b254dfea',
+
+  // SCHEDULE
+  ACADEMIC_SCHEDULE = '65f01573ac1dbb67bfcfa242',
 }
 
 export const enum ListCardConfig {
