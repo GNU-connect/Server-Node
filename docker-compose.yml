@@ -16,6 +16,64 @@ services:
         reservations:
           memory: 512m
 
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ./infra/certbot/conf:/etc/letsencrypt
+      - ./infra/certbot/www:/var/www/certbot
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - app
+      - grafana
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    expose:
+      - '9090'
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    expose:
+      - '3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - prometheus
+
+  certbot:
+    image: certbot/certbot
+    restart: on-failure
+    volumes:
+      - ./infra/certbot/conf:/etc/letsencrypt
+      - ./infra/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
 networks:
   connect-gnu-network:
-    external: true
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
