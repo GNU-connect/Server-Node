@@ -1,7 +1,6 @@
 services:
   nginx:
     image: nginx:1.29.5-alpine
-    container_name: connectgnu_nginx
     ports:
       - '80:80'
     volumes:
@@ -12,7 +11,6 @@ services:
       - app
 
   app:
-    container_name: connectgnu_app
     build:
       context: .
       target: dev
@@ -26,7 +24,6 @@ services:
 
   prometheus:
     image: prom/prometheus:v3.10.0
-    container_name: connectgnu_prometheus
     expose:
       - '9090'
     command:
@@ -44,11 +41,11 @@ services:
 
   grafana:
     image: grafana/grafana:12.3
-    container_name: connectgnu_grafana
     expose:
       - '3000'
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     environment:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-admin}
@@ -58,6 +55,30 @@ services:
       - connect-gnu-network
     depends_on:
       - prometheus
+      - loki
+      - promtail
+
+  loki:
+    image: grafana/loki:main-d94ee60
+    expose:
+      - '3100'
+    volumes:
+      - ./infra/loki/loki.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - connect-gnu-network
+
+  promtail:
+    image: grafana/promtail:main-d94ee60
+    expose:
+      - '9080'
+    volumes:
+      - ./infra/promtail/promtail.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - loki
 
 networks:
   connect-gnu-network:
@@ -66,3 +87,4 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
