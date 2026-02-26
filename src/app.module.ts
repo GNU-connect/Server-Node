@@ -15,6 +15,7 @@ import { UsersModule } from './api/public/users/users.module';
 import { DatabaseModule } from './type-orm/database.module';
 import { NoticesModule } from './api/public/notices/notices.module';
 import { SchedulesModule } from './api/public/schedules/schedules.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SchedulesModule } from './api/public/schedules/schedules.module';
     HealthModule,
     HttpModule,
     ScheduleModule.forRoot(),
+    PrometheusModule.register(),
     DatabaseModule,
     UsersModule,
     ReadingRoomsModule,
