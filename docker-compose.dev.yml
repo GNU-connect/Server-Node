@@ -1,4 +1,16 @@
 services:
+  nginx:
+    image: nginx:1.29.5-alpine
+    container_name: connectgnu_nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./infra/nginx/dev.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - app
+
   app:
     container_name: connectgnu_app
     build:
@@ -7,5 +19,50 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    ports:
-      - '3000:3000'
+    expose:
+      - '3000'
+    networks:
+      - connect-gnu-network
+
+  prometheus:
+    image: prom/prometheus:v3.10.0
+    container_name: connectgnu_prometheus
+    expose:
+      - '9090'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.external-url=${PROMETHEUS_EXTERNAL_URL:-http://localhost/prometheus/}'
+      - '--web.route-prefix=/'
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - app
+
+  grafana:
+    image: grafana/grafana:12.3
+    container_name: connectgnu_grafana
+    expose:
+      - '3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-admin}
+      - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL:-http://localhost/grafana}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - prometheus
+
+networks:
+  connect-gnu-network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

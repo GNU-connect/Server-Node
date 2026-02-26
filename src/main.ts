@@ -35,7 +35,7 @@ async function bootstrap() {
     }),
   );
 
-  app.setGlobalPrefix('api/node');
+  app.setGlobalPrefix('api');
   const config = new DocumentBuilder()
     .setTitle('커넥트지누 노드 서버 API')
     .setDescription('커넥트지누 노드 서버 API 문서입니다.')
@@ -53,7 +53,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/node/docs', app, document, {
+  SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
       defaultModelsExpandDepth: -1,
