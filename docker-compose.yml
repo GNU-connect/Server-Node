@@ -17,7 +17,7 @@ services:
           memory: 512m
 
   nginx:
-    image: nginx:alpine
+    image: nginx:1.29.5-alpine
     restart: always
     ports:
       - '80:80'
@@ -31,13 +31,17 @@ services:
       - connect-gnu-network
     depends_on:
       - app
-      - grafana
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v3.10.0
     restart: always
     expose:
       - '9090'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.external-url=${PROMETHEUS_EXTERNAL_URL}'
+      - '--web.route-prefix=/'
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -47,7 +51,7 @@ services:
       - app
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:12.3
     restart: always
     expose:
       - '3000'
@@ -55,6 +59,7 @@ services:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
       - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana_data:/var/lib/grafana
     networks:
@@ -63,7 +68,7 @@ services:
       - prometheus
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v5.3.1
     restart: on-failure
     volumes:
       - ./infra/certbot/conf:/etc/letsencrypt

@@ -8,6 +8,9 @@ on:
       - 'src/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.github/workflows/app-cd.yml'
 
   workflow_dispatch:
 
@@ -55,7 +58,7 @@ jobs:
           ssh_private_key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
           command: |
             # docker-compose.yml 다운로드
-            sudo curl -o docker-compose.yml https://raw.githubusercontent.com/GNU-connect/Server-Node/refs/heads/dev/docker-compose.yml
+            sudo curl -o docker-compose.yml https://raw.githubusercontent.com/GNU-connect/Server-Node/${{ github.sha }}/docker-compose.yml
 
             # 컨테이너 재배포
             sudo docker-compose pull app
