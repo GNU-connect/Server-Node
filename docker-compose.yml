@@ -50,6 +50,31 @@ services:
     depends_on:
       - app
 
+  loki:
+    image: grafana/loki:3.6.0
+    restart: always
+    expose:
+      - '3100'
+    volumes:
+      - ./infra/loki/loki.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - connect-gnu-network
+
+  promtail:
+    image: grafana/promtail:3.6.0
+    restart: always
+    expose:
+      - '9080'
+    volumes:
+      - ./infra/promtail/promtail.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - promtail_positions:/var/lib/promtail
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - loki
+
   grafana:
     image: grafana/grafana:12.3
     restart: always
@@ -62,10 +87,13 @@ services:
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     networks:
       - connect-gnu-network
     depends_on:
       - prometheus
+      - loki
+      - promtail
 
   certbot:
     image: certbot/certbot:v5.3.1
@@ -82,3 +110,5 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
+  promtail_positions:
