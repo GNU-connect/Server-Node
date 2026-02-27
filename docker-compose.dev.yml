@@ -59,7 +59,7 @@ services:
       - promtail
 
   loki:
-    image: grafana/loki:main-d94ee60
+    image: grafana/loki:3.6.0
     expose:
       - '3100'
     volumes:
@@ -69,12 +69,13 @@ services:
       - connect-gnu-network
 
   promtail:
-    image: grafana/promtail:main-d94ee60
+    image: grafana/promtail:3.6.0
     expose:
       - '9080'
     volumes:
       - ./infra/promtail/promtail.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
+      - promtail_positions:/var/lib/promtail
     networks:
       - connect-gnu-network
     depends_on:
@@ -88,3 +89,4 @@ volumes:
   prometheus_data:
   grafana_data:
   loki_data:
+  promtail_positions:
