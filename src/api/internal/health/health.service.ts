@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { Gauge } from 'prom-client';
@@ -7,7 +7,9 @@ import { DataSource } from 'typeorm';
 const HEALTH_CHECK_INTERVAL_MS = 15_000;
 
 @Injectable()
-export class HealthService implements OnModuleInit {
+export class HealthService implements OnModuleInit, OnModuleDestroy {
+  private intervalId: NodeJS.Timeout;
+
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
@@ -17,7 +19,13 @@ export class HealthService implements OnModuleInit {
 
   onModuleInit(): void {
     this.checkDatabase();
-    setInterval(() => this.checkDatabase(), HEALTH_CHECK_INTERVAL_MS);
+    this.intervalId = setInterval(() => this.checkDatabase(), HEALTH_CHECK_INTERVAL_MS);
+  }
+
+  onModuleDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   private async checkDatabase(): Promise<void> {
