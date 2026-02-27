@@ -16,13 +16,3 @@ scrape_configs:
     static_configs:
       - targets: ['app:3000']
     metrics_path: /api/metrics
-
-  - job_name: loki
-    static_configs:
-      - targets: ['loki:3100']
-    metrics_path: /metrics
-
-  - job_name: promtail
-    static_configs:
-      - targets: ['promtail:9080']
-    metrics_path: /metrics
