@@ -9,12 +9,10 @@ services:
       - .env
     networks:
       - connect-gnu-network
-    deploy:
-      resources:
-        limits:
-          memory: 512m
-        reservations:
-          memory: 512m
+    logging:
+      driver: gcplogs
+      options:
+        gcp-log-cmd: 'true'
 
   nginx:
     image: nginx:1.29.5-alpine
@@ -31,6 +29,10 @@ services:
       - connect-gnu-network
     depends_on:
       - app
+    logging:
+      driver: gcplogs
+      options:
+        gcp-log-cmd: 'true'
 
   prometheus:
     image: prom/prometheus:v3.10.0
@@ -49,31 +51,10 @@ services:
       - connect-gnu-network
     depends_on:
       - app
-
-  loki:
-    image: grafana/loki:3.6.0
-    restart: always
-    expose:
-      - '3100'
-    volumes:
-      - ./infra/loki/loki.yml:/etc/loki/local-config.yaml
-      - loki_data:/loki
-    networks:
-      - connect-gnu-network
-
-  promtail:
-    image: grafana/promtail:3.6.0
-    restart: always
-    expose:
-      - '9080'
-    volumes:
-      - ./infra/promtail/promtail.yml:/etc/promtail/config.yml
-      - /var/run/docker.sock:/var/run/docker.sock
-      - promtail_positions:/var/lib/promtail
-    networks:
-      - connect-gnu-network
-    depends_on:
-      - loki
+    logging:
+      driver: gcplogs
+      options:
+        gcp-log-cmd: 'true'
 
   grafana:
     image: grafana/grafana:12.3
@@ -92,8 +73,11 @@ services:
       - connect-gnu-network
     depends_on:
       - prometheus
-      - loki
-      - promtail
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   certbot:
     image: certbot/certbot:v5.3.1
@@ -102,6 +86,11 @@ services:
       - ./infra/certbot/conf:/etc/letsencrypt
       - ./infra/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
 
 networks:
   connect-gnu-network:
@@ -110,5 +99,3 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
-  loki_data:
-  promtail_positions:
