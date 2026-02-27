@@ -9,8 +9,8 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const path = request.path;
 
-    // health check 및 metrics 엔드포인트는 인증 제외
-    if (path === '/api/health' || path === '/api/metrics') {
+    // metrics 엔드포인트는 인증 제외
+    if (path === '/api/metrics') {
       return true;
     }
 
