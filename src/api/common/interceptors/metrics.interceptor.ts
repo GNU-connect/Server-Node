@@ -11,10 +11,10 @@ import { tap } from 'rxjs/operators';
 
 function normalizePath(path: string): string {
   return path
-    .replace(/\/api/, '')
+    .replace(/^\/api/, '')
     .replace(/\/[0-9a-f-]{36}/gi, '/:id')
     .replace(/\/\d+/g, '/:id')
-    .replace(/^\/?/, '/api')
+    .replace(/^\/?/, '/api/')
     .replace(/\/$/, '') || '/api';
 }
 
