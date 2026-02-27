@@ -2,11 +2,9 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
-import { ScheduleModule } from '@nestjs/schedule';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { LoggerModule } from 'src/api/internal/logger/logger.module';
 import { CafeteriasModule } from 'src/api/public/cafeterias/cafeterias.module';
-import { HealthModule } from './api/internal/health/health.module';
 import { CampusesModule } from './api/public/campuses/campuses.module';
 import { CollegesModule } from './api/public/colleges/colleges.module';
 import { DepartmentsModule } from './api/public/departments/departments.module';
@@ -21,9 +19,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
   imports: [
     SentryModule.forRoot(),
     LoggerModule,
-    HealthModule,
     HttpModule,
-    ScheduleModule.forRoot(),
     PrometheusModule.register(),
     DatabaseModule,
     UsersModule,
