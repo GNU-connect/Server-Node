@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  ROOT_DIR: /home/ubuntu/connect-gnu
+  ROOT_DIR: ./connect-gnu
 
 jobs:
   build-and-push:
