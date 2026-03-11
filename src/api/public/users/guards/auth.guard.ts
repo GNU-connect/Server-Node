@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const userId =
-      request.headers['x-user-id'] || request.body.userRequest.user?.id;
+      request.headers['x-user-id'] || request.body?.userRequest?.user?.id;
     if (userId) {
       request['userId'] = userId;
     }
