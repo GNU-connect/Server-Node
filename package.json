@@ -21,6 +21,7 @@
     "db:start": "pnpm supabase start",
     "db:stop": "pnpm supabase stop",
     "db:pull": "pnpm supabase db pull",
+    "db:push": "pnpm supabase db push",
     "db:migration": "pnpm supabase migration up",
     "db:seed": "pnpm dlx tsx seed.ts",
     "db:reset": "pnpm supabase db reset"
