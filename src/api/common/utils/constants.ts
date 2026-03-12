@@ -19,6 +19,10 @@ export const enum BlockId {
 
   // SCHEDULE
   ACADEMIC_SCHEDULE = '65f01573ac1dbb67bfcfa242',
+
+  // SHUTTLE
+  SHUTTLE_ROUTES = '69b2c27cf7bd1678c2e9f80c',
+  SHUTTLE_TIMETABLE = '69b2c0babb823869c1c7fae6',
 }
 
 export const enum ListCardConfig {
