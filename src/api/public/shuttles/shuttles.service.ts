@@ -16,8 +16,15 @@ export class ShuttlesService {
 
   public async getRoutesList(): Promise<SkillTemplate> {
     const routes = await this.shuttleTimetableRepository.findAll();
+    const title = '🚌 셔틀버스 노선 선택';
 
-    const header: ListItem = { title: '🚌 셔틀버스 노선 선택' };
+    if (routes.length === 0) {
+      return {
+        outputs: [createTextCard(title, '현재 등록된 노선이 없습니다.')],
+      };
+    }
+
+    const header: ListItem = { title };
 
     const items: ListItem[] = routes.map((route) => ({
       title: route.routeName,
