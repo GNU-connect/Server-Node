@@ -18,6 +18,7 @@ import { UsersModule } from './api/public/users/users.module';
 import { DatabaseModule } from './type-orm/database.module';
 import { NoticesModule } from './api/public/notices/notices.module';
 import { SchedulesModule } from './api/public/schedules/schedules.module';
+import { ShuttlesModule } from './api/public/shuttles/shuttles.module';
 import { MetricsInterceptor } from './api/common/interceptors/metrics.interceptor';
 import { HealthModule } from './api/internal/health/health.module';
 
@@ -39,6 +40,7 @@ import { HealthModule } from './api/internal/health/health.module';
     CafeteriasModule,
     NoticesModule,
     SchedulesModule,
+    ShuttlesModule,
     HealthModule,
   ],
   providers: [

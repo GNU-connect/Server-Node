@@ -19,6 +19,13 @@ services:
       - /app/node_modules
     expose:
       - '3000'
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_PORT=54322
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=postgres
+      - DB_STORAGE_URL=http://host.docker.internal:54321/storage/v1/s3
     networks:
       - connect-gnu-network
 
