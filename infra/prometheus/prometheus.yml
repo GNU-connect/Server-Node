@@ -16,3 +16,15 @@ scrape_configs:
     static_configs:
       - targets: ['app:3000']
     metrics_path: /api/metrics
+
+  - job_name: supabase_db
+    scrape_interval: 60s
+    scheme: https
+    metrics_path: /customer/v1/privileged/metrics
+    basic_auth:
+      username: service_role
+      password: __SUPABASE_METRICS_PASSWORD__
+    static_configs:
+      - targets: ['__SUPABASE_HOST__']
+        labels:
+          group: supabase_db
