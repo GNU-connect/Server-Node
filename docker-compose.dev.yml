@@ -29,6 +29,16 @@ services:
     networks:
       - connect-gnu-network
 
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.5.1
+    command: --nginx.scrape-uri=http://nginx:8080/nginx_status
+    expose:
+      - '9113'
+    networks:
+      - connect-gnu-network
+    depends_on:
+      - nginx
+
   prometheus:
     image: prom/prometheus:v3.10.0
     expose:

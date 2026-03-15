@@ -17,6 +17,10 @@ scrape_configs:
       - targets: ['app:3000']
     metrics_path: /api/metrics
 
+  - job_name: nginx
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+
   - job_name: supabase_db
     scheme: https
     metrics_path: /customer/v1/privileged/metrics
