@@ -12,7 +12,6 @@ select
     last_success_at,
     round(extract(epoch from (now() - last_success_at)) / 60) as minutes_since_success,
     case
-        when last_success_at is null then 'NO_DATA'
         when now() - last_success_at > interval '1 hours' then 'DELAYED'
         else 'OK'
     end as status

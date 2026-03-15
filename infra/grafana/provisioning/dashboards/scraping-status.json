@@ -236,7 +236,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT NOW() AS \"time\", COUNT(*) AS \"지연 노선 수\" FROM monitoring_shuttle_status WHERE status IN ('DELAYED', 'NO_DATA')",
+          "rawSql": "SELECT NOW() AS \"time\", COUNT(*) AS \"지연 노선 수\" FROM monitoring_shuttle_status WHERE status = 'DELAYED'",
           "refId": "A"
         }
       ],
@@ -253,8 +253,8 @@
             "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
-              { "color": "yellow", "value": 180 },
-              { "color": "red", "value": 360 }
+              { "color": "yellow", "value": 60 },
+              { "color": "red", "value": 120 }
             ]
           },
           "unit": "none"
@@ -355,11 +355,6 @@
                         "color": "red",
                         "index": 1,
                         "text": "DELAYED"
-                      },
-                      "NO_DATA": {
-                        "color": "orange",
-                        "index": 2,
-                        "text": "NO_DATA"
                       }
                     }
                   }
@@ -386,7 +381,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT route_name, updated_at, last_success_at, minutes_since_success, status FROM monitoring_shuttle_status ORDER BY CASE status WHEN 'NO_DATA' THEN 0 WHEN 'DELAYED' THEN 1 ELSE 2 END, route_name",
+          "rawSql": "SELECT route_name, updated_at, last_success_at, minutes_since_success, status FROM monitoring_shuttle_status ORDER BY CASE status WHEN 'DELAYED' THEN 0 ELSE 1 END, route_name",
           "refId": "A"
         }
       ],
