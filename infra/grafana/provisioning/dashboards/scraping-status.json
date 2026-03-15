@@ -150,12 +150,14 @@
             ]
           },
           {
-            "matcher": { "id": "byName", "options": "cafeteria_name_ko" },
+            "matcher": { "id": "byName", "options": "name" },
             "properties": [{ "id": "displayName", "value": "식당명" }]
           },
           {
             "matcher": { "id": "byName", "options": "last_date" },
-            "properties": [{ "id": "displayName", "value": "최신 수집 날짜" }]
+            "properties": [
+              { "id": "displayName", "value": "데이터 수집 기준일" }
+            ]
           }
         ]
       },
@@ -172,11 +174,11 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT cafeteria_name_ko, last_date, lag_days FROM monitoring_cafeteria_status ORDER BY lag_days DESC NULLS LAST",
+          "rawSql": "SELECT name, last_date, lag_days FROM monitoring_cafeteria_status ORDER BY lag_days DESC NULLS LAST",
           "refId": "A"
         }
       ],
-      "title": "식당별 최신 수집 날짜 및 지연 일수",
+      "title": "식당별 데이터 수집 기준일 및 지연 일수",
       "transformations": [
         {
           "id": "organize",
