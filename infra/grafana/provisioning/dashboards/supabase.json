@@ -9785,7 +9785,6 @@
       "type": "row"
     }
   ],
-  "refresh": "",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -9805,7 +9804,6 @@
           "query": "label_values(supabase_project_ref)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
         "regex": "",
         "type": "query"
       },
@@ -9843,7 +9841,6 @@
           "query": "label_values(supabase_identifier)",
           "refId": "Prometheus-supabase_identifier-Variable-Query"
         },
-        "refresh": 1,
         "regex": "",
         "type": "query"
       }
@@ -9856,6 +9853,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Supabase",
+  "refresh": "10s",
   "uid": "supabase",
   "version": 1,
   "weekStart": ""
