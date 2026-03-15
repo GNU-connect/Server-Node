@@ -18,7 +18,6 @@ scrape_configs:
     metrics_path: /api/metrics
 
   - job_name: supabase_db
-    scrape_interval: 60s
     scheme: https
     metrics_path: /customer/v1/privileged/metrics
     basic_auth:
