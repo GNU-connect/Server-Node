@@ -33,13 +33,24 @@ services:
     image: prom/prometheus:v3.10.0
     expose:
       - '9090'
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.external-url=${PROMETHEUS_EXTERNAL_URL:-http://localhost/prometheus/}'
-      - '--web.route-prefix=/'
+    environment:
+      - SUPABASE_HOST=${SUPABASE_HOST:-}
+      - SUPABASE_METRICS_PASSWORD=${SUPABASE_METRICS_PASSWORD:-}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        sed \
+          -e "s/__SUPABASE_HOST__/$$SUPABASE_HOST/g" \
+          -e "s/__SUPABASE_METRICS_PASSWORD__/$$SUPABASE_METRICS_PASSWORD/g" \
+          /etc/prometheus/prometheus.yml.template > /etc/prometheus/prometheus.yml && \
+        /bin/prometheus \
+          --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus \
+          --web.external-url=${PROMETHEUS_EXTERNAL_URL:-http://localhost/prometheus/} \
+          --web.route-prefix=/
     volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml.template
       - prometheus_data:/prometheus
     networks:
       - connect-gnu-network
