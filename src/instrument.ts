@@ -7,7 +7,7 @@ Sentry.init({
 
   // Transaction with profiling cost 1.3 instead of 1.0,
   // you can add more profiling here for example Prisma or postgresql
-  integrations: [Sentry.postgresIntegration(), eventLoopBlockIntegration({ threshold: 3000 })],
+  integrations: [Sentry.postgresIntegration(), eventLoopBlockIntegration({ threshold: 300 })],
 
   // Add Performance Monitoring by setting tracesSampleRate
   // The value is automatically adjusted depending on the environment
