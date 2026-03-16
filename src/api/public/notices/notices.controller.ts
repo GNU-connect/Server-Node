@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
+import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { User } from 'src/type-orm/entities/users/users.entity';
 import { ListDepartmentNoticeRequestDto } from './dtos/requests/list-department-notice-request.dto';
 import { ListUniversityNoticeRequestDto } from './dtos/requests/list-university-notice-request.dto';
@@ -21,6 +22,7 @@ export class NoticesController {
   }
 
   @Post('department')
+  @FetchCurrentUser()
   @ApiSkillBody(ListDepartmentNoticeRequestDto)
   async listDepartmentNotices(@CurrentUser() user: User) {
     const template = await this.noticesService.getDepartmentNoticeTemplate(user);
