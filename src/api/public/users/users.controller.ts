@@ -5,6 +5,7 @@ import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { User } from '../../../type-orm/entities/users/users.entity';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { FetchCurrentUser } from './decorators/fetch-current-user.decorator';
 import { ListCollegesRequestDto } from './dtos/requests/list-college-request.dto';
 import { ListDepartmentsRequestDto } from './dtos/requests/list-department-request.dto';
 import { UpsertDepartmentRequestDto } from './dtos/requests/upsert-department-request.dto';
@@ -16,6 +17,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('profile/get')
+  @FetchCurrentUser()
   getProfile(@CurrentUser() user: User): ResponseDTO {
     const template = this.usersService.profileTextCard(user);
     return new ResponseDTO(template);
@@ -46,6 +48,7 @@ export class UsersController {
   }
 
   @Post('department/upsert')
+  @FetchCurrentUser()
   @ApiSkillBody(UpsertDepartmentRequestDto)
   async upsert(
     @CurrentUser() user: User,

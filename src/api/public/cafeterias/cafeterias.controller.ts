@@ -6,6 +6,7 @@ import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { ListCafeteriaDietExtraRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
 import { ListCafeteriaRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-request.dto';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
+import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { User } from 'src/type-orm/entities/users/users.entity';
 import { CafeteriasService } from './cafeterias.service';
 
@@ -15,6 +16,7 @@ export class CafeteriasController {
   constructor(private readonly cafeteriasService: CafeteriasService) {}
 
   @Post()
+  @FetchCurrentUser()
   @ApiSkillBody(ListCafeteriaRequestDto)
   async listCafeterias(
     @CurrentUser() user: User,

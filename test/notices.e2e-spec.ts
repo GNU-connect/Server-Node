@@ -1,11 +1,11 @@
-import { INestApplication, MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { INestApplication, Module, ValidationPipe } from '@nestjs/common';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { NoticesController } from 'src/api/public/notices/notices.controller';
 import { NoticesService } from 'src/api/public/notices/notices.service';
 import { AuthGuard } from 'src/api/public/users/guards/auth.guard';
-import { CurrentUserMiddleware } from 'src/api/public/users/middlewares/current-user.middleware';
+import { CurrentUserInterceptor } from 'src/api/public/users/interceptors/current-user.interceptor';
 import { UsersService } from 'src/api/public/users/users.service';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 
@@ -36,13 +36,10 @@ const mockUsersService = {
     { provide: NoticesService, useValue: mockNoticesService },
     { provide: UsersService, useValue: mockUsersService },
     { provide: APP_GUARD, useClass: AuthGuard },
-    CurrentUserMiddleware,
+    { provide: APP_INTERCEPTOR, useClass: CurrentUserInterceptor },
   ],
 })
 class NoticesTestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CurrentUserMiddleware).forRoutes('*');
-  }
 }
 
 describe('Notices (e2e)', () => {
