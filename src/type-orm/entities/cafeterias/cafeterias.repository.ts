@@ -29,12 +29,11 @@ export class CafeteriasRepository {
   }
 
   findCafeteriaById(cafeteriaId: number): Promise<Cafeteria> {
-    return this.cafeteriaRepository.findOne({
-      where: {
-        id: cafeteriaId,
-      },
-      relations: ['campus'],
-    });
+    return this.cafeteriaRepository
+      .createQueryBuilder('cafeteria')
+      .leftJoinAndSelect('cafeteria.campus', 'campus')
+      .where('cafeteria.id = :cafeteriaId', { cafeteriaId })
+      .getOne();
   }
 
   /**
