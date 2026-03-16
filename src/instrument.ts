@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node';
+import { eventLoopBlockIntegration } from "@sentry/node-native";
 
 // Read more about the available options here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/options/
 Sentry.init({
@@ -6,7 +7,7 @@ Sentry.init({
 
   // Transaction with profiling cost 1.3 instead of 1.0,
   // you can add more profiling here for example Prisma or postgresql
-  integrations: [Sentry.postgresIntegration()],
+  integrations: [Sentry.postgresIntegration(), eventLoopBlockIntegration({ threshold: 300 })],
 
   // Add Performance Monitoring by setting tracesSampleRate
   // The value is automatically adjusted depending on the environment
@@ -21,7 +22,6 @@ Sentry.init({
 
   // Disable transport in development, transaction are still captured in debug mode, check the console
   enabled: process.env.NODE_ENV !== 'development',
-  enableTracing: process.env.NODE_ENV !== 'development',
 
   // Enable debug mode to log event submission
   // debug: process.env.NODE_ENV === 'development',

@@ -7,7 +7,7 @@ import {
 import { IncomingWebhook } from '@slack/client';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import * as Sentry from '@sentry/minimal';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {
