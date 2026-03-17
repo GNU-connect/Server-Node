@@ -39,6 +39,6 @@ jobs:
           key: ${{ secrets.MONITORING_SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.ROOT_DIR }}
-            sudo docker-compose pull
-            sudo docker-compose up -d
-            sudo docker image prune -af
+            docker compose pull
+            docker compose up -d
+            docker image prune -af
