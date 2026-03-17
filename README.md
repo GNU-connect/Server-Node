@@ -67,7 +67,8 @@
 
 ## 시스템 아키텍처
 
-<img width="781" height="364" alt="image" src="https://github.com/user-attachments/assets/cc46c70d-67a1-4d95-b38f-b751b9d91507" />
+<img width="1217" height="766" alt="image" src="https://github.com/user-attachments/assets/c40a1555-2fc1-46c4-84c8-ed439428e0db" />
+
 <br><br>
 
 ## 기술 스택
