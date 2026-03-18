@@ -30,7 +30,7 @@ services:
     networks:
       - connect-gnu-network
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || kill 1"]
       interval: 30s
       timeout: 5s
       retries: 3
