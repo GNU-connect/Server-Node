@@ -10,25 +10,11 @@ import { SentryInterceptor } from './api/common/interceptors/sentry.interceptor'
 import { AppModule } from './app.module';
 import './instrument';
 
-process.on('unhandledRejection', (reason) => {
-  console.error('[unhandledRejection]', reason);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('[uncaughtException]', err);
-});
-
-process.on('warning', (warning) => {
-  console.error('[warning]', warning);
-});
-
 async function bootstrap() {
-  console.log('[boot] start');
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
-  console.log('[boot] app created');
 
   const nodeEnv = process.env.NODE_ENV;
 
@@ -75,16 +61,8 @@ async function bootstrap() {
     },
   });
 
-  app.enableShutdownHooks();
-
-  const server = app.getHttpServer();
-  server.keepAliveTimeout = 5000;
-  server.headersTimeout = 6000;
-  server.requestTimeout = 15000;
-
   const port = Number(process.env.PORT) || 3000;
   await app.listen(port);
-  console.log(`[boot] listening ${port}`);
 }
 
 bootstrap();
