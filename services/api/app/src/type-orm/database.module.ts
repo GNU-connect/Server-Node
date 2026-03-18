@@ -26,6 +26,10 @@ import {
         maxQueryExecutionTime: 1000, // 롱 쿼리 로그 출력 시간
         retryAttempts: 5,
         retryDelay: 1000,
+        extra: {
+          max: 10, // 최대 커넥션 수
+          idleTimeoutMillis: 3000, // 최대 커넥션 대기 시간
+        },
       }),
       async dataSourceFactory(options) {
         if (!options) throw new Error('Invalid options passed');
