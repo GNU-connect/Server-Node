@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Server } from 'http';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
 import { initializeTransactionalContext } from 'typeorm-transactional';
@@ -17,6 +18,7 @@ async function bootstrap() {
   });
 
   const nodeEnv = process.env.NODE_ENV;
+  app.enableShutdownHooks();
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
@@ -62,6 +64,14 @@ async function bootstrap() {
   });
 
   const port = Number(process.env.PORT) || 3000;
+  const server = app.getHttpServer() as Server;
+
+  // Align server-side timeouts with the reverse proxy so idle upstream sockets
+  // do not linger when nginx decides to close them first.
+  server.keepAliveTimeout = 65_000;
+  server.headersTimeout = 66_000;
+  server.requestTimeout = 30_000;
+
   await app.listen(port);
 }
 
