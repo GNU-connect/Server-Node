@@ -29,12 +29,6 @@ services:
       - DB_STORAGE_URL=http://host.docker.internal:54321/storage/v1/s3
     networks:
       - connect-gnu-network
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || kill 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
 
 networks:
   connect-gnu-network:

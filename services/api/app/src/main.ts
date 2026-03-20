@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Server } from 'http';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import * as process from 'process';
 import { initializeTransactionalContext } from 'typeorm-transactional';
@@ -18,7 +17,6 @@ async function bootstrap() {
   });
 
   const nodeEnv = process.env.NODE_ENV;
-  app.enableShutdownHooks();
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
@@ -39,6 +37,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('커넥트지누 노드 서버 API')
     .setDescription('커넥트지누 노드 서버 API 문서입니다.')
@@ -63,15 +62,38 @@ async function bootstrap() {
     },
   });
 
+  app.use((req, res, next) => {
+    const start = Date.now();
+    const id = Math.random().toString(36).slice(2, 8);
+    const ts = () => new Date().toISOString();
+
+    console.log(`${ts()} [REQ ${id}] ${req.method} ${req.originalUrl}`);
+
+    res.on('finish', () => {
+      console.log(
+        `${ts()} [FIN ${id}] ${req.method} ${req.originalUrl} ${res.statusCode} ${Date.now() - start}ms`,
+      );
+    });
+
+    res.on('close', () => {
+      if (!res.writableEnded) {
+        console.log(
+          `${ts()} [ABORT ${id}] ${req.method} ${req.originalUrl} ${Date.now() - start}ms`,
+        );
+      }
+    });
+
+    res.on('error', (err) => {
+      console.error(
+        `${ts()} [ERR ${id}] ${req.method} ${req.originalUrl}`,
+        err,
+      );
+    });
+
+    next();
+  });
+
   const port = Number(process.env.PORT) || 3000;
-  const server = app.getHttpServer() as Server;
-
-  // Align server-side timeouts with the reverse proxy so idle upstream sockets
-  // do not linger when nginx decides to close them first.
-  server.keepAliveTimeout = 65_000;
-  server.headersTimeout = 66_000;
-  server.requestTimeout = 30_000;
-
   await app.listen(port);
 }
 
