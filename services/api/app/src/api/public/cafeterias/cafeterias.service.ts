@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { BlockId } from 'src/api/common/utils/constants';
 import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
@@ -15,6 +15,8 @@ import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeteria
 
 @Injectable()
 export class CafeteriasService {
+  private readonly logger = new Logger(CafeteriasService.name);
+
   constructor(
     private readonly cafeteriasRepository: CafeteriasRepository,
     private readonly campusesService: CampusesService,
@@ -61,10 +63,37 @@ export class CafeteriasService {
     const time = dietTime ?? getDietTime(date);
 
     // 2. 식단 목록 조회 (두 쿼리는 독립적이므로 병렬 실행)
+    const startedAt = Date.now();
+    const queryMeta = `cafeteriaId=${cafeteriaId} date=${date.toISOString()} time=${time}`;
+
+    const cafeteriaPromise = this.cafeteriasRepository
+      .findCafeteriaById(cafeteriaId)
+      .then((cafeteria) => {
+        this.logger.log(
+          `[diet:cafeteria] ${queryMeta} ${Date.now() - startedAt}ms`,
+        );
+        return cafeteria;
+      });
+
+    const dietsPromise = this.cafeteriasRepository
+      .findCafeteriaDietsByCafeteriaId(cafeteriaId, date, time)
+      .then((diets) => {
+        this.logger.log(
+          `[diet:diets] ${queryMeta} count=${diets.length} ${Date.now() - startedAt}ms`,
+        );
+        return diets;
+      });
+
     const [cafeteria, diets] = await Promise.all([
-      this.cafeteriasRepository.findCafeteriaById(cafeteriaId),
-      this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(cafeteriaId, date, time),
+      cafeteriaPromise,
+      dietsPromise,
     ]);
+
+    if (!cafeteria) {
+      throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
+    }
+
+    this.logger.log(`[diet:done] ${queryMeta} ${Date.now() - startedAt}ms`);
 
     // 3. 식단 카드 생성
     return this.cafeteriaMessagesService.cafeteriaDietsListCard(
