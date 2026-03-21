@@ -66,8 +66,17 @@ async function bootstrap() {
     const start = Date.now();
     const id = Math.random().toString(36).slice(2, 8);
     const ts = () => new Date().toISOString();
+    const socket = req.socket;
 
-    console.log(`${ts()} [REQ ${id}] ${req.method} ${req.originalUrl}`);
+    console.log(
+      `${ts()} [REQ ${id}] ${req.method} ${req.originalUrl} from=${socket.remoteAddress}:${socket.remotePort}`,
+    );
+
+    req.on('aborted', () => {
+      console.warn(
+        `${ts()} [REQ_ABORT ${id}] ${req.method} ${req.originalUrl} ${Date.now() - start}ms bytesRead=${socket.bytesRead} bytesWritten=${socket.bytesWritten}`,
+      );
+    });
 
     res.on('finish', () => {
       console.log(
@@ -90,11 +99,22 @@ async function bootstrap() {
       );
     });
 
+    socket.on('timeout', () => {
+      console.warn(
+        `${ts()} [SOCKET_TIMEOUT ${id}] ${req.method} ${req.originalUrl} ${Date.now() - start}ms`,
+      );
+    });
+
     next();
   });
 
   const port = Number(process.env.PORT) || 3000;
-  await app.listen(port);
+  const server = await app.listen(port);
+
+  // Avoid letting hung keep-alive/request sockets linger until nginx gives up first.
+  server.requestTimeout = Number(process.env.REQUEST_TIMEOUT_MS) || 15000;
+  server.headersTimeout = Number(process.env.HEADERS_TIMEOUT_MS) || 16000;
+  server.keepAliveTimeout = Number(process.env.KEEP_ALIVE_TIMEOUT_MS) || 5000;
 }
 
 bootstrap();

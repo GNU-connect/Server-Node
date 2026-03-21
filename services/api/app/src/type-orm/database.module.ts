@@ -28,7 +28,11 @@ import {
         retryDelay: 1000,
         extra: {
           max: 10, // 최대 커넥션 수
+          connectionTimeoutMillis: 3000,
           idleTimeoutMillis: 3000, // 최대 커넥션 대기 시간
+          query_timeout: 10000,
+          statement_timeout: 10000,
+          idle_in_transaction_session_timeout: 10000,
         },
       }),
       async dataSourceFactory(options) {
