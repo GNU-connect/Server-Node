@@ -14,7 +14,6 @@ import { CafeteriasModule } from 'src/api/public/cafeterias/cafeterias.module';
 import { CampusesModule } from './api/public/campuses/campuses.module';
 import { CollegesModule } from './api/public/colleges/colleges.module';
 import { DepartmentsModule } from './api/public/departments/departments.module';
-import { ReadingRoomsModule } from './api/public/reading-rooms/reading-rooms.module';
 import { UsersModule } from './api/public/users/users.module';
 import { DatabaseModule } from './type-orm/database.module';
 import { NoticesModule } from './api/public/notices/notices.module';
@@ -31,7 +30,6 @@ import { HealthModule } from './api/internal/health/health.module';
     PrometheusModule.register(),
     DatabaseModule,
     UsersModule,
-    ReadingRoomsModule,
     ConfigModule.forRoot({
       isGlobal: true
     }),
