@@ -1,13 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Post, UseFilters } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { ListAcademicScheduleExtraDto } from './dtos/requests/list-academic-schedule-request.dto';
 import { SchedulesService } from './schedules.service';
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
+import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
 
 @ApiTags('schedules')
 @Controller('schedules')
+@UseFilters(OpenBuilderExceptionFilter)
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 

@@ -1,4 +1,4 @@
-import { INestApplication, Module, ValidationPipe } from '@nestjs/common';
+import { ForbiddenException, INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -122,11 +122,24 @@ describe('Cafeterias (e2e)', () => {
       );
     });
 
-    it('userId가 없으면 403을 반환한다', async () => {
-      await request(app.getHttpServer())
+    it('인증 실패도 카카오 스킬 오류 응답으로 변환한다', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/cafeterias')
         .send({ action: { clientExtra: {} } })
-        .expect(403);
+        .expect(200);
+
+      expect(response.body).toEqual({
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: '예상치 못한 오류가 발생했어!',
+              },
+            },
+          ],
+        },
+      });
     });
   });
 
@@ -168,6 +181,35 @@ describe('Cafeterias (e2e)', () => {
         '오늘',
         undefined,
       );
+    });
+
+    it('서비스 예외도 카카오 스킬 오류 응답으로 변환한다', async () => {
+      mockCafeteriasService.getCafeteriaDietTemplate.mockRejectedValue(
+        new ForbiddenException('db timeout'),
+      );
+
+      const response = await request(app.getHttpServer())
+        .post('/api/cafeterias/diet')
+        .send({
+          userRequest: { user: { id: KAKAO_USER_ID } },
+          action: {
+            clientExtra: { cafeteriaId: 1, date: '오늘', time: '점심' },
+          },
+        })
+        .expect(200);
+
+      expect(response.body).toEqual({
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: '예상치 못한 오류가 발생했어!',
+              },
+            },
+          ],
+        },
+      });
     });
   });
 });

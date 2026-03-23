@@ -1,8 +1,9 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, UseFilters } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
+import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
 import { User } from '../../../type-orm/entities/users/users.entity';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { FetchCurrentUser } from './decorators/fetch-current-user.decorator';
@@ -13,6 +14,7 @@ import { UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('users')
+@UseFilters(OpenBuilderExceptionFilter)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
