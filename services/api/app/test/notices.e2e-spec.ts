@@ -93,11 +93,24 @@ describe('Notices (e2e)', () => {
       expect(response.body.template).toEqual(UNIVERSITY_NOTICE_TEMPLATE);
     });
 
-    it('userId가 없으면 403을 반환한다', async () => {
-      await request(app.getHttpServer())
+    it('인증 실패도 카카오 스킬 오류 응답으로 변환한다', async () => {
+      const response = await request(app.getHttpServer())
         .post('/api/notices/university')
         .send({ action: { clientExtra: {} } })
-        .expect(403);
+        .expect(200);
+
+      expect(response.body).toEqual({
+        version: '2.0',
+        template: {
+          outputs: [
+            {
+              simpleText: {
+                text: '예상치 못한 오류가 발생했어!',
+              },
+            },
+          ],
+        },
+      });
     });
 
     it('X-USER-ID 헤더로도 인증할 수 있다', async () => {
