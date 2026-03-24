@@ -71,11 +71,9 @@ export class CafeteriasService {
     const date = getTodayOrTomorrow(dietDate);
     const time = dietTime ?? getDietTime(date);
 
-    // 2. 식단 목록 조회
-    const [cafeteria, diets] = await Promise.all([
-      this.cafeteriasRepository.findCafeteriaById(cafeteriaId),
-      this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(cafeteriaId, date, time),
-    ]);
+    // 2. 식당 정보 및 식단 목록 조회
+    const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
+    const diets = await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(cafeteriaId, date, time);
 
     if (!cafeteria) {
       throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
