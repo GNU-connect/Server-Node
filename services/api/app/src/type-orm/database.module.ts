@@ -29,7 +29,7 @@ import {
         extra: {
           max: 10, // 최대 커넥션 수 (default: 10)
           min: 1, // 최소 커넥션 수 (default: 0)
-          connectionTimeoutMillis: 500, // 커넥션 타임아웃 시간 (default: 0ms, 무제한)
+          connectionTimeoutMillis: 3000, // 커넥션 타임아웃 시간 (default: 0ms, 무제한)
           idleTimeoutMillis: 30000, // 유휴 커넥션 유지 시간 (default: 10000ms)
           query_timeout: 2000, // 쿼리 타임아웃 시간 (default: 0ms, 무제한)
           statement_timeout: 1800, // 스테이트먼트 타임아웃 시간 (default: 0ms, 무제한)
