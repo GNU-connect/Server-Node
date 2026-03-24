@@ -2,32 +2,24 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import * as process from 'process';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
-import { SentryFilter } from './api/common/filters/sentry.filter';
 import { SentryInterceptor } from './api/common/interceptors/sentry.interceptor';
 import { AppModule } from './app.module';
 import './instrument';
+import { SentryFilter } from './api/common/filters/sentry.filter';
 
 async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
-
-  const nodeEnv = process.env.NODE_ENV;
+  const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
-
-  if (nodeEnv == 'production') {
-    app.useGlobalInterceptors(new SentryInterceptor());
-    const { httpAdapter } = app.get(HttpAdapterHost);
-    app.useGlobalFilters(new SentryFilter(httpAdapter));
-  } else {
-    app.useGlobalFilters(new HttpExceptionFilter());
-  }
-
+  app.useGlobalInterceptors(new SentryInterceptor());
+  app.useGlobalFilters(new SentryFilter(httpAdapter));
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: false,

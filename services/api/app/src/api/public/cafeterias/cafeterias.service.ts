@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { BlockId } from 'src/api/common/utils/constants';
 import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
@@ -52,6 +53,15 @@ export class CafeteriasService {
   /**
    * 식당 식단 템플릿 조회
    */
+  @TraceSpan({
+    name: 'cafeterias.service.getCafeteriaDietTemplate',
+    op: 'function.service',
+    attributes: ([cafeteriaId, dietDate, dietTime]) => ({
+      cafeteriaId: cafeteriaId as number,
+      requestedDietDate: (dietDate as DietDate | undefined) ?? 'auto',
+      requestedDietTime: (dietTime as DietTime | undefined) ?? 'auto',
+    }),
+  })
   public async getCafeteriaDietTemplate(
     cafeteriaId: number,
     dietDate?: DietDate,
