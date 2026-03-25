@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
@@ -68,8 +69,23 @@ export class CafeteriasService {
     dietTime?: DietTime,
   ): Promise<SkillTemplate> {
     // 1. 날짜 및 시간 기본값 설정 (시간대에 따라 오늘 또는 내일 날짜 반환)
-    const date = getTodayOrTomorrow(dietDate);
-    const time = dietTime ?? getDietTime(date);
+    const { date, time } = Sentry.startSpan(
+      {
+        name: 'cafeterias.service.resolveDietQuery',
+        op: 'function.service.prepare',
+        attributes: {
+          cafeteriaId,
+          requestedDietDate: dietDate ?? 'auto',
+          requestedDietTime: dietTime ?? 'auto',
+        },
+      },
+      () => {
+        const date = getTodayOrTomorrow(dietDate);
+        const time = dietTime ?? getDietTime(date);
+
+        return { date, time };
+      },
+    );
 
     // 2. 식당 정보 및 식단 목록 조회
     const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
