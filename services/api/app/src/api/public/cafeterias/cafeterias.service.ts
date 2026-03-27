@@ -87,9 +87,30 @@ export class CafeteriasService {
       },
     );
 
-    // 2. 식당 정보 및 식단 목록 조회
-    const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
-    const diets = await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(cafeteriaId, date, time);
+    // 2. 식당 정보 및 식단 목록 조회 (리포지토리 스팬을 한 단계로 묶어 워터폴에서 구간이 보이게 함)
+    const { cafeteria, diets } = await Sentry.startSpan(
+      {
+        name: 'cafeterias.service.loadCafeteriaData',
+        op: 'function.service.load',
+        attributes: {
+          cafeteriaId,
+          dietDate: date.toISOString().slice(0, 10),
+          dietTime: time,
+        },
+      },
+      async () => {
+        const cafeteria = await this.cafeteriasRepository.findCafeteriaById(
+          cafeteriaId,
+        );
+        const diets =
+          await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(
+            cafeteriaId,
+            date,
+            time,
+          );
+        return { cafeteria, diets };
+      },
+    );
 
     if (!cafeteria) {
       throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
