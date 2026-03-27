@@ -69,22 +69,30 @@ export class CafeteriasService {
     dietTime?: DietTime,
   ): Promise<SkillTemplate> {
     // 1. 날짜 및 시간 기본값 설정 (시간대에 따라 오늘 또는 내일 날짜 반환)
-    const { date, time } = Sentry.startSpan(
+    const date = Sentry.startSpan(
       {
-        name: 'cafeterias.service.resolveDietQuery',
-        op: 'function.service.prepare',
+        name: 'cafeterias.service.resolveDietDate',
+        op: 'function.service.prepare.date',
+        attributes: {
+          cafeteriaId,
+          requestedDietDate: dietDate ?? 'auto',
+        },
+      },
+      () => getTodayOrTomorrow(dietDate),
+    );
+
+    const time = Sentry.startSpan(
+      {
+        name: 'cafeterias.service.resolveDietTime',
+        op: 'function.service.prepare.time',
         attributes: {
           cafeteriaId,
           requestedDietDate: dietDate ?? 'auto',
           requestedDietTime: dietTime ?? 'auto',
+          dietDate: date.toISOString().slice(0, 10),
         },
       },
-      () => {
-        const date = getTodayOrTomorrow(dietDate);
-        const time = dietTime ?? getDietTime(date);
-
-        return { date, time };
-      },
+      () => dietTime ?? getDietTime(date),
     );
 
     // 2. 식당 정보 및 식단 목록 조회 (리포지토리 스팬을 한 단계로 묶어 워터폴에서 구간이 보이게 함)
