@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { BlockId } from 'src/api/common/utils/constants';
@@ -17,6 +17,7 @@ import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeteria
 
 @Injectable()
 export class CafeteriasService {
+  private readonly logger = new Logger(CafeteriasService.name);
 
   constructor(
     private readonly cafeteriasRepository: CafeteriasRepository,
@@ -78,7 +79,13 @@ export class CafeteriasService {
           requestedDietDate: dietDate ?? 'auto',
         },
       },
-      () => getTodayOrTomorrow(dietDate),
+      () => {
+        const t1 = performance.now();
+        const result = getTodayOrTomorrow(dietDate);
+        const t2 = performance.now();
+        this.logger.log(`getTodayOrTomorrow: ${(t2 - t1).toFixed(2)}ms`);
+        return result;
+      },
     );
 
     const time = Sentry.startSpan(
