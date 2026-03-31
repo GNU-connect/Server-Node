@@ -1,4 +1,18 @@
-import { DietDate } from "src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto";
+import { DietDate } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
+
+/** 한국은 연중 UTC+9 (DST 없음). Intl 없이 서울 벽시계 시·분을 쓸 때 사용 */
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+/**
+ * 인스턴트 `date`에 대한 서울 벽시계 시·분 (0–23, 0–59)
+ */
+const getSeoulHoursMinutes = (date: Date): { hours: number; minutes: number } => {
+  const seoul = new Date(date.getTime() + KST_OFFSET_MS);
+  return {
+    hours: seoul.getUTCHours(),
+    minutes: seoul.getUTCMinutes(),
+  };
+};
 
 /**
  * 내일 날짜를 반환하는 헬퍼 함수
@@ -15,18 +29,12 @@ const getTomorrow = (): Date => {
  * - 제공되지 않으면 서울 시간 기준 19시 전후로 오늘/내일 결정
  */
 export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
-  // 명시적으로 날짜가 지정된 경우
   if (dietDate) {
-    return dietDate === '오늘' ? new Date() : getTomorrow(); // 오늘이면 오늘 날짜 반환, 내일이면 내일 날짜 반환
+    return dietDate === '오늘' ? new Date() : getTomorrow();
   }
 
-  // 날짜가 지정되지 않은 경우 서울 시간 기준 19시 전후로 오늘/내일 결정
-  const currentSeoulTime = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
-  );
-  const currentSeoulTimeHours = currentSeoulTime.getHours();
-
-  return currentSeoulTimeHours < 19 ? new Date() : getTomorrow();
+  const { hours } = getSeoulHoursMinutes(new Date());
+  return hours < 19 ? new Date() : getTomorrow();
 };
 
 /**
@@ -34,34 +42,20 @@ export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
  * - 서울 시간으로 변환 후 19시 이전이면 아침, 이후면 점심/저녁 결정
  */
 export const getDietTime = (date: Date) => {
-  // 서울 시간으로 변환
-  const seoulTime = new Date(
-    date.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
-  );
-
-  const hours = seoulTime.getHours();
-  const minutes = seoulTime.getMinutes();
-
-  // 시간을 분 단위로 환산
+  const { hours, minutes } = getSeoulHoursMinutes(date);
   const totalMinutes = hours * 60 + minutes;
 
-  // 기준 시간대 (분 단위)
   const morningStart = 19 * 60; // 19:00
   const morningEnd = 9 * 60 + 30; // 09:30
   const lunchEnd = 13 * 60 + 30; // 13:30
 
-  // 아침: 19:00 ~ 다음날 09:30
   if (totalMinutes >= morningStart || totalMinutes < morningEnd) {
     return '아침';
   }
-  // 점심: 09:30 ~ 13:30
-  else if (totalMinutes >= morningEnd && totalMinutes < lunchEnd) {
+  if (totalMinutes >= morningEnd && totalMinutes < lunchEnd) {
     return '점심';
   }
-  // 저녁: 나머지 시간
-  else {
-    return '저녁';
-  }
+  return '저녁';
 };
 
 export const getDayWeek = (date: Date) => {
