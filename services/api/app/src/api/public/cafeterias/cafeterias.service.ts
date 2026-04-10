@@ -80,10 +80,15 @@ export class CafeteriasService {
         },
       },
       () => {
-        const t1 = performance.now();
+        const wallStart = performance.now();
+        const cpuStart = process.cpuUsage();
         const result = getTodayOrTomorrow(dietDate);
-        const t2 = performance.now();
-        this.logger.log(`getTodayOrTomorrow: ${(t2 - t1).toFixed(2)}ms`);
+        const wallMs = performance.now() - wallStart;
+        const cpu = process.cpuUsage(cpuStart);
+        const cpuMs = (cpu.user + cpu.system) / 1000;
+        this.logger.log(
+          `getTodayOrTomorrow: wall=${wallMs.toFixed(2)}ms cpu=${cpuMs.toFixed(2)}ms`,
+        );
         return result;
       },
     );
