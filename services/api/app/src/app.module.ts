@@ -1,4 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
@@ -28,6 +29,7 @@ import { WarmupModule } from './api/internal/warmup/warmup.module';
     SentryModule.forRoot(),
     LoggerModule,
     HttpModule,
+    CacheModule.register({ isGlobal: true, ttl: 60 * 60 * 1000 }),
     PrometheusModule.register(),
     DatabaseModule,
     UsersModule,

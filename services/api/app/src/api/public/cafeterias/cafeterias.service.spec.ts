@@ -1,3 +1,4 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CafeteriasService } from './cafeterias.service';
 import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
@@ -25,6 +26,7 @@ describe('CafeteriasService', () => {
   let cafeteriasRepository: jest.Mocked<CafeteriasRepository>;
   let campusesService: jest.Mocked<CampusesService>;
   let cafeteriaMessagesService: jest.Mocked<CafeteriaMessagesService>;
+  let cacheManager: { get: jest.Mock; set: jest.Mock };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +53,13 @@ describe('CafeteriasService', () => {
             cafeteriaDietsListCard: jest.fn().mockReturnValue(DIET_TEMPLATE),
           },
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn().mockResolvedValue(null),
+            set: jest.fn().mockResolvedValue(undefined),
+          },
+        },
       ],
     }).compile();
 
@@ -58,6 +67,7 @@ describe('CafeteriasService', () => {
     cafeteriasRepository = module.get(CafeteriasRepository);
     campusesService = module.get(CampusesService);
     cafeteriaMessagesService = module.get(CafeteriaMessagesService);
+    cacheManager = module.get(CACHE_MANAGER);
   });
 
   describe('getCafeteriaListTemplate', () => {
@@ -158,6 +168,32 @@ describe('CafeteriasService', () => {
 
       const calledDate = cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mock.calls[0][1];
       expect(calledDate.getDate()).toBe(tomorrow.getDate());
+    });
+  });
+
+  describe('캐시', () => {
+    it('cache hit이면 DB 조회 없이 캐시 값을 반환한다', async () => {
+      cacheManager.get.mockResolvedValue(DIET_TEMPLATE);
+
+      const result = await service.getCafeteriaDietTemplate(1, '오늘', '점심');
+
+      expect(result).toBe(DIET_TEMPLATE);
+      expect(cafeteriasRepository.findCafeteriaById).not.toHaveBeenCalled();
+      expect(cafeteriasRepository.findCafeteriaDietsByCafeteriaId).not.toHaveBeenCalled();
+    });
+
+    it('cache miss이면 DB를 조회하고 결과를 캐시에 저장한다', async () => {
+      cacheManager.get.mockResolvedValue(null);
+      cafeteriasRepository.findCafeteriaById.mockResolvedValue(makeCafeteria());
+      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
+
+      const result = await service.getCafeteriaDietTemplate(1, '오늘', '점심');
+
+      expect(cafeteriasRepository.findCafeteriaById).toHaveBeenCalledWith(1);
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        expect.stringMatching(/^diet:1:\d{4}-\d{2}-\d{2}:점심$/),
+        result,
+      );
     });
   });
 });
