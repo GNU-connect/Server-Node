@@ -3,7 +3,6 @@ import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
-import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { ListCafeteriaDietExtraRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
 import { ListCafeteriaRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-request.dto';
@@ -37,19 +36,6 @@ export class CafeteriasController {
 
   @Post('diet')
   @ApiSkillBody(ListCafeteriaDietExtraRequestDto)
-  @TraceSpan({
-    name: 'cafeterias.controller.listCafeteriaDiets',
-    op: 'function.nestjs.controller',
-    attributes: ([extra]) => {
-      const request = extra as ListCafeteriaDietExtraRequestDto;
-
-      return {
-        cafeteriaId: request.cafeteriaId,
-        dietDate: request.date ?? 'auto',
-        dietTime: request.time ?? 'auto',
-      };
-    },
-  })
   async listCafeteriaDiets(
     @ClientExtra(ListCafeteriaDietExtraRequestDto)
     extra: ListCafeteriaDietExtraRequestDto,
