@@ -3,6 +3,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { getDietTime, getTodayOrTomorrow } from 'src/api/public/cafeterias/utils/time';
+import { CafeteriasService } from 'src/api/public/cafeterias/cafeterias.service';
+import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
 
 @Injectable()
 export class WarmupService implements OnApplicationBootstrap {
@@ -11,6 +13,8 @@ export class WarmupService implements OnApplicationBootstrap {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly cafeteriasService: CafeteriasService,
+    private readonly cafeteriasRepository: CafeteriasRepository,
   ) {}
 
   onApplicationBootstrap() {
@@ -36,10 +40,14 @@ export class WarmupService implements OnApplicationBootstrap {
       this.exerciseCpuHotPaths(),
     ]);
 
-    const totalMs = +(performance.now() - start).toFixed(2);
-    this.logger.log(`warmup ok — total=${totalMs}ms db=${dbMs}ms cpu=${cpuMs}ms`);
+    const cacheMs = await this.prewarmDietCache();
 
-    return { ok: true, totalMs, dbMs, cpuMs };
+    const totalMs = +(performance.now() - start).toFixed(2);
+    this.logger.log(
+      `warmup ok — total=${totalMs}ms db=${dbMs}ms cpu=${cpuMs}ms cache=${cacheMs}ms`,
+    );
+
+    return { ok: true, totalMs, dbMs, cpuMs, cacheMs };
   }
 
   // ── private helpers ─────────────────────────────────────────────────────────
@@ -82,6 +90,30 @@ export class WarmupService implements OnApplicationBootstrap {
 
     return +(performance.now() - t).toFixed(2);
   }
+
+  /**
+   * 모든 식당의 현재 식단을 캐시에 pre-population.
+   * warmup 주기(5분)마다 실행되므로, TTL(10분)과 함께 캐시가 항상 warm 상태로 유지됨.
+   */
+  private async prewarmDietCache(): Promise<number> {
+    const t = performance.now();
+
+    try {
+      const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId();
+      await Promise.allSettled(
+        cafeterias.map((cafeteria) =>
+          this.cafeteriasService.getCafeteriaDietTemplate(cafeteria.id),
+        ),
+      );
+      this.logger.log(`diet cache prewarmed — count=${cafeterias.length}`);
+    } catch (err: unknown) {
+      this.logger.warn(
+        `diet cache prewarm failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+
+    return +(performance.now() - t).toFixed(2);
+  }
 }
 
 export interface WarmupResult {
@@ -89,4 +121,5 @@ export interface WarmupResult {
   totalMs: number;
   dbMs: number;
   cpuMs: number;
+  cacheMs: number;
 }

@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/node';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { BlockId } from 'src/api/common/utils/constants';
@@ -23,6 +24,7 @@ export class CafeteriasService {
     private readonly cafeteriasRepository: CafeteriasRepository,
     private readonly campusesService: CampusesService,
     private readonly cafeteriaMessagesService: CafeteriaMessagesService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   /**
@@ -107,14 +109,24 @@ export class CafeteriasService {
       () => dietTime ?? getDietTime(date),
     );
 
-    // 2. 식당 정보 및 식단 목록 조회 (리포지토리 스팬을 한 단계로 묶어 워터폴에서 구간이 보이게 함)
+    // 2. 캐시 조회
+    const dateStr = date.toISOString().slice(0, 10);
+    const cacheKey = `diet:${cafeteriaId}:${dateStr}:${time}`;
+    const cached = await this.cacheManager.get<SkillTemplate>(cacheKey);
+    if (cached) {
+      this.logger.log(`cache hit — key=${cacheKey}`);
+      return cached;
+    }
+    this.logger.log(`cache miss — key=${cacheKey}`);
+
+    // 3. 식당 정보 및 식단 목록 조회 (리포지토리 스팬을 한 단계로 묶어 워터폴에서 구간이 보이게 함)
     const { cafeteria, diets } = await Sentry.startSpan(
       {
         name: 'cafeterias.service.loadCafeteriaData',
         op: 'function.service.load',
         attributes: {
           cafeteriaId,
-          dietDate: date.toISOString().slice(0, 10),
+          dietDate: dateStr,
           dietTime: time,
         },
       },
@@ -136,12 +148,14 @@ export class CafeteriasService {
       throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
     }
 
-    // 3. 식단 카드 생성
-    return this.cafeteriaMessagesService.cafeteriaDietsListCard(
+    // 4. 식단 카드 생성 후 캐시 저장
+    const template = this.cafeteriaMessagesService.cafeteriaDietsListCard(
       cafeteria,
       date,
       time,
       diets,
     );
+    await this.cacheManager.set(cacheKey, template);
+    return template;
   }
 }

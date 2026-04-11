@@ -9,5 +9,6 @@ import { CafeteriasService } from './cafeterias.service';
   imports: [CampusesModule, CafeteriasRepositoryModule],
   controllers: [CafeteriasController],
   providers: [CafeteriasService, CafeteriaMessagesService],
+  exports: [CafeteriasService],
 })
 export class CafeteriasModule {}
