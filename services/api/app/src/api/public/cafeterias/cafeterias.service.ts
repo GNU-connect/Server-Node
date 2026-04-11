@@ -1,7 +1,6 @@
-import * as Sentry from '@sentry/node';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
+import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { BlockId } from 'src/api/common/utils/constants';
 import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
@@ -18,18 +17,31 @@ import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeteria
 
 @Injectable()
 export class CafeteriasService {
-  private readonly logger = new Logger(CafeteriasService.name);
+  readonly logger = new Logger(CafeteriasService.name);
 
   constructor(
     private readonly cafeteriasRepository: CafeteriasRepository,
     private readonly campusesService: CampusesService,
     private readonly cafeteriaMessagesService: CafeteriaMessagesService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER) readonly cacheManager: Cache,
   ) {}
 
   /**
    * 식당 목록 템플릿 조회
    */
+  @CacheKey({
+    key: ([userCampusId, requestedCampusId]) => {
+      if (requestedCampusId === -1) {
+        return 'cafeteria-list:campus-select';
+      }
+      const campusId =
+        (requestedCampusId as number | undefined) ?? (userCampusId as number | undefined);
+      if (!campusId) {
+        return 'cafeteria-list:campus-select';
+      }
+      return `cafeteria-list:campus:${campusId}`;
+    },
+  })
   public async getCafeteriaListTemplate(
     userCampusId?: number,
     requestedCampusId?: number,
@@ -57,14 +69,12 @@ export class CafeteriasService {
   /**
    * 식당 식단 템플릿 조회
    */
-  @TraceSpan({
-    name: 'cafeterias.service.getCafeteriaDietTemplate',
-    op: 'function.service',
-    attributes: ([cafeteriaId, dietDate, dietTime]) => ({
-      cafeteriaId: cafeteriaId as number,
-      requestedDietDate: (dietDate as DietDate | undefined) ?? 'auto',
-      requestedDietTime: (dietTime as DietTime | undefined) ?? 'auto',
-    }),
+  @CacheKey({
+    key: ([cafeteriaId, dietDate, dietTime]) => {
+      const date = getTodayOrTomorrow(dietDate as DietDate | undefined);
+      const time = (dietTime as DietTime | undefined) ?? getDietTime(date);
+      return `diet:${cafeteriaId as number}:${date.toISOString().slice(0, 10)}:${time}`;
+    },
   })
   public async getCafeteriaDietTemplate(
     cafeteriaId: number,
@@ -72,90 +82,27 @@ export class CafeteriasService {
     dietTime?: DietTime,
   ): Promise<SkillTemplate> {
     // 1. 날짜 및 시간 기본값 설정 (시간대에 따라 오늘 또는 내일 날짜 반환)
-    const date = Sentry.startSpan(
-      {
-        name: 'cafeterias.service.resolveDietDate',
-        op: 'function.service.prepare.date',
-        attributes: {
-          cafeteriaId,
-          requestedDietDate: dietDate ?? 'auto',
-        },
-      },
-      () => {
-        const wallStart = performance.now();
-        const cpuStart = process.cpuUsage();
-        const result = getTodayOrTomorrow(dietDate);
-        const wallMs = performance.now() - wallStart;
-        const cpu = process.cpuUsage(cpuStart);
-        const cpuMs = (cpu.user + cpu.system) / 1000;
-        this.logger.log(
-          `getTodayOrTomorrow: wall=${wallMs.toFixed(2)}ms cpu=${cpuMs.toFixed(2)}ms`,
-        );
-        return result;
-      },
-    );
+    const date = getTodayOrTomorrow(dietDate);
+    const time = dietTime ?? getDietTime(date);
 
-    const time = Sentry.startSpan(
-      {
-        name: 'cafeterias.service.resolveDietTime',
-        op: 'function.service.prepare.time',
-        attributes: {
-          cafeteriaId,
-          requestedDietDate: dietDate ?? 'auto',
-          requestedDietTime: dietTime ?? 'auto',
-          dietDate: date.toISOString().slice(0, 10),
-        },
-      },
-      () => dietTime ?? getDietTime(date),
-    );
-
-    // 2. 캐시 조회
-    const dateStr = date.toISOString().slice(0, 10);
-    const cacheKey = `diet:${cafeteriaId}:${dateStr}:${time}`;
-    const cached = await this.cacheManager.get<SkillTemplate>(cacheKey);
-    if (cached) {
-      this.logger.log(`cache hit — key=${cacheKey}`);
-      return cached;
-    }
-    this.logger.log(`cache miss — key=${cacheKey}`);
-
-    // 3. 식당 정보 및 식단 목록 조회 (리포지토리 스팬을 한 단계로 묶어 워터폴에서 구간이 보이게 함)
-    const { cafeteria, diets } = await Sentry.startSpan(
-      {
-        name: 'cafeterias.service.loadCafeteriaData',
-        op: 'function.service.load',
-        attributes: {
-          cafeteriaId,
-          dietDate: dateStr,
-          dietTime: time,
-        },
-      },
-      async () => {
-        const cafeteria = await this.cafeteriasRepository.findCafeteriaById(
-          cafeteriaId,
-        );
-        const diets =
-          await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(
-            cafeteriaId,
-            date,
-            time,
-          );
-        return { cafeteria, diets };
-      },
+    // 2. 식당 정보 및 식단 목록 조회
+    const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
+    const diets = await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(
+      cafeteriaId,
+      date,
+      time,
     );
 
     if (!cafeteria) {
       throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
     }
 
-    // 4. 식단 카드 생성 후 캐시 저장
-    const template = this.cafeteriaMessagesService.cafeteriaDietsListCard(
+    // 3. 식단 카드 생성
+    return this.cafeteriaMessagesService.cafeteriaDietsListCard(
       cafeteria,
       date,
       time,
       diets,
     );
-    await this.cacheManager.set(cacheKey, template);
-    return template;
   }
 }

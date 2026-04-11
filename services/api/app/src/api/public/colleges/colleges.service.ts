@@ -1,17 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { CollegeMessagesService } from 'src/api/public/message-templates/college-messages.service';
 import { ListCollegesRequestDto } from 'src/api/public/users/dtos/requests/list-college-request.dto';
 import { College } from 'src/type-orm/entities/colleges/college.entity';
 import { CollegesRepository } from 'src/type-orm/entities/colleges/colleges.repository';
+import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
 
 @Injectable()
 export class CollegesService {
+  readonly logger = new Logger(CollegesService.name);
+
   constructor(
     private readonly collegesRepository: CollegesRepository,
     private readonly collegeMessagesService: CollegeMessagesService,
+    @Inject(CACHE_MANAGER) readonly cacheManager: Cache,
   ) {}
 
+  @CacheKey({
+    key: ([blockId]) => `colleges:${blockId}`,
+  })
   public async collegesListCard(
     extra: ListCollegesRequestDto,
     blockId: string,

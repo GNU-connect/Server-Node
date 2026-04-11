@@ -3,7 +3,6 @@ import {
   BasicCard,
   ListCard,
 } from 'src/api/common/interfaces/response/fields/component';
-import { TraceSpan } from 'src/api/common/decorators/trace-span.decorator';
 import {
   Button,
   ListItem,
@@ -63,15 +62,6 @@ export class CafeteriaMessagesService {
     };
   }
 
-  @TraceSpan({
-    name: 'cafeteria-messages.service.cafeteriaDietsListCard',
-    op: 'function.message_builder',
-    attributes: ([cafeteria, _date, time, diets]) => ({
-      cafeteriaId: (cafeteria as Cafeteria).id,
-      dietCount: (diets as CafeteriaDiet[]).length,
-      dietTime: time as DietTime,
-    }),
-  })
   public cafeteriaDietsListCard(
     cafeteria: Cafeteria,
     date: Date,
