@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
-import { NoticeMessagesService } from 'src/api/public/message-templates/notice-messages.service';
 import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice-categories.repository';
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
 import { NoticesRepository } from 'src/type-orm/entities/notices/notices.repository';
 import { User } from 'src/type-orm/entities/users/users.entity';
-import { CommonMessagesService } from '../message-templates/common-messages.service';
 
 @Injectable()
 export class NoticesService {
-  // 학교 공지사항 department_id
   private readonly UNIVERSITY_DEPARTMENT_ID = 117;
 
-  // 조회할 카테고리 목록
   private readonly TARGET_CATEGORIES = [
     '기관',
     '채용',
@@ -22,22 +17,18 @@ export class NoticesService {
     '학사',
   ];
 
-  // 캐러셀형 ListCard의 최대 아이템 수
   private readonly CAROUSEL_ITEMS_LIMIT = 4;
 
   constructor(
     private readonly noticesRepository: NoticesRepository,
     private readonly noticeCategoriesRepository: NoticeCategoriesRepository,
-    private readonly noticeMessagesService: NoticeMessagesService,
-    private readonly commonMessagesService: CommonMessagesService,
   ) {}
 
   /**
-   * 학교 공지사항 템플릿 생성
-   * @returns SkillTemplate (캐러셀 형태의 5개 ListCard)
+   * 학교 공지사항 조회
+   * @returns 카테고리별 공지사항 Map (데이터가 없으면 빈 Map)
    */
-  async getUniversityNoticeTemplate(): Promise<SkillTemplate> {
-    // 1. 학교 공지 카테고리 조회
+  async getUniversityNotices(): Promise<Map<NoticeCategory, Notice[]>> {
     const categories =
       await this.noticeCategoriesRepository.findByDepartmentIdAndCategories(
         this.UNIVERSITY_DEPARTMENT_ID,
@@ -45,98 +36,68 @@ export class NoticesService {
       );
 
     if (categories.length === 0) {
-      return this.commonMessagesService.createSimpleText(
-        '학교 공지사항 카테고리를 찾을 수 없습니다.',
-      );
+      return new Map();
     }
 
-    // 2. 각 카테고리별 최신 공지 조회
     const categoryIds = categories.map((category) => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
       this.CAROUSEL_ITEMS_LIMIT,
     );
 
-    // 3. 카테고리와 공지사항을 매핑
-    const noticesByCategoryEntity = new Map<NoticeCategory, Notice[]>();
-    
-    // TARGET_CATEGORIES 순서대로 정렬
+    const result = new Map<NoticeCategory, Notice[]>();
+
     for (const targetCategory of this.TARGET_CATEGORIES) {
       const category = categories.find((c) => c.category === targetCategory);
       if (category) {
         const notices = noticesByCategory.get(category.id) || [];
         if (notices.length > 0) {
-          noticesByCategoryEntity.set(category, notices);
+          result.set(category, notices);
         }
       }
     }
 
-    if (noticesByCategoryEntity.size === 0) {
-      return this.commonMessagesService.createSimpleText(
-        '현재 등록된 공지사항이 없습니다.',
-      );
-    }
-
-    // 4. 캐러셀 응답 생성
-    return this.noticeMessagesService.createUniversityNoticeCarousel(
-      noticesByCategoryEntity,
-    );
+    return result;
   }
 
   /**
-   * 학과 공지사항 템플릿 생성
-   * @param user 현재 사용자
-   * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
+   * 학과 공지사항 조회
+   * @param user 현재 사용자 (department 미설정 시 빈 Map 반환)
+   * @returns 카테고리별 공지사항 Map
    */
-  async getDepartmentNoticeTemplate(user: User): Promise<SkillTemplate> {
-    // 1. 학과 인증 체크
+  async getDepartmentNotices(user: User): Promise<Map<NoticeCategory, Notice[]>> {
     if (!user.department) {
-      return this.commonMessagesService.createDepartmentAuthRequiredMessage();
+      return new Map();
     }
 
-    // 2. 학과 ID 수집 (본인 학과 + 상위 학과)
     const departmentIds: number[] = [user.department.id];
     if (user.department.parentDepartmentId) {
       departmentIds.push(user.department.parentDepartmentId);
     }
 
-    // 3. 카테고리 조회
     const categories = await this.noticeCategoriesRepository.findByDepartmentIds(
       departmentIds,
     );
 
     if (categories.length === 0) {
-      return this.commonMessagesService.createSimpleText(
-        '등록된 공지사항 게시판이 없습니다.',
-      );
+      return new Map();
     }
 
-    // 4. 각 카테고리별 최신 공지 조회
     const categoryIds = categories.map((category) => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
       this.CAROUSEL_ITEMS_LIMIT,
     );
 
-    // 5. 카테고리와 공지사항을 매핑 (공지사항이 있는 것만)
-    const noticesByCategoryEntity = new Map<NoticeCategory, Notice[]>();
-    
+    const result = new Map<NoticeCategory, Notice[]>();
+
     for (const category of categories) {
       const notices = noticesByCategory.get(category.id) || [];
       if (notices.length > 0) {
-        noticesByCategoryEntity.set(category, notices);
+        result.set(category, notices);
       }
     }
 
-    if (noticesByCategoryEntity.size === 0) {
-      return this.commonMessagesService.createSimpleText(
-        '현재 등록된 공지사항이 없습니다.',
-      );
-    }
-
-    // 6. 캐러셀 응답 생성
-    return this.noticeMessagesService.createDepartmentNoticeCarousel(
-      noticesByCategoryEntity,
-    );
+    return result;
   }
 }

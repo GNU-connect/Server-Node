@@ -5,17 +5,22 @@ import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
 import { GetShuttleTimetableRequestDto } from './dtos/request/get-shuttle-timetable-request.dto';
+import { ShuttleMessagesService } from './shuttle-messages.service';
 import { ShuttlesService } from './shuttles.service';
 
 @ApiTags('shuttles')
 @Controller('shuttles')
 @UseFilters(OpenBuilderExceptionFilter)
 export class ShuttlesController {
-  constructor(private readonly shuttlesService: ShuttlesService) {}
+  constructor(
+    private readonly shuttlesService: ShuttlesService,
+    private readonly shuttleMessagesService: ShuttleMessagesService,
+  ) {}
 
   @Post('routes')
   public async getRoutesList(): Promise<ResponseDTO> {
-    const template = await this.shuttlesService.getRoutesList();
+    const routes = await this.shuttlesService.getRoutes();
+    const template = this.shuttleMessagesService.createRoutesListCard(routes);
     return new ResponseDTO(template);
   }
 
@@ -25,7 +30,8 @@ export class ShuttlesController {
     @ClientExtra(GetShuttleTimetableRequestDto)
     extra: GetShuttleTimetableRequestDto,
   ): Promise<ResponseDTO> {
-    const template = await this.shuttlesService.getTimetable(extra);
+    const record = await this.shuttlesService.getTimetable(extra.routeName);
+    const template = this.shuttleMessagesService.createTimetableTextCard(record);
     return new ResponseDTO(template);
   }
 }
