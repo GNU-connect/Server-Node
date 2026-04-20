@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoticesService } from './notices.service';
-import { NoticesRepository } from 'src/type-orm/entities/notices/notices.repository';
 import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice-categories.repository';
-import { NoticeMessagesService } from 'src/api/public/message-templates/notice-messages.service';
-import { CommonMessagesService } from 'src/api/public/message-templates/common-messages.service';
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
+import { NoticesRepository } from 'src/type-orm/entities/notices/notices.repository';
 import { User } from 'src/type-orm/entities/users/users.entity';
-import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
+import { NoticesService } from './notices.service';
 
 const makeCategory = (overrides: Partial<NoticeCategory> = {}): NoticeCategory =>
   ({
@@ -46,16 +43,10 @@ const makeUser = (overrides: Partial<User> = {}): User =>
     ...overrides,
   } as User);
 
-const SIMPLE_TEXT_TEMPLATE: SkillTemplate = { outputs: [{ simpleText: { text: '' } } as any] };
-const AUTH_REQUIRED_TEMPLATE: SkillTemplate = { outputs: [{ textCard: {} } as any] };
-const CAROUSEL_TEMPLATE: SkillTemplate = { outputs: [{ carousel: {} } as any] };
-
 describe('NoticesService', () => {
   let service: NoticesService;
   let noticesRepository: jest.Mocked<NoticesRepository>;
   let noticeCategoriesRepository: jest.Mocked<NoticeCategoriesRepository>;
-  let noticeMessagesService: jest.Mocked<NoticeMessagesService>;
-  let commonMessagesService: jest.Mocked<CommonMessagesService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -74,72 +65,49 @@ describe('NoticesService', () => {
             findByDepartmentIds: jest.fn(),
           },
         },
-        {
-          provide: NoticeMessagesService,
-          useValue: {
-            createUniversityNoticeCarousel: jest.fn(),
-            createDepartmentNoticeCarousel: jest.fn(),
-          },
-        },
-        {
-          provide: CommonMessagesService,
-          useValue: {
-            createSimpleText: jest.fn().mockReturnValue(SIMPLE_TEXT_TEMPLATE),
-            createDepartmentAuthRequiredMessage: jest.fn().mockReturnValue(AUTH_REQUIRED_TEMPLATE),
-          },
-        },
       ],
     }).compile();
 
     service = module.get<NoticesService>(NoticesService);
     noticesRepository = module.get(NoticesRepository);
     noticeCategoriesRepository = module.get(NoticeCategoriesRepository);
-    noticeMessagesService = module.get(NoticeMessagesService);
-    commonMessagesService = module.get(CommonMessagesService);
   });
 
-  describe('getUniversityNoticeTemplate', () => {
-    it('카테고리가 없으면 "카테고리를 찾을 수 없습니다" 메시지를 반환한다', async () => {
+  describe('getUniversityNotices', () => {
+    it('카테고리가 없으면 빈 Map을 반환한다', async () => {
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([]);
 
-      const result = await service.getUniversityNoticeTemplate();
+      const result = await service.getUniversityNotices();
 
-      expect(commonMessagesService.createSimpleText).toHaveBeenCalledWith(
-        '학교 공지사항 카테고리를 찾을 수 없습니다.',
-      );
-      expect(result).toBe(SIMPLE_TEXT_TEMPLATE);
+      expect(result.size).toBe(0);
     });
 
-    it('공지사항이 없으면 "현재 등록된 공지사항이 없습니다" 메시지를 반환한다', async () => {
+    it('공지사항이 없으면 빈 Map을 반환한다', async () => {
       const category = makeCategory({ id: 1, category: '학사' });
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([category]);
-      // 모든 카테고리에 공지 없음
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
 
-      const result = await service.getUniversityNoticeTemplate();
+      const result = await service.getUniversityNotices();
 
-      expect(commonMessagesService.createSimpleText).toHaveBeenCalledWith(
-        '현재 등록된 공지사항이 없습니다.',
-      );
-      expect(result).toBe(SIMPLE_TEXT_TEMPLATE);
+      expect(result.size).toBe(0);
     });
 
-    it('공지가 있으면 createUniversityNoticeCarousel을 호출한다', async () => {
+    it('공지가 있으면 카테고리-공지 Map을 반환한다', async () => {
       const category = makeCategory({ id: 1, category: '학사' });
       const notice = makeNotice({ categoryId: 1 });
       const noticeMap = new Map([[1, [notice]]]);
 
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([category]);
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(noticeMap);
-      noticeMessagesService.createUniversityNoticeCarousel.mockReturnValue(CAROUSEL_TEMPLATE);
 
-      const result = await service.getUniversityNoticeTemplate();
+      const result = await service.getUniversityNotices();
 
-      expect(noticeMessagesService.createUniversityNoticeCarousel).toHaveBeenCalled();
-      expect(result).toBe(CAROUSEL_TEMPLATE);
+      expect(result.size).toBe(1);
+      expect([...result.keys()][0]).toBe(category);
+      expect([...result.values()][0]).toEqual([notice]);
     });
 
-    it('TARGET_CATEGORIES 순서대로 캐러셀 Map이 구성된다', async () => {
+    it('TARGET_CATEGORIES 순서대로 Map이 구성된다', async () => {
       const TARGET_CATEGORIES = ['기관', '채용', '장학', '외부기관 행사', '학사'];
       const categories = TARGET_CATEGORIES.map((cat, idx) =>
         makeCategory({ id: idx + 1, category: cat }),
@@ -150,21 +118,16 @@ describe('NoticesService', () => {
 
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue(categories);
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(noticeMap);
-      noticeMessagesService.createUniversityNoticeCarousel.mockReturnValue(CAROUSEL_TEMPLATE);
 
-      await service.getUniversityNoticeTemplate();
+      const result = await service.getUniversityNotices();
 
-      const passedMap: Map<NoticeCategory, Notice[]> =
-        noticeMessagesService.createUniversityNoticeCarousel.mock.calls[0][0];
-
-      const keys = [...passedMap.keys()].map((c) => c.category);
+      const keys = [...result.keys()].map((c) => c.category);
       expect(keys).toEqual(TARGET_CATEGORIES);
     });
 
-    it('공지가 없는 카테고리는 캐러셀 Map에서 제외된다', async () => {
+    it('공지가 없는 카테고리는 Map에서 제외된다', async () => {
       const catWithNotices = makeCategory({ id: 1, category: '학사' });
       const catWithoutNotices = makeCategory({ id: 2, category: '채용' });
-      // id 1만 공지 있음
       const noticeMap = new Map([[1, [makeNotice({ categoryId: 1 })]]]);
 
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([
@@ -172,21 +135,17 @@ describe('NoticesService', () => {
         catWithoutNotices,
       ]);
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(noticeMap);
-      noticeMessagesService.createUniversityNoticeCarousel.mockReturnValue(CAROUSEL_TEMPLATE);
 
-      await service.getUniversityNoticeTemplate();
+      const result = await service.getUniversityNotices();
 
-      const passedMap: Map<NoticeCategory, Notice[]> =
-        noticeMessagesService.createUniversityNoticeCarousel.mock.calls[0][0];
-
-      expect(passedMap.size).toBe(1);
-      expect([...passedMap.keys()][0].id).toBe(1);
+      expect(result.size).toBe(1);
+      expect([...result.keys()][0].id).toBe(1);
     });
 
     it('department_id 117로 카테고리를 조회한다', async () => {
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([]);
 
-      await service.getUniversityNoticeTemplate();
+      await service.getUniversityNotices();
 
       expect(noticeCategoriesRepository.findByDepartmentIdAndCategories).toHaveBeenCalledWith(
         117,
@@ -195,55 +154,46 @@ describe('NoticesService', () => {
     });
   });
 
-  describe('getDepartmentNoticeTemplate', () => {
-    it('user.department가 null이면 학과 등록 안내 메시지를 반환한다', async () => {
+  describe('getDepartmentNotices', () => {
+    it('user.department가 null이면 빈 Map을 반환한다', async () => {
       const user = makeUser({ department: null });
 
-      const result = await service.getDepartmentNoticeTemplate(user);
+      const result = await service.getDepartmentNotices(user);
 
-      expect(commonMessagesService.createDepartmentAuthRequiredMessage).toHaveBeenCalled();
-      expect(result).toBe(AUTH_REQUIRED_TEMPLATE);
+      expect(result.size).toBe(0);
     });
 
-    it('카테고리가 없으면 "등록된 공지사항 게시판이 없습니다" 메시지를 반환한다', async () => {
+    it('카테고리가 없으면 빈 Map을 반환한다', async () => {
       const user = makeUser();
       noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([]);
 
-      const result = await service.getDepartmentNoticeTemplate(user);
+      const result = await service.getDepartmentNotices(user);
 
-      expect(commonMessagesService.createSimpleText).toHaveBeenCalledWith(
-        '등록된 공지사항 게시판이 없습니다.',
-      );
-      expect(result).toBe(SIMPLE_TEXT_TEMPLATE);
+      expect(result.size).toBe(0);
     });
 
-    it('공지사항이 없으면 "현재 등록된 공지사항이 없습니다" 메시지를 반환한다', async () => {
+    it('공지사항이 없으면 빈 Map을 반환한다', async () => {
       const user = makeUser();
       const category = makeCategory({ id: 1 });
       noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([category]);
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
 
-      const result = await service.getDepartmentNoticeTemplate(user);
+      const result = await service.getDepartmentNotices(user);
 
-      expect(commonMessagesService.createSimpleText).toHaveBeenCalledWith(
-        '현재 등록된 공지사항이 없습니다.',
-      );
-      expect(result).toBe(SIMPLE_TEXT_TEMPLATE);
+      expect(result.size).toBe(0);
     });
 
-    it('공지가 있으면 createDepartmentNoticeCarousel을 호출한다', async () => {
+    it('공지가 있으면 카테고리-공지 Map을 반환한다', async () => {
       const user = makeUser();
       const category = makeCategory({ id: 1 });
       const noticeMap = new Map([[1, [makeNotice()]]]);
 
       noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([category]);
       noticesRepository.findRecentByCategoryIds.mockResolvedValue(noticeMap);
-      noticeMessagesService.createDepartmentNoticeCarousel.mockReturnValue(CAROUSEL_TEMPLATE);
 
-      const result = await service.getDepartmentNoticeTemplate(user);
+      const result = await service.getDepartmentNotices(user);
 
-      expect(noticeMessagesService.createDepartmentNoticeCarousel).toHaveBeenCalled();
-      expect(result).toBe(CAROUSEL_TEMPLATE);
+      expect(result.size).toBe(1);
     });
 
     it('parentDepartmentId가 있으면 departmentIds에 부모 학과 ID도 포함된다', async () => {
@@ -257,7 +207,7 @@ describe('NoticesService', () => {
       });
       noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([]);
 
-      await service.getDepartmentNoticeTemplate(user);
+      await service.getDepartmentNotices(user);
 
       expect(noticeCategoriesRepository.findByDepartmentIds).toHaveBeenCalledWith(
         expect.arrayContaining([10, 5]),
@@ -275,7 +225,7 @@ describe('NoticesService', () => {
       });
       noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([]);
 
-      await service.getDepartmentNoticeTemplate(user);
+      await service.getDepartmentNotices(user);
 
       expect(noticeCategoriesRepository.findByDepartmentIds).toHaveBeenCalledWith([10]);
     });

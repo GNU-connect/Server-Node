@@ -102,7 +102,7 @@ export class WarmupService implements OnApplicationBootstrap {
       const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId();
       await Promise.allSettled(
         cafeterias.map((cafeteria) =>
-          this.cafeteriasService.getCafeteriaDietTemplate(cafeteria.id),
+          this.cafeteriasService.getCafeteriaDiet(cafeteria.id),
         ),
       );
       this.logger.log(`diet cache prewarmed — count=${cafeterias.length}`);
