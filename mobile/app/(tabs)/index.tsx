@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, Text, StyleSheet, SafeAreaView, StatusBar, ActivityIndicator } from "react-native";
+import { ScrollView, View, Text, StyleSheet, StatusBar, ActivityIndicator, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "@/foundations/colors";
 import Typography from "@/foundations/typography";
 import Spacing from "@/foundations/spacing";
-import { Chip, DaySelector, MealTypeSelector, Badge, MenuSection } from "@/components/ui";
+import { Chip, DaySelector, MealTypeSelector, Badge, MenuSection, CampusBottomSheet } from "@/components/ui";
 import type { Day } from "@/components/ui/DaySelector";
 import type { MealType } from "@/components/ui/MealTypeSelector";
-import {
-  getCampuses,
-  getCafeterias,
-  getCafeteriaDiet,
-  dayToIsoDate,
-  type Campus,
-  type Cafeteria,
-  type DietItem,
-} from "@/services/cafeteriaApi";
+import { getCampuses, getCafeterias, getCafeteriaDiet, dayToIsoDate, type Campus, type Cafeteria, type DietItem } from "@/services/cafeteriaApi";
 
 const TODAY_DAY: Day = (() => {
   const days: Day[] = ["일", "월", "화", "수", "목", "금", "토"];
@@ -50,7 +44,7 @@ interface MenuCategory {
 function groupDietItems(items: DietItem[]): MenuCategory[] {
   const grouped: Record<string, string[]> = {};
   for (const item of items) {
-    const key = item.category ?? item.type ?? '';
+    const key = item.category ?? item.type ?? "";
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(item.name);
   }
@@ -67,6 +61,8 @@ export default function MealScreen() {
   const [day, setDay] = useState<Day>(TODAY_DAY);
   const [mealType, setMealType] = useState<MealType>("점심");
 
+  const [campusSheetOpen, setCampusSheetOpen] = useState(false);
+
   const [loadingCampuses, setLoadingCampuses] = useState(true);
   const [loadingCafeterias, setLoadingCafeterias] = useState(false);
   const [loadingDiet, setLoadingDiet] = useState(false);
@@ -81,7 +77,7 @@ export default function MealScreen() {
         setCampuses(data);
         if (data.length > 0) setSelectedCampus(data[0]);
       })
-      .catch(() => setError('캠퍼스 정보를 불러오지 못했습니다.'))
+      .catch(() => setError("캠퍼스 정보를 불러오지 못했습니다."))
       .finally(() => setLoadingCampuses(false));
   }, []);
 
@@ -97,7 +93,7 @@ export default function MealScreen() {
         setCafeterias(data);
         if (data.length > 0) setSelectedCafeteria(data[0]);
       })
-      .catch(() => setError('식당 정보를 불러오지 못했습니다.'))
+      .catch(() => setError("식당 정보를 불러오지 못했습니다."))
       .finally(() => setLoadingCafeterias(false));
   }, [selectedCampus]);
 
@@ -110,14 +106,12 @@ export default function MealScreen() {
       .then((data) => setMenuCategories(groupDietItems(data.items)))
       .catch(() => {
         setMenuCategories([]);
-        setError('메뉴 정보를 불러오지 못했습니다.');
+        setError("메뉴 정보를 불러오지 못했습니다.");
       })
       .finally(() => setLoadingDiet(false));
   }, [selectedCafeteria, day, mealType]);
 
-  const badgeLabel = selectedCampus && selectedCafeteria
-    ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${day}요일 ${mealType}`
-    : '';
+  const badgeLabel = selectedCampus && selectedCafeteria ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${day}요일 ${mealType}` : "";
 
   const isLoading = loadingCampuses || loadingCafeterias;
 
@@ -137,31 +131,21 @@ export default function MealScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* 헤더 */}
         <View style={styles.header}>
-          <Text style={styles.title}>이번 주 학식</Text>
+          <View style={styles.titleRow}>
+            <Pressable style={styles.campusPill} onPress={() => setCampusSheetOpen(true)} accessibilityRole="button">
+              <Text style={styles.title}>{selectedCampus?.name ?? ""}</Text>
+              <FontAwesome name="chevron-down" size={13} color={Colors.primary} style={styles.campusChevron} />
+            </Pressable>
+            <Text style={styles.title}> 학식</Text>
+          </View>
+
           <Text style={styles.subtitle}>{getWeekRangeLabel()}</Text>
         </View>
-
-        {/* 캠퍼스 선택 */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-          {campuses.map((c) => (
-            <Chip
-              key={c.id}
-              label={c.name}
-              selected={selectedCampus?.id === c.id}
-              onPress={() => setSelectedCampus(c)}
-            />
-          ))}
-        </ScrollView>
 
         {/* 식당 선택 */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
           {cafeterias.map((c) => (
-            <Chip
-              key={c.id}
-              label={c.name}
-              selected={selectedCafeteria?.id === c.id}
-              onPress={() => setSelectedCafeteria(c)}
-            />
+            <Chip key={c.id} label={c.name} selected={selectedCafeteria?.id === c.id} onPress={() => setSelectedCafeteria(c)} />
           ))}
         </ScrollView>
 
@@ -189,9 +173,7 @@ export default function MealScreen() {
                 <Text style={styles.emptyText}>{error}</Text>
               </View>
             ) : menuCategories.length > 0 ? (
-              menuCategories.map((cat, i) => (
-                <MenuSection key={i} category={cat.category} items={cat.items} />
-              ))
+              menuCategories.map((cat, i) => <MenuSection key={i} category={cat.category} items={cat.items} />)
             ) : (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyIcon}>🍽️</Text>
@@ -202,6 +184,14 @@ export default function MealScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <CampusBottomSheet
+        visible={campusSheetOpen}
+        campuses={campuses}
+        selectedCampus={selectedCampus}
+        onSelect={setSelectedCampus}
+        onClose={() => setCampusSheetOpen(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -213,8 +203,8 @@ const styles = StyleSheet.create({
   },
   center: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   scroll: {
     flex: 1,
@@ -227,14 +217,31 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xxl,
     paddingBottom: Spacing.md,
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  campusPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.primaryLight,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginRight: 0,
+  },
+  campusChevron: {
+    marginLeft: 6,
+  },
   title: {
     ...Typography.heading1,
     color: Colors.textPrimary,
-    marginBottom: 4,
   },
   subtitle: {
     ...Typography.body3,
     color: Colors.textSecondary,
+    marginTop: Spacing.sm,
   },
   chipRow: {
     paddingHorizontal: Spacing.md,
