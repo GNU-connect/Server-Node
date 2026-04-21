@@ -1,12 +1,12 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { CafeteriaResponseDto } from './cafeteria-response.dto';
 
-export class DietItemDto {
-  @ApiPropertyOptional({ description: '음식 카테고리' })
-  category: string | null;
+export class MenuCategoryDto {
+  @ApiProperty({ description: '카테고리명' })
+  category: string;
 
-  @ApiProperty({ description: '음식명' })
-  name: string;
+  @ApiProperty({ description: '해당 카테고리의 음식명 목록', type: [String] })
+  items: string[];
 }
 
 export class CafeteriaDietResponseDto {
@@ -19,6 +19,6 @@ export class CafeteriaDietResponseDto {
   @ApiProperty({ description: '식사 시간', enum: ['아침', '점심', '저녁'] })
   time: string;
 
-  @ApiProperty({ description: '식단 목록', type: [DietItemDto] })
-  items: DietItemDto[];
+  @ApiProperty({ description: '카테고리별 메뉴 목록', type: [MenuCategoryDto] })
+  menus: MenuCategoryDto[];
 }

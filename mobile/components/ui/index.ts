@@ -5,5 +5,4 @@ export { default as CafeteriaAccordion } from './CafeteriaAccordion';
 export { default as Badge } from './Badge';
 export { default as MenuSection } from './MenuSection';
 export { default as CampusBottomSheet } from './CampusBottomSheet';
-export type { Day } from './DaySelector';
 export type { MealType } from './MealTypeSelector';

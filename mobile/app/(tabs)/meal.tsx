@@ -6,50 +6,21 @@ import Colors from "@/foundations/colors";
 import Typography from "@/foundations/typography";
 import Spacing from "@/foundations/spacing";
 import { Chip, DaySelector, MealTypeSelector, Badge, MenuSection, CampusBottomSheet } from "@/components/ui";
-import type { Day } from "@/components/ui/DaySelector";
 import type { MealType } from "@/components/ui/MealTypeSelector";
-import { getCampuses, getCafeterias, getCafeteriaDiet, dayToIsoDate, type Campus, type Cafeteria, type DietItem } from "@/services/cafeteriaApi";
+import { getCampuses, getCafeterias, getCafeteriaDiet, type Campus, type Cafeteria, type MenuCategory } from "@/services/cafeteriaApi";
 
-const TODAY_DAY: Day = (() => {
-  const days: Day[] = ["일", "월", "화", "수", "목", "금", "토"];
-  return days[new Date().getDay()];
-})();
-
-function getWeekRangeLabel(): string {
-  const today = new Date();
-  const dow = today.getDay(); // 0=일, 1=월, ..., 6=토
-  const diffToMonday = dow === 0 ? -6 : 1 - dow;
-
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + diffToMonday);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-
-  const fmt = (d: Date) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${y}.${m}.${dd}`;
-  };
-
-  return `${fmt(monday)} ~ ${fmt(sunday)}`;
+function toIsoDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
-interface MenuCategory {
-  category: string;
-  items: string[];
-}
-
-function groupDietItems(items: DietItem[]): MenuCategory[] {
-  const grouped: Record<string, string[]> = {};
-  for (const item of items) {
-    const key = item.category ?? item.type ?? "";
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(item.name);
-  }
-  return Object.entries(grouped).map(([category, names]) => ({ category, items: names }));
-}
+const WEEK_DATES: Date[] = Array.from({ length: 7 }, (_, i) => {
+  const d = new Date();
+  d.setDate(d.getDate() + i);
+  return d;
+});
 
 export default function MealScreen() {
   const [campuses, setCampuses] = useState<Campus[]>([]);
@@ -58,7 +29,7 @@ export default function MealScreen() {
 
   const [selectedCampus, setSelectedCampus] = useState<Campus | null>(null);
   const [selectedCafeteria, setSelectedCafeteria] = useState<Cafeteria | null>(null);
-  const [day, setDay] = useState<Day>(TODAY_DAY);
+  const [selectedDate, setSelectedDate] = useState<string>(toIsoDate(WEEK_DATES[0]));
   const [mealType, setMealType] = useState<MealType>("점심");
 
   const [campusSheetOpen, setCampusSheetOpen] = useState(false);
@@ -102,16 +73,16 @@ export default function MealScreen() {
     if (!selectedCafeteria) return;
     setLoadingDiet(true);
     setError(null);
-    getCafeteriaDiet(selectedCafeteria.id, dayToIsoDate(day), mealType)
-      .then((data) => setMenuCategories(groupDietItems(data.items)))
+    getCafeteriaDiet(selectedCafeteria.id, selectedDate, mealType)
+      .then((data) => setMenuCategories(data.menus))
       .catch(() => {
         setMenuCategories([]);
         setError("메뉴 정보를 불러오지 못했습니다.");
       })
       .finally(() => setLoadingDiet(false));
-  }, [selectedCafeteria, day, mealType]);
+  }, [selectedCafeteria, selectedDate, mealType]);
 
-  const badgeLabel = selectedCampus && selectedCafeteria ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${day}요일 ${mealType}` : "";
+  const badgeLabel = selectedCampus && selectedCafeteria ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${selectedDate} ${mealType}` : "";
 
   const isLoading = loadingCampuses || loadingCafeterias;
 
@@ -138,8 +109,6 @@ export default function MealScreen() {
             </Pressable>
             <Text style={styles.title}> 학식</Text>
           </View>
-
-          <Text style={styles.subtitle}>{getWeekRangeLabel()}</Text>
         </View>
 
         {/* 식당 선택 */}
@@ -151,7 +120,7 @@ export default function MealScreen() {
 
         {/* 요일 선택 */}
         <View style={styles.section}>
-          <DaySelector selected={day} onSelect={setDay} />
+          <DaySelector dates={WEEK_DATES} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </View>
 
         {/* 식사 유형 선택 */}
@@ -237,11 +206,6 @@ const styles = StyleSheet.create({
   title: {
     ...Typography.heading1,
     color: Colors.textPrimary,
-  },
-  subtitle: {
-    ...Typography.body3,
-    color: Colors.textSecondary,
-    marginTop: Spacing.sm,
   },
   chipRow: {
     paddingHorizontal: Spacing.md,
