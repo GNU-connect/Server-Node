@@ -8,7 +8,7 @@ import { ListCafeteriaDietExtraRequestDto } from 'src/api/public/cafeterias/dtos
 import { ListCafeteriaRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-request.dto';
 import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
 import { CampusesService } from 'src/api/public/campuses/campuses.service';
-import { CampusMessagesService } from 'src/api/public/message-templates/campus-messages.service';
+import { CampusMessagesService } from 'src/api/public/campuses/campus-messages.service';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { BlockId } from 'src/api/common/utils/constants';

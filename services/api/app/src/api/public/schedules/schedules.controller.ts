@@ -4,8 +4,8 @@ import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
-import { CommonMessagesService } from 'src/api/public/message-templates/common-messages.service';
-import { ScheduleMessagesService } from 'src/api/public/message-templates/schedule-messages.service';
+import { CommonMessagesService } from 'src/api/public/common/common-messages.service';
+import { ScheduleMessagesService } from 'src/api/public/schedules/schedule-messages.service';
 import { ListAcademicScheduleExtraDto } from './dtos/requests/list-academic-schedule-request.dto';
 import { SchedulesService } from './schedules.service';
 
