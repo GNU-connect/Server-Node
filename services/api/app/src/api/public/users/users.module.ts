@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CampusesModule } from 'src/api/public/campuses/campuses.module';
 import { CollegesModule } from 'src/api/public/colleges/colleges.module';
 import { DepartmentsModule } from 'src/api/public/departments/departments.module';
-import { AuthGuard } from 'src/api/public/users/guards/auth.guard';
 import { CurrentUserInterceptor } from 'src/api/public/users/interceptors/current-user.interceptor';
 import { DatabaseModule } from '../../../type-orm/database.module';
 import { User } from '../../../type-orm/entities/users/users.entity';
@@ -29,10 +28,6 @@ import { DepartmentMessagesService } from 'src/api/public/departments/department
   providers: [
     UsersService,
     UsersRepository,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
     {
       provide: APP_INTERCEPTOR,
       useClass: CurrentUserInterceptor,

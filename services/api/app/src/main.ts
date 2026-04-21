@@ -28,6 +28,11 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+    origin: ['http://localhost:8081'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()

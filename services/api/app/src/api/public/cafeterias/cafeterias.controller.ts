@@ -1,4 +1,4 @@
-import { Controller, Post, UseFilters } from '@nestjs/common';
+import { Controller, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
@@ -13,10 +13,12 @@ import { CurrentUser } from 'src/api/public/users/decorators/current-user.decora
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { BlockId } from 'src/api/common/utils/constants';
 import { User } from 'src/type-orm/entities/users/users.entity';
+import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { CafeteriasService } from './cafeterias.service';
 
 @ApiTags('cafeterias')
 @Controller('cafeterias')
+@UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
 export class CafeteriasController {
   constructor(

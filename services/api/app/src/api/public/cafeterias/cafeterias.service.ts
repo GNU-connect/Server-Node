@@ -40,6 +40,31 @@ export class CafeteriasService {
   }
 
   /**
+   * 식당 식단 정보 조회 (날짜를 직접 받는 Native REST용)
+   */
+  public async getCafeteriaDietByDate(
+    cafeteriaId: number,
+    date: Date,
+    time?: DietTime,
+  ): Promise<CafeteriaDietResult> {
+    const resolvedTime = time ?? getDietTime(date);
+
+    const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
+
+    if (!cafeteria) {
+      throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
+    }
+
+    const diets = await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(
+      cafeteriaId,
+      date,
+      resolvedTime,
+    );
+
+    return { cafeteria, diets, date, time: resolvedTime };
+  }
+
+  /**
    * 식당 식단 정보 조회
    */
   @CacheKey({
