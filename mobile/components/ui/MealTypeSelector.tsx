@@ -3,7 +3,7 @@ import { View, Pressable, Text, StyleSheet } from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
 
-const MEAL_TYPES = ['조식', '중식', '석식'] as const;
+const MEAL_TYPES = ['아침', '점심', '저녁'] as const;
 export type MealType = (typeof MEAL_TYPES)[number];
 
 interface MealTypeSelectorProps {
