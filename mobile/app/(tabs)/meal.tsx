@@ -58,6 +58,7 @@ export default function MealScreen() {
     setLoadingCafeterias(true);
     setError(null);
     setSelectedCafeteria(null);
+    setCafeterias([]);
     setMenuCategories([]);
     getCafeterias(selectedCampus.id)
       .then((data) => {
