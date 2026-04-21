@@ -1,7 +1,7 @@
 import type { Day } from '@/components/ui/DaySelector';
 import type { MealType } from '@/components/ui/MealTypeSelector';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.0.17:3000/api';
 
 export interface Campus {
   id: number;
