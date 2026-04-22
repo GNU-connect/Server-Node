@@ -33,6 +33,8 @@ export default [
     rules: {
       // react
       ...reactPlugin.configs.recommended.rules,
+      // React 17+ 새로운 JSX 변환 사용 시 import React 불필요
+      ...reactPlugin.configs['jsx-runtime'].rules,
 
       // react-native
       ...reactNativePlugin.configs.all.rules,

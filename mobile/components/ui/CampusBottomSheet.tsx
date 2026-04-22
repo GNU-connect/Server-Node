@@ -1,20 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  Pressable,
-  Animated,
-  StyleSheet,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import { Modal, View, Text, Pressable, Animated, StyleSheet, Platform } from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
 import Spacing from '@/foundations/spacing';
 import type { Campus } from '@/services/cafeteriaApi';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SHEET_HEIGHT = 320;
 
 interface CampusBottomSheetProps {
@@ -128,7 +118,7 @@ export default function CampusBottomSheet({
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    backgroundColor: Colors.overlay,
   },
   divider: {
     backgroundColor: Colors.divider,
@@ -196,7 +186,7 @@ const styles = StyleSheet.create({
     minHeight: SHEET_HEIGHT,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
-    shadowColor: '#000',
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 12,

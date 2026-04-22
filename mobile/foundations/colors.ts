@@ -23,6 +23,10 @@ const Colors = {
   success: '#17C3A2',
   warning: '#F7C948',
   error: '#F04452',
+  errorBackground: '#FFF5F5',
+
+  overlay: 'rgba(0, 0, 0, 0.45)',
+  shadow: '#000000',
 } as const;
 
 export type ColorKey = keyof typeof Colors;

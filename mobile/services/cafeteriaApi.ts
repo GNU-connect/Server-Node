@@ -1,6 +1,10 @@
 import type { MealType } from '@/components/ui/MealTypeSelector';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.0.17:3000/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
+if (!BASE_URL) {
+  throw new Error('EXPO_PUBLIC_API_URL is not set');
+}
 
 export interface Campus {
   id: number;
@@ -59,4 +63,3 @@ export function getCafeteriaDiet(
   if (time) params.set('time', time);
   return request<CafeteriaDiet>(`/cafeterias/${cafeteriaId}/diet?${params.toString()}`);
 }
-

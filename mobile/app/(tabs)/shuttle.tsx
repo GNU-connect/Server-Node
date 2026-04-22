@@ -199,7 +199,7 @@ export default function ShuttleScreen() {
               <ActivityIndicator
                 size="small"
                 color={Colors.textOnPrimary}
-                style={{ marginTop: 8 }}
+                style={styles.nextBusLoading}
               />
             ) : timetableData?.nextBus ? (
               <View style={styles.nextBusTimeRow}>
@@ -271,23 +271,28 @@ export default function ShuttleScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: Colors.backgroundPrimary,
-    flex: 1,
+  busIcon: {
+    marginRight: 6,
   },
   center: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
   },
-  scroll: {
-    flex: 1,
-  },
   content: {
     paddingBottom: Spacing.xl,
   },
-
-  // 헤더
+  errorContainer: {
+    alignItems: 'center',
+    backgroundColor: Colors.errorBackground,
+    borderRadius: 12,
+    marginHorizontal: Spacing.md,
+    padding: Spacing.md,
+  },
+  errorText: {
+    ...Typography.body3,
+    color: Colors.error,
+  },
   header: {
     alignItems: 'flex-start',
     flexDirection: 'row',
@@ -295,6 +300,79 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xxl,
+  },
+  memoText: {
+    ...Typography.caption,
+    color: Colors.error,
+    flex: 1,
+    marginRight: 6,
+  },
+  memoTextPast: {
+    color: Colors.textTertiary,
+  },
+  nextBadge: {
+    backgroundColor: Colors.primary,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  nextBadgeText: {
+    ...Typography.caption,
+    color: Colors.textOnPrimary,
+    fontWeight: '600',
+  },
+  nextBusCard: {
+    backgroundColor: Colors.primary,
+    borderRadius: 16,
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
+    marginHorizontal: Spacing.md,
+    minHeight: 96,
+    padding: Spacing.md,
+  },
+  nextBusLabel: {
+    ...Typography.body3,
+    color: Colors.textOnPrimary,
+    opacity: 0.85,
+  },
+  nextBusLabelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 6,
+  },
+  nextBusLoading: {
+    marginTop: Spacing.sm,
+  },
+  nextBusMinutes: {
+    ...Typography.body1,
+    color: Colors.textOnPrimary,
+    opacity: 0.9,
+  },
+  nextBusNone: {
+    ...Typography.body2,
+    color: Colors.textOnPrimary,
+    opacity: 0.8,
+  },
+  nextBusTime: {
+    color: Colors.textOnPrimary,
+    fontSize: 36,
+    fontWeight: '700',
+    letterSpacing: -1,
+  },
+  nextBusTimeRow: {
+    alignItems: 'baseline',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  pastBadge: {
+    backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  pastBadgeText: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
   },
   refreshBadge: {
     alignItems: 'center',
@@ -310,18 +388,6 @@ const styles = StyleSheet.create({
     color: Colors.textTertiary,
     fontSize: 11,
     fontWeight: '500',
-  },
-  title: {
-    ...Typography.heading1,
-    color: Colors.textPrimary,
-  },
-
-  // 노선 선택
-  routeSelector: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: Spacing.md,
-    paddingHorizontal: Spacing.md,
   },
   routeBtn: {
     alignItems: 'center',
@@ -344,83 +410,23 @@ const styles = StyleSheet.create({
   routeBtnTextSelected: {
     color: Colors.textOnPrimary,
   },
-
-  // 오류
-  errorContainer: {
-    alignItems: 'center',
-    backgroundColor: '#FFF5F5',
-    borderRadius: 12,
-    marginHorizontal: Spacing.md,
-    padding: Spacing.md,
-  },
-  errorText: {
-    ...Typography.body3,
-    color: Colors.error,
-  },
-
-  // 다음 버스 카드
-  nextBusCard: {
-    backgroundColor: Colors.primary,
-    borderRadius: 16,
-    justifyContent: 'center',
+  routeSelector: {
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: Spacing.md,
-    marginHorizontal: Spacing.md,
-    minHeight: 96,
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
-  nextBusLabelRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 6,
-  },
-  busIcon: {
-    marginRight: 6,
-  },
-  nextBusLabel: {
-    ...Typography.body3,
-    color: Colors.textOnPrimary,
-    opacity: 0.85,
-  },
-  nextBusTimeRow: {
-    alignItems: 'baseline',
-    flexDirection: 'row',
-    gap: 10,
-  },
-  nextBusTime: {
-    color: Colors.textOnPrimary,
-    fontSize: 36,
-    fontWeight: '700',
-    letterSpacing: -1,
-  },
-  nextBusMinutes: {
-    ...Typography.body1,
-    color: Colors.textOnPrimary,
-    opacity: 0.9,
-  },
-  nextBusNone: {
-    ...Typography.body2,
-    color: Colors.textOnPrimary,
-    opacity: 0.8,
-  },
-
-  // 시간표
-  timetableContainer: {
+  safeArea: {
     backgroundColor: Colors.backgroundPrimary,
-    borderColor: Colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginHorizontal: Spacing.md,
-    overflow: 'hidden',
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
   },
   section: {
     paddingBottom: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
-  },
-  sectionHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: Spacing.sm,
   },
   sectionDot: {
     backgroundColor: Colors.primary,
@@ -428,6 +434,11 @@ const styles = StyleSheet.create({
     height: 8,
     marginRight: 8,
     width: 8,
+  },
+  sectionHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: Spacing.sm,
   },
   sectionTitle: {
     ...Typography.body1,
@@ -442,7 +453,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
   },
   timeRowNext: {
-    backgroundColor: '#EBF3FF',
+    backgroundColor: Colors.primaryLight,
     borderColor: Colors.primary,
     borderRadius: 10,
     borderTopWidth: 0,
@@ -455,49 +466,35 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '400',
   },
-  timeTextPast: {
-    color: Colors.textTertiary,
+  timeTextFuture: {
+    color: Colors.textPrimary,
+    fontWeight: '700',
   },
   timeTextNext: {
     color: Colors.primary,
     fontWeight: '700',
   },
-  timeTextFuture: {
+  timeTextPast: {
+    color: Colors.textTertiary,
+  },
+  timetableContainer: {
+    backgroundColor: Colors.backgroundPrimary,
+    borderColor: Colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginHorizontal: Spacing.md,
+    overflow: 'hidden',
+  },
+  title: {
+    ...Typography.heading1,
     color: Colors.textPrimary,
-    fontWeight: '700',
   },
-  memoText: {
-    ...Typography.caption,
-    color: Colors.error,
-    flex: 1,
-    marginRight: 6,
+  updatedDot: {
+    backgroundColor: Colors.textTertiary,
+    borderRadius: 2.5,
+    height: 5,
+    width: 5,
   },
-  memoTextPast: {
-    color: Colors.textTertiary,
-  },
-  pastBadge: {
-    backgroundColor: Colors.backgroundTertiary,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  pastBadgeText: {
-    ...Typography.caption,
-    color: Colors.textTertiary,
-  },
-  nextBadge: {
-    backgroundColor: Colors.primary,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  nextBadgeText: {
-    ...Typography.caption,
-    color: Colors.textOnPrimary,
-    fontWeight: '600',
-  },
-
-  // 업데이트 날짜
   updatedRow: {
     alignItems: 'center',
     borderTopColor: Colors.divider,
@@ -506,12 +503,6 @@ const styles = StyleSheet.create({
     gap: 6,
     justifyContent: 'center',
     paddingVertical: Spacing.md,
-  },
-  updatedDot: {
-    backgroundColor: Colors.textTertiary,
-    borderRadius: 2.5,
-    height: 5,
-    width: 5,
   },
   updatedText: {
     ...Typography.caption,
