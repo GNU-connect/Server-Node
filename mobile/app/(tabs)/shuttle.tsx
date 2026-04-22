@@ -41,7 +41,7 @@ export default function ShuttleScreen() {
     setLoadingRoutes(true);
     setError(null);
     getShuttleRoutes()
-      .then((data) => {
+      .then(data => {
         setRoutes(data);
         if (data.length > 0) setSelectedRoute(data[0].routeName);
       })
@@ -53,7 +53,7 @@ export default function ShuttleScreen() {
     setLoadingTimetable(true);
     setError(null);
     getShuttleTimetable(routeName)
-      .then((data) => {
+      .then(data => {
         setTimetableData(data);
         setLastFetchedAt(new Date());
         setSecondsAgo(0);
@@ -102,7 +102,10 @@ export default function ShuttleScreen() {
     }
   }, [loadingTimetable, spinValue]);
 
-  const spin = spinValue.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
 
   const refreshLabel = lastFetchedAt
     ? secondsAgo < 60
@@ -136,7 +139,6 @@ export default function ShuttleScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>셔틀버스</Text>
-            <Text style={styles.subtitle}>캠퍼스 간 이동 시간표</Text>
           </View>
           {(lastFetchedAt || loadingTimetable) && (
             <Pressable
@@ -156,7 +158,7 @@ export default function ShuttleScreen() {
 
         {/* 노선 선택 */}
         <View style={styles.routeSelector}>
-          {routes.map((route) => {
+          {routes.map(route => {
             const isSelected = route.routeName === selectedRoute;
             return (
               <Pressable
@@ -185,11 +187,20 @@ export default function ShuttleScreen() {
         {!error && (
           <View style={styles.nextBusCard}>
             <View style={styles.nextBusLabelRow}>
-              <FontAwesome name="bus" size={15} color={Colors.textOnPrimary} style={styles.busIcon} />
+              <FontAwesome
+                name="bus"
+                size={15}
+                color={Colors.textOnPrimary}
+                style={styles.busIcon}
+              />
               <Text style={styles.nextBusLabel}>다음 버스</Text>
             </View>
             {loadingTimetable ? (
-              <ActivityIndicator size="small" color={Colors.textOnPrimary} style={{ marginTop: 8 }} />
+              <ActivityIndicator
+                size="small"
+                color={Colors.textOnPrimary}
+                style={{ marginTop: 8 }}
+              />
             ) : timetableData?.nextBus ? (
               <View style={styles.nextBusTimeRow}>
                 <Text style={styles.nextBusTime}>{timetableData.nextBus.time}</Text>
@@ -204,27 +215,31 @@ export default function ShuttleScreen() {
         {/* 시간표 목록 */}
         {!error && !loadingTimetable && timetableData && (
           <View style={styles.timetableContainer}>
-            {timetableData.sections.map((section) => (
+            {timetableData.sections.map(section => (
               <View key={section.label} style={styles.section}>
                 <View style={styles.sectionHeader}>
                   <View style={styles.sectionDot} />
                   <Text style={styles.sectionTitle}>{section.label}</Text>
                 </View>
-                {section.times.map((entry) => (
+                {section.times.map(entry => (
                   <View
                     key={entry.time + (entry.memo ?? '')}
                     style={[styles.timeRow, entry.status === 'next' && styles.timeRowNext]}
                   >
-                    <Text style={[
-                      styles.timeText,
-                      entry.status === 'past' && styles.timeTextPast,
-                      entry.status === 'next' && styles.timeTextNext,
-                      entry.status === 'future' && styles.timeTextFuture,
-                    ]}>
+                    <Text
+                      style={[
+                        styles.timeText,
+                        entry.status === 'past' && styles.timeTextPast,
+                        entry.status === 'next' && styles.timeTextNext,
+                        entry.status === 'future' && styles.timeTextFuture,
+                      ]}
+                    >
                       {entry.time}
                     </Text>
                     {entry.memo && (
-                      <Text style={[styles.memoText, entry.status === 'past' && styles.memoTextPast]}>
+                      <Text
+                        style={[styles.memoText, entry.status === 'past' && styles.memoTextPast]}
+                      >
                         {entry.memo}
                       </Text>
                     )}
@@ -257,12 +272,12 @@ export default function ShuttleScreen() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
     backgroundColor: Colors.backgroundPrimary,
+    flex: 1,
   },
   center: {
-    flex: 1,
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
   },
   scroll: {
@@ -274,61 +289,56 @@ const styles = StyleSheet.create({
 
   // 헤더
   header: {
-    flexDirection: 'row',
     alignItems: 'flex-start',
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xxl,
-    paddingBottom: Spacing.md,
   },
   refreshBadge: {
-    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 20,
+    flexDirection: 'row',
     gap: 5,
     marginTop: 6,
     paddingHorizontal: 9,
     paddingVertical: 5,
-    backgroundColor: Colors.backgroundTertiary,
-    borderRadius: 20,
   },
   refreshLabel: {
-    fontSize: 11,
     color: Colors.textTertiary,
+    fontSize: 11,
     fontWeight: '500',
   },
   title: {
     ...Typography.heading1,
     color: Colors.textPrimary,
   },
-  subtitle: {
-    ...Typography.body3,
-    color: Colors.textSecondary,
-    marginTop: 2,
-  },
 
   // 노선 선택
   routeSelector: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
     gap: 8,
+    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
   routeBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: Colors.backgroundTertiary,
     alignItems: 'center',
+    backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 12,
+    flex: 1,
     justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   routeBtnSelected: {
     backgroundColor: Colors.primary,
   },
   routeBtnText: {
     ...Typography.body3,
-    fontWeight: '600',
     color: Colors.textSecondary,
+    fontWeight: '600',
     textAlign: 'center',
   },
   routeBtnTextSelected: {
@@ -337,11 +347,11 @@ const styles = StyleSheet.create({
 
   // 오류
   errorContainer: {
-    marginHorizontal: Spacing.md,
-    padding: Spacing.md,
+    alignItems: 'center',
     backgroundColor: '#FFF5F5',
     borderRadius: 12,
-    alignItems: 'center',
+    marginHorizontal: Spacing.md,
+    padding: Spacing.md,
   },
   errorText: {
     ...Typography.body3,
@@ -350,17 +360,17 @@ const styles = StyleSheet.create({
 
   // 다음 버스 카드
   nextBusCard: {
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
     backgroundColor: Colors.primary,
     borderRadius: 16,
-    padding: Spacing.md,
-    minHeight: 96,
     justifyContent: 'center',
+    marginBottom: Spacing.md,
+    marginHorizontal: Spacing.md,
+    minHeight: 96,
+    padding: Spacing.md,
   },
   nextBusLabelRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: 6,
   },
   busIcon: {
@@ -372,14 +382,14 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   nextBusTimeRow: {
-    flexDirection: 'row',
     alignItems: 'baseline',
+    flexDirection: 'row',
     gap: 10,
   },
   nextBusTime: {
+    color: Colors.textOnPrimary,
     fontSize: 36,
     fontWeight: '700',
-    color: Colors.textOnPrimary,
     letterSpacing: -1,
   },
   nextBusMinutes: {
@@ -395,55 +405,55 @@ const styles = StyleSheet.create({
 
   // 시간표
   timetableContainer: {
-    marginHorizontal: Spacing.md,
     backgroundColor: Colors.backgroundPrimary,
+    borderColor: Colors.border,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Colors.border,
+    marginHorizontal: Spacing.md,
     overflow: 'hidden',
   },
   section: {
+    paddingBottom: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
   },
   sectionHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
+    flexDirection: 'row',
     marginBottom: Spacing.sm,
   },
   sectionDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
     backgroundColor: Colors.primary,
+    borderRadius: 4,
+    height: 8,
     marginRight: 8,
+    width: 8,
   },
   sectionTitle: {
     ...Typography.body1,
     color: Colors.textPrimary,
   },
   timeRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
-    paddingHorizontal: 4,
-    borderTopWidth: 1,
     borderTopColor: Colors.divider,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 4,
+    paddingVertical: 13,
   },
   timeRowNext: {
     backgroundColor: '#EBF3FF',
+    borderColor: Colors.primary,
     borderRadius: 10,
     borderTopWidth: 0,
+    borderWidth: 1.5,
     marginHorizontal: -4,
     paddingHorizontal: 8,
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
   },
   timeText: {
+    flex: 1,
     fontSize: 17,
     fontWeight: '400',
-    flex: 1,
   },
   timeTextPast: {
     color: Colors.textTertiary,
@@ -459,8 +469,8 @@ const styles = StyleSheet.create({
   memoText: {
     ...Typography.caption,
     color: Colors.error,
-    marginRight: 6,
     flex: 1,
+    marginRight: 6,
   },
   memoTextPast: {
     color: Colors.textTertiary,
@@ -489,19 +499,19 @@ const styles = StyleSheet.create({
 
   // 업데이트 날짜
   updatedRow: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderTopColor: Colors.divider,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
     justifyContent: 'center',
     paddingVertical: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.divider,
-    gap: 6,
   },
   updatedDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
     backgroundColor: Colors.textTertiary,
+    borderRadius: 2.5,
+    height: 5,
+    width: 5,
   },
   updatedText: {
     ...Typography.caption,

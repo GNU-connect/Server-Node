@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -8,13 +8,13 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
-} from "react-native";
-import Colors from "@/foundations/colors";
-import Typography from "@/foundations/typography";
-import Spacing from "@/foundations/spacing";
-import type { Campus } from "@/services/cafeteriaApi";
+} from 'react-native';
+import Colors from '@/foundations/colors';
+import Typography from '@/foundations/typography';
+import Spacing from '@/foundations/spacing';
+import type { Campus } from '@/services/cafeteriaApi';
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SHEET_HEIGHT = 320;
 
 interface CampusBottomSheetProps {
@@ -81,9 +81,7 @@ export default function CampusBottomSheet({
         </Animated.View>
 
         {/* 시트 패널 */}
-        <Animated.View
-          style={[styles.sheet, { transform: [{ translateY }] }]}
-        >
+        <Animated.View style={[styles.sheet, { transform: [{ translateY }] }]}>
           {/* 드래그 핸들 */}
           <View style={styles.handle} />
 
@@ -94,15 +92,12 @@ export default function CampusBottomSheet({
           <View style={styles.divider} />
 
           {/* 캠퍼스 목록 */}
-          {campuses.map((campus) => {
+          {campuses.map(campus => {
             const isSelected = campus.id === selectedCampus?.id;
             return (
               <Pressable
                 key={campus.id}
-                style={({ pressed }) => [
-                  styles.item,
-                  pressed && styles.itemPressed,
-                ]}
+                style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
                 onPress={() => {
                   onSelect(campus);
                   onClose();
@@ -123,7 +118,7 @@ export default function CampusBottomSheet({
           })}
 
           {/* iOS 홈 인디케이터 여백 */}
-          {Platform.OS === "ios" && <View style={styles.safeBottom} />}
+          {Platform.OS === 'ios' && <View style={styles.safeBottom} />}
         </Animated.View>
       </View>
     </Modal>
@@ -131,74 +126,34 @@ export default function CampusBottomSheet({
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
-  },
-  sheet: {
-    backgroundColor: Colors.backgroundPrimary,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    minHeight: SHEET_HEIGHT,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 16,
-  },
-  handle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: Colors.border,
-    alignSelf: "center",
-    marginBottom: Spacing.md,
-  },
-  title: {
-    ...Typography.heading3,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
   divider: {
-    height: 1,
     backgroundColor: Colors.divider,
+    height: 1,
     marginBottom: Spacing.xs,
   },
+  handle: {
+    alignSelf: 'center',
+    backgroundColor: Colors.border,
+    borderRadius: 2,
+    height: 4,
+    marginBottom: Spacing.md,
+    width: 36,
+  },
   item: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
+    alignItems: 'center',
+    flexDirection: 'row',
     gap: Spacing.md,
+    paddingVertical: 14,
   },
   itemPressed: {
     backgroundColor: Colors.backgroundSecondary,
     borderRadius: 8,
     marginHorizontal: -Spacing.xs,
     paddingHorizontal: Spacing.xs,
-  },
-  radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  radioSelected: {
-    borderColor: Colors.primary,
-  },
-  radioDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: Colors.primary,
   },
   itemText: {
     ...Typography.body2,
@@ -208,7 +163,47 @@ const styles = StyleSheet.create({
     ...Typography.body1,
     color: Colors.textPrimary,
   },
+  radio: {
+    alignItems: 'center',
+    borderColor: Colors.border,
+    borderRadius: 11,
+    borderWidth: 2,
+    height: 22,
+    justifyContent: 'center',
+    width: 22,
+  },
+  radioDot: {
+    backgroundColor: Colors.primary,
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  radioSelected: {
+    borderColor: Colors.primary,
+  },
+  root: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   safeBottom: {
     height: 20,
+  },
+  sheet: {
+    backgroundColor: Colors.backgroundPrimary,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    elevation: 16,
+    minHeight: SHEET_HEIGHT,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+  },
+  title: {
+    ...Typography.heading3,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
   },
 });

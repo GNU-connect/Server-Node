@@ -1,18 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, View, Text, StyleSheet, StatusBar, ActivityIndicator, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Colors from "@/foundations/colors";
-import Typography from "@/foundations/typography";
-import Spacing from "@/foundations/spacing";
-import { Chip, DaySelector, MealTypeSelector, Badge, MenuSection, CampusBottomSheet } from "@/components/ui";
-import type { MealType } from "@/components/ui/MealTypeSelector";
-import { getCampuses, getCafeterias, getCafeteriaDiet, type Campus, type Cafeteria, type MenuCategory } from "@/services/cafeteriaApi";
+import React, { useEffect, useState } from 'react';
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  ActivityIndicator,
+  Pressable,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Colors from '@/foundations/colors';
+import Typography from '@/foundations/typography';
+import Spacing from '@/foundations/spacing';
+import {
+  Chip,
+  DaySelector,
+  MealTypeSelector,
+  Badge,
+  MenuSection,
+  CampusBottomSheet,
+} from '@/components/ui';
+import type { MealType } from '@/components/ui/MealTypeSelector';
+import {
+  getCampuses,
+  getCafeterias,
+  getCafeteriaDiet,
+  type Campus,
+  type Cafeteria,
+  type MenuCategory,
+} from '@/services/cafeteriaApi';
 
 function toIsoDate(date: Date): string {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
@@ -30,7 +52,7 @@ export default function MealScreen() {
   const [selectedCampus, setSelectedCampus] = useState<Campus | null>(null);
   const [selectedCafeteria, setSelectedCafeteria] = useState<Cafeteria | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(toIsoDate(WEEK_DATES[0]));
-  const [mealType, setMealType] = useState<MealType>("점심");
+  const [mealType, setMealType] = useState<MealType>('점심');
 
   const [campusSheetOpen, setCampusSheetOpen] = useState(false);
 
@@ -44,11 +66,11 @@ export default function MealScreen() {
     setLoadingCampuses(true);
     setError(null);
     getCampuses()
-      .then((data) => {
+      .then(data => {
         setCampuses(data);
         if (data.length > 0) setSelectedCampus(data[0]);
       })
-      .catch(() => setError("캠퍼스 정보를 불러오지 못했습니다."))
+      .catch(() => setError('캠퍼스 정보를 불러오지 못했습니다.'))
       .finally(() => setLoadingCampuses(false));
   }, []);
 
@@ -61,11 +83,11 @@ export default function MealScreen() {
     setCafeterias([]);
     setMenuCategories([]);
     getCafeterias(selectedCampus.id)
-      .then((data) => {
+      .then(data => {
         setCafeterias(data);
         if (data.length > 0) setSelectedCafeteria(data[0]);
       })
-      .catch(() => setError("식당 정보를 불러오지 못했습니다."))
+      .catch(() => setError('식당 정보를 불러오지 못했습니다.'))
       .finally(() => setLoadingCafeterias(false));
   }, [selectedCampus]);
 
@@ -75,15 +97,18 @@ export default function MealScreen() {
     setLoadingDiet(true);
     setError(null);
     getCafeteriaDiet(selectedCafeteria.id, selectedDate, mealType)
-      .then((data) => setMenuCategories(data.menus))
+      .then(data => setMenuCategories(data.menus))
       .catch(() => {
         setMenuCategories([]);
-        setError("메뉴 정보를 불러오지 못했습니다.");
+        setError('메뉴 정보를 불러오지 못했습니다.');
       })
       .finally(() => setLoadingDiet(false));
   }, [selectedCafeteria, selectedDate, mealType]);
 
-  const badgeLabel = selectedCampus && selectedCafeteria ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${selectedDate} ${mealType}` : "";
+  const badgeLabel =
+    selectedCampus && selectedCafeteria
+      ? `${selectedCampus.name} · ${selectedCafeteria.name} · ${selectedDate} ${mealType}`
+      : '';
 
   const isLoading = loadingCampuses || loadingCafeterias;
 
@@ -100,22 +125,44 @@ export default function MealScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.backgroundPrimary} />
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 헤더 */}
         <View style={styles.header}>
           <View style={styles.titleRow}>
-            <Pressable style={styles.campusPill} onPress={() => setCampusSheetOpen(true)} accessibilityRole="button">
-              <Text style={styles.title}>{selectedCampus?.name ?? ""}</Text>
-              <FontAwesome name="chevron-down" size={13} color={Colors.primary} style={styles.campusChevron} />
+            <Pressable
+              style={styles.campusPill}
+              onPress={() => setCampusSheetOpen(true)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.title}>{selectedCampus?.name ?? ''}</Text>
+              <FontAwesome
+                name="chevron-down"
+                size={13}
+                color={Colors.primary}
+                style={styles.campusChevron}
+              />
             </Pressable>
             <Text style={styles.title}> 학식</Text>
           </View>
         </View>
 
         {/* 식당 선택 */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-          {cafeterias.map((c) => (
-            <Chip key={c.id} label={c.name} selected={selectedCafeteria?.id === c.id} onPress={() => setSelectedCafeteria(c)} />
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {cafeterias.map(c => (
+            <Chip
+              key={c.id}
+              label={c.name}
+              selected={selectedCafeteria?.id === c.id}
+              onPress={() => setSelectedCafeteria(c)}
+            />
           ))}
         </ScrollView>
 
@@ -143,7 +190,9 @@ export default function MealScreen() {
                 <Text style={styles.emptyText}>{error}</Text>
               </View>
             ) : menuCategories.length > 0 ? (
-              menuCategories.map((cat, i) => <MenuSection key={i} category={cat.category} items={cat.items} />)
+              menuCategories.map((cat, i) => (
+                <MenuSection key={i} category={cat.category} items={cat.items} />
+              ))
             ) : (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyIcon}>🍽️</Text>
@@ -167,82 +216,82 @@ export default function MealScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: Colors.backgroundPrimary,
+  campusChevron: {
+    marginLeft: 6,
+  },
+  campusPill: {
+    alignItems: 'center',
+    backgroundColor: Colors.primaryLight,
+    borderRadius: 8,
+    flexDirection: 'row',
+    marginRight: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   center: {
+    alignItems: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
   },
-  scroll: {
-    flex: 1,
+  chipRow: {
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
   },
   content: {
     paddingBottom: Spacing.xl,
   },
-  header: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxl,
-    paddingBottom: Spacing.md,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  campusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.primaryLight,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginRight: 0,
-  },
-  campusChevron: {
-    marginLeft: 6,
-  },
-  title: {
-    ...Typography.heading1,
-    color: Colors.textPrimary,
-  },
-  chipRow: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
-  },
-  section: {
-    paddingHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  menuContainer: {
-    marginTop: Spacing.sm,
-    marginHorizontal: Spacing.md,
-    backgroundColor: Colors.backgroundPrimary,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    padding: Spacing.md,
-  },
-  menuList: {
-    marginTop: Spacing.md,
-  },
   emptyContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: Spacing.xl,
   },
   emptyIcon: {
     fontSize: 40,
     marginBottom: Spacing.sm,
   },
+  emptySubText: {
+    ...Typography.body3,
+    color: Colors.textTertiary,
+  },
   emptyText: {
     ...Typography.body1,
     color: Colors.textSecondary,
     marginBottom: 4,
   },
-  emptySubText: {
-    ...Typography.body3,
-    color: Colors.textTertiary,
+  header: {
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.xxl,
+  },
+  menuContainer: {
+    backgroundColor: Colors.backgroundPrimary,
+    borderColor: Colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    padding: Spacing.md,
+  },
+  menuList: {
+    marginTop: Spacing.md,
+  },
+  safeArea: {
+    backgroundColor: Colors.backgroundPrimary,
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  section: {
+    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
+  },
+  title: {
+    ...Typography.heading1,
+    color: Colors.textPrimary,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 4,
   },
 });

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.caption,
-    fontWeight: '600',
     color: Colors.primary,
+    fontWeight: '600',
   },
 });

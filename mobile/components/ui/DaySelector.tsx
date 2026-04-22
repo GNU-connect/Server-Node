@@ -1,14 +1,14 @@
-import React from "react";
-import { View, Pressable, Text, StyleSheet } from "react-native";
-import Colors from "@/foundations/colors";
-import Typography from "@/foundations/typography";
+import React from 'react';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
+import Colors from '@/foundations/colors';
+import Typography from '@/foundations/typography';
 
-const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"] as const;
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
 
 function toIsoDate(date: Date): string {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
@@ -28,16 +28,22 @@ interface DaySelectorProps {
 export default function DaySelector({ dates, selectedDate, onSelect }: DaySelectorProps) {
   return (
     <View style={styles.row}>
-      {dates.map((date) => {
+      {dates.map(date => {
         const iso = toIsoDate(date);
         const isSelected = iso === selectedDate;
         const isToday = iso === todayIso;
         const isTomorrow = iso === tomorrowIso;
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-        const label = isToday ? "오늘" : isTomorrow ? "내일" : DAY_NAMES[date.getDay()];
+        const label = isToday ? '오늘' : isTomorrow ? '내일' : DAY_NAMES[date.getDay()];
         const dateNum = date.getDate();
 
-        const dayTextColor = isSelected ? Colors.textOnPrimary : isToday || isTomorrow ? Colors.primary : isWeekend ? "#F04452CC" : Colors.textSecondary;
+        const dayTextColor = isSelected
+          ? Colors.textOnPrimary
+          : isToday || isTomorrow
+            ? Colors.primary
+            : isWeekend
+              ? '#F04452CC'
+              : Colors.textSecondary;
 
         return (
           <Pressable
@@ -47,7 +53,15 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
           >
-            <Text style={[styles.dayText, { color: dayTextColor }, isToday && !isSelected && styles.dayTextToday]}>{label}</Text>
+            <Text
+              style={[
+                styles.dayText,
+                { color: dayTextColor },
+                isToday && !isSelected && styles.dayTextToday,
+              ]}
+            >
+              {label}
+            </Text>
             <Text style={[styles.dateText, isSelected && styles.dateTextSelected]}>{dateNum}</Text>
           </Pressable>
         );
@@ -57,18 +71,25 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  dateText: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  dateTextSelected: {
+    color: Colors.textOnPrimary,
+    fontSize: 14,
+    fontWeight: '800',
   },
   dayBtn: {
-    flex: 1,
-    marginHorizontal: 2,
-    height: 52,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
     backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 12,
+    flex: 1,
+    height: 52,
+    justifyContent: 'center',
+    marginHorizontal: 2,
   },
   dayBtnSelected: {
     backgroundColor: Colors.primary,
@@ -81,21 +102,14 @@ const styles = StyleSheet.create({
   },
   dayText: {
     ...Typography.body3,
-    fontWeight: "600",
     color: Colors.textSecondary,
+    fontWeight: '600',
   },
   dayTextToday: {
-    fontWeight: "700",
+    fontWeight: '700',
   },
-  dateText: {
-    ...Typography.caption,
-    fontWeight: "500",
-    color: Colors.textTertiary,
-    marginTop: 2,
-  },
-  dateTextSelected: {
-    color: Colors.textOnPrimary,
-    fontWeight: "800",
-    fontSize: 14,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
