@@ -1,11 +1,23 @@
-import React, { useEffect, useRef } from 'react';
-import { Modal, View, Text, Pressable, Animated, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+  Animated,
+  StyleSheet,
+  Platform,
+  useWindowDimensions,
+} from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
 import Spacing from '@/foundations/spacing';
 import type { Campus } from '@/services/cafeteriaApi';
 
-const SHEET_HEIGHT = 320;
+/** 기기(세로) 화면 높이의 비율(40%)에 맞추고, 너무 작·큰 경우만 clamp (회전 대응 없음) */
+function getSheetHeight(windowHeight: number) {
+  return Math.round(Math.min(520, Math.max(240, windowHeight * 0.4)));
+}
 
 interface CampusBottomSheetProps {
   visible: boolean;
@@ -22,11 +34,15 @@ export default function CampusBottomSheet({
   onSelect,
   onClose,
 }: CampusBottomSheetProps) {
-  const translateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+  const { height: windowHeight } = useWindowDimensions();
+  const sheetHeight = getSheetHeight(windowHeight);
+  const translateY = useRef(new Animated.Value(sheetHeight)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const [rendered, setRendered] = useState(visible);
 
   useEffect(() => {
     if (visible) {
+      setRendered(true);
       Animated.parallel([
         Animated.spring(translateY, {
           toValue: 0,
@@ -43,7 +59,7 @@ export default function CampusBottomSheet({
     } else {
       Animated.parallel([
         Animated.timing(translateY, {
-          toValue: SHEET_HEIGHT,
+          toValue: sheetHeight,
           duration: 200,
           useNativeDriver: true,
         }),
@@ -52,13 +68,15 @@ export default function CampusBottomSheet({
           duration: 200,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(({ finished }) => {
+        if (finished) setRendered(false);
+      });
     }
   }, [visible]);
 
   return (
     <Modal
-      visible={visible}
+      visible={rendered}
       transparent
       animationType="none"
       statusBarTranslucent
@@ -71,7 +89,9 @@ export default function CampusBottomSheet({
         </Animated.View>
 
         {/* 시트 패널 */}
-        <Animated.View style={[styles.sheet, { transform: [{ translateY }] }]}>
+        <Animated.View
+          style={[styles.sheet, { minHeight: sheetHeight, transform: [{ translateY }] }]}
+        >
           {/* 드래그 핸들 */}
           <View style={styles.handle} />
 
@@ -183,7 +203,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 16,
-    minHeight: SHEET_HEIGHT,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
     shadowColor: Colors.shadow,

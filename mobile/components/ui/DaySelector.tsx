@@ -2,30 +2,20 @@ import React from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
+import { KOREAN_WEEKDAY_SHORT, toIsoDate } from '@/utils/date';
 
-const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
-
-function toIsoDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-const todayIso = toIsoDate(new Date());
-const tomorrowIso = (() => {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return toIsoDate(d);
-})();
-
-interface DaySelectorProps {
+export interface DaySelectorProps {
   dates: Date[];
   selectedDate: string;
   onSelect: (isoDate: string) => void;
 }
 
 export default function DaySelector({ dates, selectedDate, onSelect }: DaySelectorProps) {
+  const todayIso = toIsoDate(new Date());
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowIso = toIsoDate(tomorrowDate);
+
   return (
     <View style={styles.row}>
       {dates.map(date => {
@@ -34,7 +24,7 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
         const isToday = iso === todayIso;
         const isTomorrow = iso === tomorrowIso;
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-        const label = isToday ? '오늘' : isTomorrow ? '내일' : DAY_NAMES[date.getDay()];
+        const label = isToday ? '오늘' : isTomorrow ? '내일' : KOREAN_WEEKDAY_SHORT[date.getDay()];
         const dateNum = date.getDate();
 
         const dayTextColor = isSelected
@@ -48,21 +38,29 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
         return (
           <Pressable
             key={iso}
-            style={[styles.dayBtn, isSelected && styles.dayBtnSelected]}
+            style={[styles.dayBtnDate, isSelected && styles.dayBtnSelected]}
             onPress={() => onSelect(iso)}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
           >
             <Text
               style={[
-                styles.dayText,
+                styles.labelText,
                 { color: dayTextColor },
-                isToday && !isSelected && styles.dayTextToday,
+                isSelected && styles.textOnSelected,
               ]}
             >
               {label}
             </Text>
-            <Text style={[styles.dateText, isSelected && styles.dateTextSelected]}>{dateNum}</Text>
+            <Text
+              style={[
+                styles.dateNumText,
+                { color: dayTextColor },
+                isSelected && styles.textOnSelected,
+              ]}
+            >
+              {dateNum}
+            </Text>
           </Pressable>
         );
       })}
@@ -71,45 +69,32 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
 }
 
 const styles = StyleSheet.create({
-  dateText: {
-    ...Typography.caption,
-    color: Colors.textTertiary,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  dateTextSelected: {
-    color: Colors.textOnPrimary,
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  dayBtn: {
-    alignItems: 'center',
-    backgroundColor: Colors.backgroundTertiary,
-    borderRadius: 12,
-    flex: 1,
-    height: 52,
-    justifyContent: 'center',
-    marginHorizontal: 2,
-  },
-  dayBtnSelected: {
-    backgroundColor: Colors.primary,
-    elevation: 6,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    transform: [{ scale: 1.05 }],
-  },
-  dayText: {
-    ...Typography.body3,
-    color: Colors.textSecondary,
-    fontWeight: '600',
-  },
-  dayTextToday: {
-    fontWeight: '700',
-  },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  dayBtnDate: {
+    minWidth: 42,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.backgroundTertiary,
+  },
+  dayBtnSelected: {
+    backgroundColor: Colors.primary,
+  },
+  labelText: {
+    ...Typography.body3,
+    fontWeight: '600',
+  },
+  dateNumText: {
+    ...Typography.body2,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  textOnSelected: {
+    color: Colors.textOnPrimary,
   },
 });

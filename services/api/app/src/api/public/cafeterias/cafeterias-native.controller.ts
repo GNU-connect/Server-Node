@@ -4,7 +4,10 @@ import { NativeResponseDto } from 'src/api/common/dtos/native-response.dto';
 import { JwtAuthGuard } from 'src/api/public/users/guards/jwt-auth.guard';
 import { GetCafeteriaDietQueryDto } from './dtos/requests/get-cafeteria-diet-query.dto';
 import { GetCafeteriasQueryDto } from './dtos/requests/get-cafeterias-query.dto';
-import { CafeteriaDietResponseDto, MenuCategoryDto } from './dtos/responses/cafeteria-diet-response.dto';
+import {
+  CafeteriaDietResponseDto,
+  MenuCategoryDto,
+} from './dtos/responses/cafeteria-diet-response.dto';
 import { CafeteriaResponseDto } from './dtos/responses/cafeteria-response.dto';
 import { CafeteriasService } from './cafeterias.service';
 
@@ -20,7 +23,7 @@ export class CafeteriasNativeController {
     @Query() query: GetCafeteriasQueryDto,
   ): Promise<NativeResponseDto<CafeteriaResponseDto[]>> {
     const cafeterias = await this.cafeteriasService.getCafeterias(query.campusId ?? 1);
-    const data = cafeterias.map((cafeteria) => ({
+    const data = cafeterias.map(cafeteria => ({
       id: cafeteria.id,
       name: cafeteria.name,
       thumbnailUrl: cafeteria.thumbnailUrl,
@@ -49,8 +52,12 @@ export class CafeteriasNativeController {
     const grouped = new Map<string, string[]>();
     for (const diet of result.diets) {
       const key = diet.dishCategory || diet.dishType || '';
-      if (!grouped.has(key)) grouped.set(key, []);
-      grouped.get(key)!.push(diet.dishName);
+      let items = grouped.get(key);
+      if (!items) {
+        items = [];
+        grouped.set(key, items);
+      }
+      items.push(diet.dishName);
     }
     const menus: MenuCategoryDto[] = Array.from(grouped.entries()).map(([category, items]) => ({
       category,

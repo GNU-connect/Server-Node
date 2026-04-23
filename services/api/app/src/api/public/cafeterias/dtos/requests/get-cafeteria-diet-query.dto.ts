@@ -1,10 +1,10 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional, Matches } from 'class-validator';
+import { IsIn, IsISO8601, IsOptional } from 'class-validator';
 import { DietTime } from './list-cafeteria-diet-request.dto';
 
 export class GetCafeteriaDietQueryDto {
   @IsOptional()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, { message: 'date는 YYYY-MM-DD 형식이어야 합니다.' })
+  @IsISO8601({ strict: true }, { message: 'date는 유효한 날짜여야 합니다.' })
   @ApiPropertyOptional({
     description: '날짜 (YYYY-MM-DD). 생략 시 오늘 날짜.',
     example: '2026-04-21',
