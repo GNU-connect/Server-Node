@@ -21,7 +21,7 @@ import {
   MenuSection,
   CampusBottomSheet,
 } from '@/components/ui';
-import type { MealType } from '@/components/ui/MealTypeSelector';
+import type { DietTimeLabel } from '@/utils/dietTime';
 import {
   getCampuses,
   getCafeterias,
@@ -31,6 +31,7 @@ import {
   type MenuCategory,
 } from '@/services/cafeteriaApi';
 import { toIsoDate } from '@/utils/date';
+import { getDietTime } from '@/utils/dietTime';
 
 const WEEK_DATES: Date[] = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -46,7 +47,7 @@ export default function MealScreen() {
   const [selectedCampus, setSelectedCampus] = useState<Campus | null>(null);
   const [selectedCafeteria, setSelectedCafeteria] = useState<Cafeteria | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(toIsoDate(WEEK_DATES[0]));
-  const [mealType, setMealType] = useState<MealType>('점심');
+  const [mealType, setMealType] = useState<DietTimeLabel>(() => getDietTime(new Date()));
 
   const [campusSheetOpen, setCampusSheetOpen] = useState(false);
 
@@ -84,6 +85,13 @@ export default function MealScreen() {
       .catch(() => setError('식당 정보를 불러오지 못했습니다.'))
       .finally(() => setLoadingCafeterias(false));
   }, [selectedCampus]);
+
+  // 오늘 날짜를 고르면 API·챗봇과 동일하게 KST 현재 구간에 맞춰 끼니 선택
+  useEffect(() => {
+    if (selectedDate === toIsoDate(new Date())) {
+      setMealType(getDietTime(new Date()));
+    }
+  }, [selectedDate]);
 
   // 식당/요일/끼니 변경 시 식단 불러오기
   useEffect(() => {

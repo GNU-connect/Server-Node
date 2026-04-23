@@ -1,4 +1,4 @@
-import type { MealType } from '@/components/ui/MealTypeSelector';
+import type { DietTimeLabel } from '@/utils/dietTime';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -57,7 +57,7 @@ export function getCafeterias(campusId: number): Promise<Cafeteria[]> {
 export function getCafeteriaDiet(
   cafeteriaId: number,
   date: string,
-  time?: MealType,
+  time?: DietTimeLabel,
 ): Promise<CafeteriaDiet> {
   const params = new URLSearchParams({ date });
   if (time) params.set('time', time);
