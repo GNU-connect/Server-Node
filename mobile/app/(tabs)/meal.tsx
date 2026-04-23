@@ -85,13 +85,6 @@ export default function MealScreen() {
       .finally(() => setLoadingCafeterias(false));
   }, [selectedCampus]);
 
-  // 오늘 날짜를 고르면 기기 로컬 시각 기준 현재 끼니 구간에 맞춤
-  useEffect(() => {
-    if (selectedDate === toIsoDate(new Date())) {
-      setMealType(getDietTime(new Date()));
-    }
-  }, [selectedDate]);
-
   // 식당/요일/끼니 변경 시 식단 불러오기
   useEffect(() => {
     if (!selectedCafeteria) return;
