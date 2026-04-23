@@ -5,24 +5,20 @@
 export const DIET_TIME_LABELS = ['아침', '점심', '저녁'] as const;
 export type DietTimeLabel = (typeof DIET_TIME_LABELS)[number];
 
-/**
- * 서버 `cafeterias/utils/time.ts` 의 getDietTime 과 동일한 KST 구간.
- */
-const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-
-function getSeoulHoursMinutes(date: Date): { hours: number; minutes: number } {
-  const seoul = new Date(date.getTime() + KST_OFFSET_MS);
+function getLocalHoursMinutes(date: Date): { hours: number; minutes: number } {
   return {
-    hours: seoul.getUTCHours(),
-    minutes: seoul.getUTCMinutes(),
+    hours: date.getHours(),
+    minutes: date.getMinutes(),
   };
 }
 
 /**
- * 19:00 ~ 09:29: 아침, 09:30 ~ 13:29: 점심, 13:30 ~ 18:59: 저녁 (KST)
+ * 기기 로컬 시각 기준 구간 (날짜 칩 `toIsoDate`와 동일 타임존).
+ *
+ * 19:00 ~ 09:29: 아침, 09:30 ~ 13:29: 점심, 13:30 ~ 18:59: 저녁
  */
 export function getDietTime(date: Date): DietTimeLabel {
-  const { hours, minutes } = getSeoulHoursMinutes(date);
+  const { hours, minutes } = getLocalHoursMinutes(date);
   const totalMinutes = hours * 60 + minutes;
 
   const morningStart = 19 * 60;

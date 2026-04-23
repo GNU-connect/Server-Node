@@ -21,7 +21,6 @@ import {
   MenuSection,
   CampusBottomSheet,
 } from '@/components/ui';
-import type { DietTimeLabel } from '@/utils/dietTime';
 import {
   getCampuses,
   getCafeterias,
@@ -31,7 +30,7 @@ import {
   type MenuCategory,
 } from '@/services/cafeteriaApi';
 import { toIsoDate } from '@/utils/date';
-import { getDietTime } from '@/utils/dietTime';
+import { getDietTime, type DietTimeLabel } from '@/utils/dietTime';
 
 const WEEK_DATES: Date[] = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -86,7 +85,7 @@ export default function MealScreen() {
       .finally(() => setLoadingCafeterias(false));
   }, [selectedCampus]);
 
-  // 오늘 날짜를 고르면 API·챗봇과 동일하게 KST 현재 구간에 맞춰 끼니 선택
+  // 오늘 날짜를 고르면 기기 로컬 시각 기준 현재 끼니 구간에 맞춤
   useEffect(() => {
     if (selectedDate === toIsoDate(new Date())) {
       setMealType(getDietTime(new Date()));
