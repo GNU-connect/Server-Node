@@ -21,7 +21,6 @@ import {
   MenuSection,
   CampusBottomSheet,
 } from '@/components/ui';
-import type { MealType } from '@/components/ui/MealTypeSelector';
 import {
   getCampuses,
   getCafeterias,
@@ -31,6 +30,7 @@ import {
   type MenuCategory,
 } from '@/services/cafeteriaApi';
 import { toIsoDate } from '@/utils/date';
+import { getDietTime, type DietTimeLabel } from '@/utils/dietTime';
 
 const WEEK_DATES: Date[] = Array.from({ length: 7 }, (_, i) => {
   const d = new Date();
@@ -46,7 +46,7 @@ export default function MealScreen() {
   const [selectedCampus, setSelectedCampus] = useState<Campus | null>(null);
   const [selectedCafeteria, setSelectedCafeteria] = useState<Cafeteria | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(toIsoDate(WEEK_DATES[0]));
-  const [mealType, setMealType] = useState<MealType>('점심');
+  const [mealType, setMealType] = useState<DietTimeLabel>(() => getDietTime(new Date()));
 
   const [campusSheetOpen, setCampusSheetOpen] = useState(false);
 

@@ -39,7 +39,8 @@ export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
 
 /**
  * 식단 시간 반환
- * - 서울 시간으로 변환 후 19시 이전이면 아침, 이후면 점심/저녁 결정
+ * - 서울 시간으로 변환 후 아침 시간 범위 내면 아침, 점심 시간 범위 내면 점심, 이후면 저녁
+ * - 19:00 ~ 09:29: 아침, 09:30 ~ 13:29: 점심, 13:30 ~ 23:59: 저녁
  */
 export const getDietTime = (date: Date) => {
   const { hours, minutes } = getSeoulHoursMinutes(date);

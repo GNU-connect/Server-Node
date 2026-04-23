@@ -69,18 +69,19 @@ export default function DaySelector({ dates, selectedDate, onSelect }: DaySelect
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  dateNumText: {
+    ...Typography.body2,
+    fontWeight: '700',
+    marginTop: 2,
   },
   dayBtnDate: {
-    minWidth: 42,
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-    borderRadius: 21,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 21,
+    justifyContent: 'center',
+    minWidth: 42,
+    paddingHorizontal: 4,
+    paddingVertical: 6,
   },
   dayBtnSelected: {
     backgroundColor: Colors.primary,
@@ -89,10 +90,9 @@ const styles = StyleSheet.create({
     ...Typography.body3,
     fontWeight: '600',
   },
-  dateNumText: {
-    ...Typography.body2,
-    fontWeight: '700',
-    marginTop: 2,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   textOnSelected: {
     color: Colors.textOnPrimary,

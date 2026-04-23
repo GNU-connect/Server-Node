@@ -2,22 +2,20 @@ import React from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
-
-const MEAL_TYPES = ['아침', '점심', '저녁'] as const;
-export type MealType = (typeof MEAL_TYPES)[number];
+import { DIET_TIME_LABELS, type DietTimeLabel } from '@/utils/dietTime';
 
 interface MealTypeSelectorProps {
-  selected: MealType;
-  onSelect: (type: MealType) => void;
+  selected: DietTimeLabel;
+  onSelect: (type: DietTimeLabel) => void;
 }
 
 export default function MealTypeSelector({ selected, onSelect }: MealTypeSelectorProps) {
   return (
     <View style={styles.container}>
-      {MEAL_TYPES.map((type, index) => {
+      {DIET_TIME_LABELS.map((type, index) => {
         const isSelected = type === selected;
         const isFirst = index === 0;
-        const isLast = index === MEAL_TYPES.length - 1;
+        const isLast = index === DIET_TIME_LABELS.length - 1;
 
         return (
           <Pressable
