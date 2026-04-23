@@ -1,16 +1,18 @@
-import { BadRequestException, Controller, Post, UseFilters } from '@nestjs/common';
+import { BadRequestException, Controller, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
-import { CommonMessagesService } from 'src/api/public/message-templates/common-messages.service';
-import { ScheduleMessagesService } from 'src/api/public/message-templates/schedule-messages.service';
+import { CommonMessagesService } from 'src/api/public/common/common-messages.service';
+import { ScheduleMessagesService } from 'src/api/public/schedules/schedule-messages.service';
 import { ListAcademicScheduleExtraDto } from './dtos/requests/list-academic-schedule-request.dto';
+import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { SchedulesService } from './schedules.service';
 
 @ApiTags('schedules')
 @Controller('schedules')
+@UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
 export class SchedulesController {
   constructor(

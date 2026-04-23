@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoticeMessagesService } from './notice-messages.service';
+import { NoticeMessagesService } from 'src/api/public/notices/notice-messages.service';
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
 

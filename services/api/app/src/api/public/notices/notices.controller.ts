@@ -1,19 +1,21 @@
-import { Controller, Post, UseFilters } from '@nestjs/common';
+import { Controller, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
-import { CommonMessagesService } from 'src/api/public/message-templates/common-messages.service';
-import { NoticeMessagesService } from 'src/api/public/message-templates/notice-messages.service';
+import { CommonMessagesService } from 'src/api/public/common/common-messages.service';
+import { NoticeMessagesService } from 'src/api/public/notices/notice-messages.service';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { User } from 'src/type-orm/entities/users/users.entity';
 import { ListDepartmentNoticeRequestDto } from './dtos/requests/list-department-notice-request.dto';
 import { ListUniversityNoticeRequestDto } from './dtos/requests/list-university-notice-request.dto';
+import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { NoticesService } from './notices.service';
 
 @ApiTags('notices')
 @Controller('notices')
+@UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
 export class NoticesController {
   constructor(

@@ -3,28 +3,66 @@ import { View, Pressable, Text, StyleSheet } from 'react-native';
 import Colors from '@/foundations/colors';
 import Typography from '@/foundations/typography';
 
-const DAYS = ['월', '화', '수', '목', '금', '토', '일'] as const;
-export type Day = (typeof DAYS)[number];
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
 
-interface DaySelectorProps {
-  selected: Day;
-  onSelect: (day: Day) => void;
+function toIsoDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
-export default function DaySelector({ selected, onSelect }: DaySelectorProps) {
+const todayIso = toIsoDate(new Date());
+const tomorrowIso = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return toIsoDate(d);
+})();
+
+interface DaySelectorProps {
+  dates: Date[];
+  selectedDate: string;
+  onSelect: (isoDate: string) => void;
+}
+
+export default function DaySelector({ dates, selectedDate, onSelect }: DaySelectorProps) {
   return (
     <View style={styles.row}>
-      {DAYS.map((day) => {
-        const isSelected = day === selected;
+      {dates.map(date => {
+        const iso = toIsoDate(date);
+        const isSelected = iso === selectedDate;
+        const isToday = iso === todayIso;
+        const isTomorrow = iso === tomorrowIso;
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        const label = isToday ? '오늘' : isTomorrow ? '내일' : DAY_NAMES[date.getDay()];
+        const dateNum = date.getDate();
+
+        const dayTextColor = isSelected
+          ? Colors.textOnPrimary
+          : isToday || isTomorrow
+            ? Colors.primary
+            : isWeekend
+              ? '#F04452CC'
+              : Colors.textSecondary;
+
         return (
           <Pressable
-            key={day}
+            key={iso}
             style={[styles.dayBtn, isSelected && styles.dayBtnSelected]}
-            onPress={() => onSelect(day)}
+            onPress={() => onSelect(iso)}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
           >
-            <Text style={[styles.dayText, isSelected && styles.dayTextSelected]}>{day}</Text>
+            <Text
+              style={[
+                styles.dayText,
+                { color: dayTextColor },
+                isToday && !isSelected && styles.dayTextToday,
+              ]}
+            >
+              {label}
+            </Text>
+            <Text style={[styles.dateText, isSelected && styles.dateTextSelected]}>{dateNum}</Text>
           </Pressable>
         );
       })}
@@ -33,27 +71,45 @@ export default function DaySelector({ selected, onSelect }: DaySelectorProps) {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  dateText: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  dateTextSelected: {
+    color: Colors.textOnPrimary,
+    fontSize: 14,
+    fontWeight: '800',
   },
   dayBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Colors.backgroundTertiary,
+    borderRadius: 12,
+    flex: 1,
+    height: 52,
+    justifyContent: 'center',
+    marginHorizontal: 2,
   },
   dayBtnSelected: {
     backgroundColor: Colors.primary,
+    elevation: 6,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    transform: [{ scale: 1.05 }],
   },
   dayText: {
     ...Typography.body3,
-    fontWeight: '600',
     color: Colors.textSecondary,
+    fontWeight: '600',
   },
-  dayTextSelected: {
-    color: Colors.textOnPrimary,
+  dayTextToday: {
+    fontWeight: '700',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

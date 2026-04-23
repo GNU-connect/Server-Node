@@ -26,10 +26,10 @@ export default function Chip({ label, selected, onPress }: ChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 9,
     borderRadius: 100,
     marginRight: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
   },
   chipSelected: {
     backgroundColor: Colors.chipSelectedBg,
