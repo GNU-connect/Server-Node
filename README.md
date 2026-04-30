@@ -1,8 +1,13 @@
-<h2><img src="./mobile/assets/images/icon.png" alt="" width="30" height="30" style="vertical-align: middle; margin-right: 0.25em;">커넥트 지누</h2>
+<div align="center">
+  <img src="./mobile/assets/images/icon.png" alt="커넥트 지누 아이콘" width="80" height="80">
+  <h2>커넥트 지누</h2>
+</div>
 
 <div align="center">
   <b>경상국립대학교 종합 정보 챗봇 서비스</b>
-  <p>2024.03 - 운영 중 · 5인 팀
+  <p>2024.03 - 운영 중</p>
+  <img src="https://img.shields.io/badge/서비스%20상태-운영중-00C851?style=for-the-badge" alt="서비스 상태 운영중">
+  <img src="https://img.shields.io/badge/카카오톡%20친구-2,818명-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=000000" alt="카카오톡 친구 2,818명">
 
 </div>
 
@@ -11,6 +16,7 @@
 ## 🔷 프로젝트 개요
 
 경상국립대학교 학우들이 학교 생활에 필요한 정보를 빠르게 확인할 수 있도록 돕는 서비스입니다.
+
 공지사항, 학식, 학사일정, 셔틀버스 시간표 등 학교 생활에 필요한 정보를 제공합니다.
 
 - [KBS 라이브 진주 인터뷰 - 커넥트 지누 편](https://www.youtube.com/watch?v=B3Gx3Jap5vA&ab_channel=KBS진주)
@@ -90,6 +96,45 @@
 
 ---
 
+## 설계 과정과 이유
+
+제한된 기간과 팀 상황 안에서 왜 그렇게 설계했는지를 남기기 위해 작성했습니다.
+
+각 의사결정은 `문제 → 선택 → 근거 → 결과/트레이드오프 → 느낀 점` 순서로 정리했습니다.
+
+### 1. 데이터 모델링
+
+**캠퍼스/단과대학/학과(Campus/College/Department)**
+
+- 캠퍼스, 단과대학, 학과는 서로 계층적인 관계를 가지고 있습니다.
+- 4개의 캠퍼스, 17개의 단과대학, 116개의 학과가 있습니다. (2024년 기준)
+- 캠퍼스, 단과대학, 학과는 각각 고유한 한글 이름과 영어 이름을 가지고 있습니다.
+- 한글 이름은 사용자에게 보여주는 값으로 사용하고, 영어 이름은 데이터 수집 시 식별자로 사용합니다.
+
+**공지사항(Notice)**
+
+- 각 학과에는 0개 또는 1개 이상의 공지사항 게시판이 있습니다.
+- 게시판 정보는 `notice_category`에 저장하고, 실제 공지 내용은 `notice`에 저장했습니다.
+- `notice_category`에는 학과 ID, 게시판 ID, 마지막으로 수집한 공지 번호를 저장합니다.
+- `notice`에는 제목, 작성일처럼 사용자에게 보여줄 공지 데이터를 저장합니다.
+- 이렇게 분리하면 게시판별 수집 상태와 실제 공지 데이터를 따로 관리할 수 있습니다.
+
+**학식(Cafeteria)**
+
+- 학식 데이터는 식당 정보와 날짜별 메뉴 정보로 나누었습니다.
+- `cafeteria`에는 캠퍼스, 식당명, 식당 타입, 외부 식당 ID 같은 정보를 저장합니다.
+- `cafeteria_diet`에는 날짜, 요일, 시간대, 메뉴명처럼 매일 바뀌는 정보를 저장합니다.
+- 식당 정보와 식단 정보를 분리해 같은 식당 정보를 반복해서 저장하지 않도록 했습니다.
+
+**학사일정(Academic Calendar)**
+
+- 학사일정은 일정 유형, 시작일, 종료일, 내용을 기준으로 저장했습니다.
+- 개강, 시험, 수강신청처럼 기간이 있는 일정이 많아 시작일과 종료일을 따로 두었습니다.
+- 특정 학과나 사용자보다 학교 전체에서 공통으로 사용하는 정보에 가까워 독립 테이블로 관리했습니다.
+- 일정 유형을 저장해 특정 유형의 일정 필터링(예: 대학생, 대학원생 등)이 가능하도록 했습니다.
+
+---
+
 ## 🔷 팀원 소개
 
 <div align="center">
@@ -100,7 +145,7 @@
           <img src="https://github.com/JangDongHo.png" width="120" height="120" alt="Dongho Jang">
         </a>
         <br>
-        <b>Dongho Jang</b>
+        <b>장동호</b>
         <br>
         <a href="https://github.com/JangDongHo">
           <img src="https://img.shields.io/badge/GitHub-JangDongHo-181717?style=flat-square&logo=github&logoColor=white" alt="JangDongHo">
@@ -111,7 +156,7 @@
           <img src="https://github.com/hykim02.png" width="120" height="120" alt="hykim02">
         </a>
         <br>
-        <b>hykim02</b>
+        <b>김희영</b>
         <br>
         <a href="https://github.com/hykim02">
           <img src="https://img.shields.io/badge/GitHub-hykim02-181717?style=flat-square&logo=github&logoColor=white" alt="hykim02">
@@ -122,7 +167,7 @@
           <img src="https://github.com/hayeonkang.png" width="120" height="120" alt="hayeonkang">
         </a>
         <br>
-        <b>hayeonkang</b>
+        <b>강하연</b>
         <br>
         <a href="https://github.com/hayeonkang">
           <img src="https://img.shields.io/badge/GitHub-hayeonkang-181717?style=flat-square&logo=github&logoColor=white" alt="hayeonkang">
@@ -133,7 +178,7 @@
           <img src="https://github.com/brainVRG.png" width="120" height="120" alt="brainVRG">
         </a>
         <br>
-        <b>brainVRG</b>
+        <b>남민우</b>
         <br>
         <a href="https://github.com/brainVRG">
           <img src="https://img.shields.io/badge/GitHub-brainVRG-181717?style=flat-square&logo=github&logoColor=white" alt="brainVRG">
@@ -144,7 +189,7 @@
           <img src="https://github.com/minseob.png" width="120" height="120" alt="minseob">
         </a>
         <br>
-        <b>minseob</b>
+        <b>김민섭</b>
         <br>
         <a href="https://github.com/minseob">
           <img src="https://img.shields.io/badge/GitHub-minseob-181717?style=flat-square&logo=github&logoColor=white" alt="minseob">
