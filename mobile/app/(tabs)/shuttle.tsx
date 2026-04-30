@@ -21,6 +21,11 @@ import {
   type ShuttleRoute,
   type ShuttleTimetable,
 } from '@/services/shuttleApi';
+import {
+  getShuttleRoutePreference,
+  saveShuttleRoutePreference,
+  selectByStoredRouteName,
+} from '@/services/preferenceStorage';
 
 export default function ShuttleScreen() {
   const [routes, setRoutes] = useState<ShuttleRoute[]>([]);
@@ -38,15 +43,34 @@ export default function ShuttleScreen() {
   const spinAnimRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
+    let canceled = false;
+
     setLoadingRoutes(true);
     setError(null);
-    getShuttleRoutes()
-      .then(data => {
+
+    Promise.all([getShuttleRoutes(), getShuttleRoutePreference()])
+      .then(([data, storedRouteName]) => {
+        if (canceled) return;
+
         setRoutes(data);
-        if (data.length > 0) setSelectedRoute(data[0].routeName);
+
+        const nextRoute = selectByStoredRouteName(data, storedRouteName);
+        setSelectedRoute(nextRoute?.routeName ?? null);
+
+        if (nextRoute && nextRoute.routeName !== storedRouteName) {
+          void saveShuttleRoutePreference(nextRoute.routeName);
+        }
       })
-      .catch(() => setError('노선 정보를 불러오지 못했습니다.'))
-      .finally(() => setLoadingRoutes(false));
+      .catch(() => {
+        if (!canceled) setError('노선 정보를 불러오지 못했습니다.');
+      })
+      .finally(() => {
+        if (!canceled) setLoadingRoutes(false);
+      });
+
+    return () => {
+      canceled = true;
+    };
   }, []);
 
   const fetchTimetable = useCallback((routeName: string) => {
@@ -115,6 +139,7 @@ export default function ShuttleScreen() {
 
   const handleRouteSelect = useCallback((routeName: string) => {
     setSelectedRoute(routeName);
+    void saveShuttleRoutePreference(routeName);
   }, []);
 
   if (loadingRoutes) {
