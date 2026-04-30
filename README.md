@@ -104,6 +104,9 @@
 
 ### 1. 데이터 모델링
 
+<img width="4400" height="1026" alt="drawSQL-image-export-2026-04-30" src="https://github.com/user-attachments/assets/3cabfd3a-d025-4e36-957d-327afd0f7e2e" />
+<br>
+
 **캠퍼스/단과대학/학과(Campus/College/Department)**
 
 - 캠퍼스, 단과대학, 학과는 서로 계층적인 관계를 가지고 있습니다.
