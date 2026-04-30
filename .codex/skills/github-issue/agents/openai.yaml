@@ -1,0 +1,4 @@
+interface:
+  display_name: 'GitHub Issue 작성'
+  short_description: 'GitHub Issue 초안 작성 및 등록'
+  default_prompt: 'Use $github-issue to draft and create a GitHub issue from the task template.'
