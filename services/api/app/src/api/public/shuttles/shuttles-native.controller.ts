@@ -54,8 +54,8 @@ export class ShuttlesNativeController {
   @Get('routes')
   @ApiOkResponse({ type: NativeResponseDto<ShuttleRouteResponseDto[]> })
   async getRoutes(): Promise<NativeResponseDto<ShuttleRouteResponseDto[]>> {
-    const routes = await this.shuttlesService.getRoutes();
-    const data: ShuttleRouteResponseDto[] = routes.map((r) => ({
+    const result = await this.shuttlesService.getRoutes();
+    const data: ShuttleRouteResponseDto[] = result.routes.map((r) => ({
       routeName: r.routeName,
       updatedAt: r.updatedAt.toISOString(),
     }));
@@ -67,7 +67,8 @@ export class ShuttlesNativeController {
   async getTimetable(
     @Param('routeName') routeName: string,
   ): Promise<NativeResponseDto<ShuttleTimetableResponseDto>> {
-    const record = await this.shuttlesService.getTimetable(routeName);
+    const result = await this.shuttlesService.getTimetable(routeName);
+    const record = result.timetable;
     const rawTimetable = record.timetable as Record<string, string[]>;
 
     const nowMinutes = getKstMinutes();
