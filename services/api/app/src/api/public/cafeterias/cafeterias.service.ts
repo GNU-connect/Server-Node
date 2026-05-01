@@ -7,10 +7,7 @@ import {
 } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
 import { CafeteriaDietResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
 import { CafeteriaListResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
-import {
-  getDietTime,
-  getTodayOrTomorrow,
-} from 'src/api/public/cafeterias/utils/time';
+import { getDietTime, getTodayOrTomorrow } from 'src/api/public/cafeterias/utils/time';
 import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
 
 @Injectable()

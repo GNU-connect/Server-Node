@@ -31,7 +31,11 @@ export class ShuttleTimetableResponseDto {
   @ApiProperty({ description: '노선명' })
   routeName: string;
 
-  @ApiProperty({ description: '다음 버스 정보. 오늘 운행 종료 시 null', nullable: true, type: NextBusDto })
+  @ApiProperty({
+    description: '다음 버스 정보. 오늘 운행 종료 시 null',
+    nullable: true,
+    type: NextBusDto,
+  })
   nextBus: NextBusDto | null;
 
   @ApiProperty({ type: [TimetableSectionDto] })

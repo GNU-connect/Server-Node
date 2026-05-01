@@ -50,7 +50,7 @@ export class NoticesRepository {
       if (!noticesByCategory.has(notice.categoryId)) {
         noticesByCategory.set(notice.categoryId, []);
       }
-      const categoryNotices = noticesByCategory.get(notice.categoryId)!;
+      const categoryNotices = noticesByCategory.get(notice.categoryId) || [];
       if (categoryNotices.length < limit) {
         categoryNotices.push(notice);
       }

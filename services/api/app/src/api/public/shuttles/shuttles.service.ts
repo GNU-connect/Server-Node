@@ -5,9 +5,7 @@ import { ShuttleTimetableRepository } from 'src/type-orm/entities/shuttle-timeta
 
 @Injectable()
 export class ShuttlesService {
-  constructor(
-    private readonly shuttleTimetableRepository: ShuttleTimetableRepository,
-  ) {}
+  constructor(private readonly shuttleTimetableRepository: ShuttleTimetableRepository) {}
 
   public async getRoutes(): Promise<ShuttleRouteListResult> {
     const routes = await this.shuttleTimetableRepository.findAll();

@@ -13,9 +13,9 @@ export class Campus {
   @Column({ name: 'thumbnail_url' })
   thumbnailUrl: string;
 
-  @OneToMany(() => User, (users) => users.campus)
+  @OneToMany(() => User, users => users.campus)
   users: User[];
 
-  @OneToMany(() => Cafeteria, (cafeterias) => cafeterias.campus)
+  @OneToMany(() => Cafeteria, cafeterias => cafeterias.campus)
   cafeterias: Cafeteria[];
 }

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { NoticeCategory } from './notice-category.entity';
 
 @Entity('notice')
@@ -24,7 +18,7 @@ export class Notice {
   @Column({ name: 'created_at', type: 'date' })
   createdAt: Date;
 
-  @ManyToOne(() => NoticeCategory, (category) => category.notices)
+  @ManyToOne(() => NoticeCategory, category => category.notices)
   @JoinColumn({ name: 'category_id' })
   category: NoticeCategory;
 }

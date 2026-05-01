@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, UseFilters, UseGuards } from '@nestjs/common';
+import { Controller, Post, UseFilters, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator';
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
@@ -29,7 +29,8 @@ export class SchedulesController {
     const { month } = extra;
 
     if (month !== undefined && (month < 1 || month > 12)) {
-      const template = this.commonMessagesService.createSimpleText('올바른 월을 입력해주세요. (1-12)');
+      const template =
+        this.commonMessagesService.createSimpleText('올바른 월을 입력해주세요. (1-12)');
       return new ResponseDTO(template);
     }
 

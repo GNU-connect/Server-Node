@@ -77,10 +77,10 @@ describe('CurrentUserInterceptor', () => {
       const ctx = makeContext({});
       await interceptor.intercept(ctx, makeCallHandler());
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(
-        FETCH_CURRENT_USER_KEY,
-        [ctx.getHandler(), ctx.getClass()],
-      );
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(FETCH_CURRENT_USER_KEY, [
+        ctx.getHandler(),
+        ctx.getClass(),
+      ]);
     });
 
     describe('헤더 기반 userId', () => {

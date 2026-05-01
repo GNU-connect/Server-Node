@@ -14,7 +14,7 @@ import { ShuttlesService } from './shuttles.service';
 /** KST(UTC+9) 기준 자정부터의 분 수 */
 function getKstMinutes(): number {
   const now = new Date();
-  return ((now.getUTCHours() * 60 + now.getUTCMinutes()) + 9 * 60) % (24 * 60);
+  return (now.getUTCHours() * 60 + now.getUTCMinutes() + 9 * 60) % (24 * 60);
 }
 
 /** KST 기준 오늘이 금요일인지 여부 */
@@ -55,7 +55,7 @@ export class ShuttlesNativeController {
   @ApiOkResponse({ type: NativeResponseDto<ShuttleRouteResponseDto[]> })
   async getRoutes(): Promise<NativeResponseDto<ShuttleRouteResponseDto[]>> {
     const result = await this.shuttlesService.getRoutes();
-    const data: ShuttleRouteResponseDto[] = result.routes.map((r) => ({
+    const data: ShuttleRouteResponseDto[] = result.routes.map(r => ({
       routeName: r.routeName,
       updatedAt: r.updatedAt.toISOString(),
     }));
@@ -92,23 +92,21 @@ export class ShuttlesNativeController {
       ? { time: splitTimeMemo(nextRaw).time, minutesUntil: parseMinutes(nextRaw) - nowMinutes }
       : null;
 
-    const sections: TimetableSectionDto[] = Object.entries(rawTimetable).map(
-      ([label, times]) => ({
-        label,
-        times: times.map((raw): TimeEntryDto => {
-          const { time, memo } = splitTimeMemo(raw);
-          const minutes = parseMinutes(raw);
-          const isNext = raw === nextRaw;
-          let status: 'past' | 'next' | 'future';
-          if (isNext) {
-            status = 'next';
-          } else {
-            status = minutes < nowMinutes ? 'past' : 'future';
-          }
-          return { time, memo, status };
-        }),
+    const sections: TimetableSectionDto[] = Object.entries(rawTimetable).map(([label, times]) => ({
+      label,
+      times: times.map((raw): TimeEntryDto => {
+        const { time, memo } = splitTimeMemo(raw);
+        const minutes = parseMinutes(raw);
+        const isNext = raw === nextRaw;
+        let status: 'past' | 'next' | 'future';
+        if (isNext) {
+          status = 'next';
+        } else {
+          status = minutes < nowMinutes ? 'past' : 'future';
+        }
+        return { time, memo, status };
       }),
-    );
+    }));
 
     const data: ShuttleTimetableResponseDto = {
       routeName: record.routeName,

@@ -10,13 +10,7 @@ import { User } from 'src/type-orm/entities/users/users.entity';
 export class NoticesService {
   private readonly UNIVERSITY_DEPARTMENT_ID = 117;
 
-  private readonly TARGET_CATEGORIES = [
-    '기관',
-    '채용',
-    '장학',
-    '외부기관 행사',
-    '학사',
-  ];
+  private readonly TARGET_CATEGORIES = ['기관', '채용', '장학', '외부기관 행사', '학사'];
 
   private readonly CAROUSEL_ITEMS_LIMIT = 4;
 
@@ -30,11 +24,10 @@ export class NoticesService {
    * @returns 카테고리별 공지사항 Map (데이터가 없으면 빈 Map)
    */
   async getUniversityNotices(): Promise<NoticeListResult> {
-    const categories =
-      await this.noticeCategoriesRepository.findByDepartmentIdAndCategories(
-        this.UNIVERSITY_DEPARTMENT_ID,
-        this.TARGET_CATEGORIES,
-      );
+    const categories = await this.noticeCategoriesRepository.findByDepartmentIdAndCategories(
+      this.UNIVERSITY_DEPARTMENT_ID,
+      this.TARGET_CATEGORIES,
+    );
 
     if (categories.length === 0) {
       return { noticesMap: new Map() };
@@ -76,15 +69,13 @@ export class NoticesService {
       departmentIds.push(user.department.parentDepartmentId);
     }
 
-    const categories = await this.noticeCategoriesRepository.findByDepartmentIds(
-      departmentIds,
-    );
+    const categories = await this.noticeCategoriesRepository.findByDepartmentIds(departmentIds);
 
     if (categories.length === 0) {
       return { noticesMap: new Map() };
     }
 
-    const categoryIds = categories.map((category) => category.id);
+    const categoryIds = categories.map(category => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
       this.CAROUSEL_ITEMS_LIMIT,

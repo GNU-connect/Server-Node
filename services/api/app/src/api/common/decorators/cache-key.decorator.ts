@@ -15,14 +15,8 @@ export interface CacheKeyOptions {
  * `logger: Logger` 프로퍼티가 있으면 cache hit/miss 로그를 자동으로 기록함.
  */
 export function CacheKey(options: CacheKeyOptions): MethodDecorator {
-  return (
-    _target: object,
-    _propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ) => {
-    const originalMethod = descriptor.value as (
-      ...args: unknown[]
-    ) => Promise<unknown>;
+  return (_target: object, _propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+    const originalMethod = descriptor.value as (...args: unknown[]) => Promise<unknown>;
 
     descriptor.value = async function (...args: unknown[]) {
       const cacheManager = (this as { cacheManager: Cache }).cacheManager;

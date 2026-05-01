@@ -113,7 +113,7 @@ describe('NoticesService', () => {
         makeCategory({ id: idx + 1, category: cat }),
       );
       const noticeMap = new Map(
-        categories.map((cat) => [cat.id, [makeNotice({ categoryId: cat.id })]]),
+        categories.map(cat => [cat.id, [makeNotice({ categoryId: cat.id })]]),
       );
 
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue(categories);
@@ -121,7 +121,7 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      const keys = [...result.noticesMap.keys()].map((c) => c.category);
+      const keys = [...result.noticesMap.keys()].map(c => c.category);
       expect(keys).toEqual(TARGET_CATEGORIES);
     });
 

@@ -14,7 +14,9 @@ const CAMPUS_LIST_TEMPLATE: SkillTemplate = {
 };
 
 const CAFETERIA_LIST_TEMPLATE: SkillTemplate = {
-  outputs: [{ listCard: { header: { title: '어떤 교내 식당 정보가 알고 싶어?' }, items: [] } } as any],
+  outputs: [
+    { listCard: { header: { title: '어떤 교내 식당 정보가 알고 싶어?' }, items: [] } } as any,
+  ],
 };
 
 const CAFETERIA_DIET_TEMPLATE: SkillTemplate = {

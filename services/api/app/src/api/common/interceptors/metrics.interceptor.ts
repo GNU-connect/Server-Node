@@ -1,21 +1,18 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { Counter, Histogram } from 'prom-client';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 function normalizePath(path: string): string {
-  return path
-    .replace(/^\/api/, '')
-    .replace(/\/[0-9a-f-]{36}/gi, '/:id')
-    .replace(/\/\d+/g, '/:id')
-    .replace(/^\/?/, '/api/')
-    .replace(/\/$/, '') || '/api';
+  return (
+    path
+      .replace(/^\/api/, '')
+      .replace(/\/[0-9a-f-]{36}/gi, '/:id')
+      .replace(/\/\d+/g, '/:id')
+      .replace(/^\/?/, '/api/')
+      .replace(/\/$/, '') || '/api'
+  );
 }
 
 @Injectable()
@@ -60,7 +57,7 @@ export class MetricsInterceptor implements NestInterceptor {
     isError: boolean,
   ): void {
     const response = context.switchToHttp().getResponse();
-    const status = isError ? 500 : (response.statusCode || 200);
+    const status = isError ? 500 : response.statusCode || 200;
     const durationSeconds = (Date.now() - start) / 1000;
 
     const labels = {

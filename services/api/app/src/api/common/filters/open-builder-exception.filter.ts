@@ -27,9 +27,7 @@ export class OpenBuilderExceptionFilter implements ExceptionFilter {
     }
 
     const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     this.logger.error(
       JSON.stringify({
@@ -37,8 +35,7 @@ export class OpenBuilderExceptionFilter implements ExceptionFilter {
         status,
         method: request.method,
         url: request.url,
-        message:
-          exception instanceof Error ? exception.message : String(exception),
+        message: exception instanceof Error ? exception.message : String(exception),
       }),
     );
 

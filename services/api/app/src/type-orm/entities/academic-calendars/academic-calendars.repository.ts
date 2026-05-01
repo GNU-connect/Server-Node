@@ -20,12 +20,12 @@ export class AcademicCalendarsRepository {
   async findByYearAndMonth(
     year: number,
     month: number,
-    calendarType: number = 1,
+    calendarType = 1,
   ): Promise<AcademicCalendar[]> {
     // 해당 월의 첫날과 마지막날 계산
     const startOfMonth = new Date(year, month - 1, 1);
     const endOfMonth = new Date(year, month, 0);
-    
+
     // 오늘 날짜 (시간 제외)
     const today = new Date();
     today.setHours(0, 0, 0, 0);

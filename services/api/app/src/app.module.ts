@@ -34,7 +34,7 @@ import { WarmupModule } from './api/internal/warmup/warmup.module';
     DatabaseModule,
     UsersModule,
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     CampusesModule,
     CollegesModule,
@@ -79,7 +79,7 @@ export class AppModule implements OnApplicationBootstrap {
   onApplicationBootstrap() {
     const server = this.httpAdapterHost.httpAdapter.getHttpServer() as Server;
 
-    server.keepAliveTimeout = 61 * 1000
-    server.headersTimeout = 65 * 1000
+    server.keepAliveTimeout = 61 * 1000;
+    server.headersTimeout = 65 * 1000;
   }
 }

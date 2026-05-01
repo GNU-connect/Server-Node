@@ -6,9 +6,7 @@ import { AcademicCalendarsRepository } from 'src/type-orm/entities/academic-cale
 export class SchedulesService {
   private readonly UNDERGRADUATE_CALENDAR_TYPE = 1;
 
-  constructor(
-    private readonly academicCalendarsRepository: AcademicCalendarsRepository,
-  ) {}
+  constructor(private readonly academicCalendarsRepository: AcademicCalendarsRepository) {}
 
   /**
    * 학사일정 조회

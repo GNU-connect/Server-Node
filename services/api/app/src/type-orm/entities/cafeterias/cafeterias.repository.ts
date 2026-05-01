@@ -14,7 +14,7 @@ export class CafeteriasRepository {
     private readonly cafeteriaDietRepository: Repository<CafeteriaDiet>,
   ) {}
 
-  findCafeteriasByCampusId(campusId: number = 1): Promise<Cafeteria[]> {
+  findCafeteriasByCampusId(campusId = 1): Promise<Cafeteria[]> {
     return this.cafeteriaRepository.find({
       where: {
         campus: {

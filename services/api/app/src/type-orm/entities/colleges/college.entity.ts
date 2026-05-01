@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Department } from '../departments/department.entity';
 
 @Entity('college')
@@ -22,6 +16,6 @@ export class College {
   @Column({ name: 'thumbnail_url' })
   thumbnailUrl: string;
 
-  @OneToMany(() => Department, (departments) => departments.college)
+  @OneToMany(() => Department, departments => departments.college)
   departments: Department[];
 }

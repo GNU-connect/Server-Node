@@ -35,11 +35,7 @@ const normalizeAttributes = (
 };
 
 export function TraceSpan(options: TraceSpanOptions): MethodDecorator {
-  return (
-    target: object,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ) => {
+  return (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
 
     if (typeof originalMethod !== 'function') {

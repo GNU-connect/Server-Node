@@ -39,8 +39,7 @@ const mockUsersService = {
     { provide: APP_INTERCEPTOR, useClass: CurrentUserInterceptor },
   ],
 })
-class NoticesTestModule {
-}
+class NoticesTestModule {}
 
 describe('Notices (e2e)', () => {
   let app: INestApplication;

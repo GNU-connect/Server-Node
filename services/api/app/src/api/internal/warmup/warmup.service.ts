@@ -35,10 +35,7 @@ export class WarmupService implements OnApplicationBootstrap {
   private async runWarmup(): Promise<WarmupResult> {
     const start = performance.now();
 
-    const [dbMs, cpuMs] = await Promise.all([
-      this.pingDatabase(),
-      this.exerciseCpuHotPaths(),
-    ]);
+    const [dbMs, cpuMs] = await Promise.all([this.pingDatabase(), this.exerciseCpuHotPaths()]);
 
     const cacheMs = await this.prewarmDietCache();
 
@@ -86,7 +83,7 @@ export class WarmupService implements OnApplicationBootstrap {
 
     // 3. 문자열 / 배열 조작
     const tags = ['아침', '점심', '저녁'];
-    tags.map((t) => t.repeat(3)).join(',');
+    tags.map(t => t.repeat(3)).join(',');
 
     return +(performance.now() - t).toFixed(2);
   }
@@ -101,9 +98,7 @@ export class WarmupService implements OnApplicationBootstrap {
     try {
       const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId();
       await Promise.allSettled(
-        cafeterias.map((cafeteria) =>
-          this.cafeteriasService.getCafeteriaDiet(cafeteria.id),
-        ),
+        cafeterias.map(cafeteria => this.cafeteriasService.getCafeteriaDiet(cafeteria.id)),
       );
       this.logger.log(`diet cache prewarmed — count=${cafeterias.length}`);
     } catch (err: unknown) {

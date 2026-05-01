@@ -12,7 +12,7 @@ export class CampusMessagesService {
       title: '캠퍼스 선택',
     };
 
-    const items: ListItem[] = campuses.map((campus) => ({
+    const items: ListItem[] = campuses.map(campus => ({
       title: campus.name,
       imageUrl: campus.thumbnailUrl,
       action: 'block',

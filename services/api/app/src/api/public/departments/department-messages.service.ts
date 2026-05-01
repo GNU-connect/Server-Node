@@ -19,7 +19,7 @@ export class DepartmentMessagesService {
       title: '학과 선택',
     };
 
-    const items: ListItem[] = departments.map((department) => {
+    const items: ListItem[] = departments.map(department => {
       return {
         title: department.name,
         action: 'block',

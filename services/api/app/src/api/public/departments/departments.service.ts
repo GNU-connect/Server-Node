@@ -1,7 +1,6 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DepartmentListResult } from 'src/api/public/departments/dtos/results/department-list-result.dto';
-import { ListDepartmentsRequestDto } from 'src/api/public/users/dtos/requests/list-department-request.dto';
 import { DepartmentsRepository } from 'src/type-orm/entities/departments/departments.repository';
 import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
 

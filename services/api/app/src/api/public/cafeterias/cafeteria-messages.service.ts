@@ -1,18 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BasicCard,
-  ListCard,
-} from 'src/api/common/interfaces/response/fields/component';
-import {
-  Button,
-  ListItem,
-  QuickReply,
-} from 'src/api/common/interfaces/response/fields/etc';
+import { BasicCard, ListCard } from 'src/api/common/interfaces/response/fields/component';
+import { Button, ListItem, QuickReply } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
-import {
-  createBasicCard,
-  createListCard,
-} from 'src/api/common/utils/component';
+import { createBasicCard, createListCard } from 'src/api/common/utils/component';
 import { BlockId } from 'src/api/common/utils/constants';
 import {
   DietDate,
@@ -29,7 +19,7 @@ export class CafeteriaMessagesService {
       title: '어떤 교내 식당 정보가 알고 싶어?',
     };
 
-    const items: ListItem[] = cafeterias.map((cafeteria) => ({
+    const items: ListItem[] = cafeterias.map(cafeteria => ({
       title: cafeteria.name,
       description: cafeteria.campus.name,
       imageUrl: cafeteria.thumbnailUrl,
@@ -51,11 +41,7 @@ export class CafeteriaMessagesService {
       },
     ];
 
-    const cafeteriaDietListCard: ListCard = createListCard(
-      header,
-      items,
-      buttons,
-    );
+    const cafeteriaDietListCard: ListCard = createListCard(header, items, buttons);
 
     return {
       outputs: [cafeteriaDietListCard],
@@ -73,14 +59,12 @@ export class CafeteriaMessagesService {
     const month = date.getMonth() + 1;
     const day = date.getDate();
 
-    let description = `${year}-${month}-${day}(${getDayWeek(
-      date,
-    )}) ${time} 메뉴\n\n`;
+    let description = `${year}-${month}-${day}(${getDayWeek(date)}) ${time} 메뉴\n\n`;
 
     if (diets.length > 0) {
       // dishCategory 또는 dishType 별로 그룹화
       const grouped: Record<string, string[]> = {};
-      diets.forEach((diet) => {
+      diets.forEach(diet => {
         const type = diet.dishCategory || diet.dishType || '';
         if (!grouped[type]) grouped[type] = [];
         grouped[type].push(diet.dishName);
@@ -111,15 +95,9 @@ export class CafeteriaMessagesService {
       action: 'share',
     };
 
-    const basicCard: BasicCard = createBasicCard(
-      title,
-      description,
-      thumbnail,
-      [shareButton],
-    );
+    const basicCard: BasicCard = createBasicCard(title, description, thumbnail, [shareButton]);
 
-    const quickReplies: QuickReply[] =
-      this.createDishDateQuickReplies(cafeteria);
+    const quickReplies: QuickReply[] = this.createDishDateQuickReplies(cafeteria);
 
     return {
       outputs: [basicCard],
@@ -131,8 +109,8 @@ export class CafeteriaMessagesService {
     const dishDateTypes: DietDate[] = ['오늘', '내일'];
     const times: DietTime[] = ['아침', '점심', '저녁'];
 
-    return dishDateTypes.flatMap((dishDateType) =>
-      times.map((time) => ({
+    return dishDateTypes.flatMap(dishDateType =>
+      times.map(time => ({
         label: `${dishDateType} ${time}`,
         action: 'block',
         blockId: BlockId.CAFETERIA_DIET_LIST,
