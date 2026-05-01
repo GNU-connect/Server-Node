@@ -2,25 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { Carousel, ListCard } from 'src/api/common/interfaces/response/fields/component';
 import { ListItem } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
-import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
-import { Notice } from 'src/type-orm/entities/notices/notice.entity';
+import {
+  NoticeCategoryResult,
+  NoticeListResult,
+} from 'src/api/public/notices/dtos/results/notice-list-result.dto';
 
 @Injectable()
-export class NoticeMessagesService {
+export class NoticeMessageFactory {
   /**
    * 학교 공지사항 캐러셀 생성
-   * @param noticesByCategory 카테고리별 공지사항 Map
+   * @param result 카테고리별 공지사항 목록
    * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
    */
-  createUniversityNoticeCarousel(noticesByCategory: Map<NoticeCategory, Notice[]>): SkillTemplate {
+  createUniversityNoticeCarousel(result: NoticeListResult): SkillTemplate {
     const carouselItems: ListCard['listCard'][] = [];
 
-    for (const [category, notices] of noticesByCategory) {
+    for (const category of result.categories) {
       const header: ListItem = {
         title: `${category.category} 공지`,
       };
 
-      const items: ListItem[] = notices.map(notice => ({
+      const items: ListItem[] = category.notices.map(notice => ({
         title: notice.title,
         description: this.formatNoticeDate(notice.createdAt),
         link: {
@@ -48,23 +50,25 @@ export class NoticeMessagesService {
 
   /**
    * 학과 공지사항 캐러셀 생성
-   * @param noticesByCategory 카테고리별 공지사항 Map (department relation 포함)
+   * @param result 카테고리별 공지사항 목록
    * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
    */
-  createDepartmentNoticeCarousel(noticesByCategory: Map<NoticeCategory, Notice[]>): SkillTemplate {
+  createDepartmentNoticeCarousel(result: NoticeListResult): SkillTemplate {
     const carouselItems: ListCard['listCard'][] = [];
 
-    for (const [category, notices] of noticesByCategory) {
+    for (const category of result.categories) {
+      const departmentName = this.requireDepartmentField(category, 'departmentName');
+      const departmentEn = this.requireDepartmentField(category, 'departmentEn');
       const header: ListItem = {
-        title: `${category.department.name} - ${category.category}`,
+        title: `${departmentName} - ${category.category}`,
       };
 
-      const items: ListItem[] = notices.map(notice => ({
+      const items: ListItem[] = category.notices.map(notice => ({
         title: notice.title,
         description: this.formatNoticeDate(notice.createdAt),
         link: {
           web: this.createDepartmentNoticeLinkUrl(
-            category.department.departmentEn,
+            departmentEn,
             category.mi,
             category.bbsId,
             notice.nttSn,
@@ -76,11 +80,7 @@ export class NoticeMessagesService {
         {
           label: '더보기',
           action: 'webLink' as const,
-          webLinkUrl: this.createNoticeBoardListUrl(
-            category.department.departmentEn,
-            category.mi,
-            category.bbsId,
-          ),
+          webLinkUrl: this.createNoticeBoardListUrl(departmentEn, category.mi, category.bbsId),
         },
       ];
 
@@ -140,6 +140,17 @@ export class NoticeMessagesService {
    */
   private createNoticeBoardListUrl(departmentEn: string, mi: number, bbsId: number): string {
     return `https://www.gnu.ac.kr/${departmentEn}/na/ntt/selectNttList.do?mi=${mi}&bbsId=${bbsId}`;
+  }
+
+  private requireDepartmentField(
+    category: NoticeCategoryResult,
+    field: 'departmentName' | 'departmentEn',
+  ): string {
+    const value = category[field];
+    if (!value) {
+      throw new Error(`학과 공지사항 카테고리에 ${field} 값이 없습니다.`);
+    }
+    return value;
   }
 
   /**

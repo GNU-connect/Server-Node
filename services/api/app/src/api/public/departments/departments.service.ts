@@ -20,6 +20,12 @@ export class DepartmentsService {
   })
   public async findAll(collegeId: number, page: number): Promise<DepartmentListResult> {
     const [departments, total] = await this.departmentsRepository.findByCollegeId(collegeId, page);
-    return { departments, total };
+    return {
+      departments: departments.map(department => ({
+        id: department.id,
+        name: department.name,
+      })),
+      total,
+    };
   }
 }

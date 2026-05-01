@@ -1,6 +1,10 @@
-import { College } from 'src/type-orm/entities/colleges/college.entity';
+export interface CollegeItemResult {
+  id: number;
+  name: string;
+  thumbnailUrl: string;
+}
 
 export interface CollegeListResult {
-  colleges: College[];
+  colleges: CollegeItemResult[];
   total: number;
 }

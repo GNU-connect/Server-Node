@@ -1,5 +1,8 @@
-import { ShuttleTimetable } from 'src/type-orm/entities/shuttle-timetables/shuttle-timetable.entity';
+export interface ShuttleRouteResult {
+  routeName: string;
+  updatedAt: Date;
+}
 
 export interface ShuttleRouteListResult {
-  routes: ShuttleTimetable[];
+  routes: ShuttleRouteResult[];
 }

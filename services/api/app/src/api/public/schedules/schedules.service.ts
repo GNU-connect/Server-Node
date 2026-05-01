@@ -23,6 +23,14 @@ export class SchedulesService {
       this.UNDERGRADUATE_CALENDAR_TYPE,
     );
 
-    return { year, month: targetMonth, schedules };
+    return {
+      year,
+      month: targetMonth,
+      schedules: schedules.map(schedule => ({
+        content: schedule.content,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+      })),
+    };
   }
 }

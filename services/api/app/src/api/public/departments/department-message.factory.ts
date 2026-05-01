@@ -4,22 +4,21 @@ import { ListItem } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createListCard } from 'src/api/common/utils/component';
 import { BlockId, ListCardConfig } from 'src/api/common/utils/constants';
+import { DepartmentListResult } from 'src/api/public/departments/dtos/results/department-list-result.dto';
 import { ListDepartmentsRequestDto } from 'src/api/public/users/dtos/requests/list-department-request.dto';
-import { Department } from 'src/type-orm/entities/departments/department.entity';
 
 @Injectable()
-export class DepartmentMessagesService {
-  public async departmentsListCard(
-    departments: Department[],
-    total: number,
+export class DepartmentMessageFactory {
+  public createDepartmentListCard(
+    result: DepartmentListResult,
     extra: ListDepartmentsRequestDto,
     blockId: string,
-  ): Promise<SkillTemplate> {
+  ): SkillTemplate {
     const header: ListItem = {
       title: '학과 선택',
     };
 
-    const items: ListItem[] = departments.map(department => {
+    const items: ListItem[] = result.departments.map(department => {
       return {
         title: department.name,
         action: 'block',
@@ -33,7 +32,7 @@ export class DepartmentMessagesService {
 
     const departmentListCard: ListCard = createListCard(header, items);
 
-    const totalPages = Math.ceil(total / ListCardConfig.LIMIT);
+    const totalPages = Math.ceil(result.total / ListCardConfig.LIMIT);
     const paginationButtons = [];
 
     if (extra.page > 1) {

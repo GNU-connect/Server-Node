@@ -1,6 +1,9 @@
-import { Department } from 'src/type-orm/entities/departments/department.entity';
+export interface DepartmentItemResult {
+  id: number;
+  name: string;
+}
 
 export interface DepartmentListResult {
-  departments: Department[];
+  departments: DepartmentItemResult[];
   total: number;
 }

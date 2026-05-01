@@ -18,6 +18,13 @@ export class CollegesService {
   })
   public async findAll(page: number): Promise<CollegeListResult> {
     const [colleges, total] = await this.collegesRepository.findAll(page);
-    return { colleges, total };
+    return {
+      colleges: colleges.map(college => ({
+        id: college.id,
+        name: college.name,
+        thumbnailUrl: college.thumbnailUrl,
+      })),
+      total,
+    };
   }
 }

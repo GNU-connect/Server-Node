@@ -1,7 +1,11 @@
-import { AcademicCalendar } from 'src/type-orm/entities/academic-calendars/academic-calendar.entity';
+export interface AcademicScheduleItemResult {
+  content: string;
+  startDate: Date;
+  endDate: Date;
+}
 
 export interface AcademicScheduleResult {
   year: number;
   month: number;
-  schedules: AcademicCalendar[];
+  schedules: AcademicScheduleItemResult[];
 }

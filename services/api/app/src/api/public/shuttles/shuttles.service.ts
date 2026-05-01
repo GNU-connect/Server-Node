@@ -9,7 +9,12 @@ export class ShuttlesService {
 
   public async getRoutes(): Promise<ShuttleRouteListResult> {
     const routes = await this.shuttleTimetableRepository.findAll();
-    return { routes };
+    return {
+      routes: routes.map(route => ({
+        routeName: route.routeName,
+        updatedAt: route.updatedAt,
+      })),
+    };
   }
 
   public async getTimetable(routeName: string): Promise<ShuttleTimetableResult> {
@@ -19,6 +24,10 @@ export class ShuttlesService {
       throw new NotFoundException(`'${routeName}' 노선의 시간표를 찾을 수 없습니다.`);
     }
 
-    return { timetable: record };
+    return {
+      routeName: record.routeName,
+      timetable: record.timetable as Record<string, string[]>,
+      updatedAt: record.updatedAt,
+    };
   }
 }

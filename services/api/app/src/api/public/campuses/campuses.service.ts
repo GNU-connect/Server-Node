@@ -18,6 +18,12 @@ export class CampusesService {
   })
   public async findAll(): Promise<CampusListResult> {
     const campuses = await this.campusesRepository.findAll();
-    return { campuses };
+    return {
+      campuses: campuses.map(campus => ({
+        id: campus.id,
+        name: campus.name,
+        thumbnailUrl: campus.thumbnailUrl,
+      })),
+    };
   }
 }

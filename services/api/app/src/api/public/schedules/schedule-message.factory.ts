@@ -4,10 +4,10 @@ import { Button, QuickReply } from 'src/api/common/interfaces/response/fields/et
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createTextCard } from 'src/api/common/utils/component';
 import { BlockId } from 'src/api/common/utils/constants';
-import { AcademicCalendar } from 'src/type-orm/entities/academic-calendars/academic-calendar.entity';
+import { AcademicScheduleResult } from 'src/api/public/schedules/dtos/results/academic-schedule-result.dto';
 
 @Injectable()
-export class ScheduleMessagesService {
+export class ScheduleMessageFactory {
   /**
    * 학사일정 TextCard 생성
    * @param year 년도
@@ -15,19 +15,15 @@ export class ScheduleMessagesService {
    * @param schedules 학사일정 목록
    * @returns SkillTemplate
    */
-  createAcademicScheduleTextCard(
-    year: number,
-    month: number,
-    schedules: AcademicCalendar[],
-  ): SkillTemplate {
-    const title = `${year}년 ${month}월 학사일정`;
+  createAcademicScheduleTextCard(result: AcademicScheduleResult): SkillTemplate {
+    const title = `${result.year}년 ${result.month}월 학사일정`;
 
     // 학사일정 내용 생성
     let description = '';
-    if (schedules.length === 0) {
+    if (result.schedules.length === 0) {
       description = '등록된 학사일정이 없습니다.';
     } else {
-      description = schedules
+      description = result.schedules
         .map(schedule => {
           const startDate = new Date(schedule.startDate);
           const endDate = new Date(schedule.endDate);
@@ -54,7 +50,7 @@ export class ScheduleMessagesService {
     const textCard: TextCard = createTextCard(title, description, buttons);
 
     // Quick Replies 생성
-    const quickReplies = this.createMonthQuickReplies(month);
+    const quickReplies = this.createMonthQuickReplies(result.month);
 
     return {
       outputs: [textCard],

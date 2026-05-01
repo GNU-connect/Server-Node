@@ -1,6 +1,18 @@
-import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
-import { Notice } from 'src/type-orm/entities/notices/notice.entity';
+export interface NoticeItemResult {
+  title: string;
+  nttSn: number;
+  createdAt: Date;
+}
+
+export interface NoticeCategoryResult {
+  category: string;
+  mi: number;
+  bbsId: number;
+  departmentName?: string;
+  departmentEn?: string;
+  notices: NoticeItemResult[];
+}
 
 export interface NoticeListResult {
-  noticesMap: Map<NoticeCategory, Notice[]>;
+  categories: NoticeCategoryResult[];
 }

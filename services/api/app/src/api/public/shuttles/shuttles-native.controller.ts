@@ -68,8 +68,7 @@ export class ShuttlesNativeController {
     @Param('routeName') routeName: string,
   ): Promise<NativeResponseDto<ShuttleTimetableResponseDto>> {
     const result = await this.shuttlesService.getTimetable(routeName);
-    const record = result.timetable;
-    const rawTimetable = record.timetable as Record<string, string[]>;
+    const rawTimetable = result.timetable;
 
     const nowMinutes = getKstMinutes();
     const friday = isKstFriday();
@@ -109,10 +108,10 @@ export class ShuttlesNativeController {
     }));
 
     const data: ShuttleTimetableResponseDto = {
-      routeName: record.routeName,
+      routeName: result.routeName,
       nextBus,
       sections,
-      updatedAt: formatUpdatedAt(record.updatedAt),
+      updatedAt: formatUpdatedAt(result.updatedAt),
     };
 
     return new NativeResponseDto(data);

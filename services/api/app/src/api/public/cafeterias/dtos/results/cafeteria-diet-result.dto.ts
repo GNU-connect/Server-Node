@@ -1,10 +1,15 @@
 import { DietTime } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
-import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
+import { CafeteriaItemResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
+
+export interface CafeteriaDietItemResult {
+  dishCategory: string | null;
+  dishType: string | null;
+  dishName: string;
+}
 
 export interface CafeteriaDietResult {
-  cafeteria: Cafeteria;
-  diets: CafeteriaDiet[];
+  cafeteria: CafeteriaItemResult;
+  diets: CafeteriaDietItemResult[];
   date: Date;
   time: DietTime;
 }
