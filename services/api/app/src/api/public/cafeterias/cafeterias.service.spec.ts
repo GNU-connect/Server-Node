@@ -55,16 +55,16 @@ describe('CafeteriasService', () => {
       const result = await service.getCafeterias(1);
 
       expect(cafeteriasRepository.findCafeteriasByCampusId).toHaveBeenCalledWith(1);
-      expect(result).toBe(cafeterias);
+      expect(result.cafeterias).toBe(cafeterias);
     });
 
     it('cache hit이면 DB 조회 없이 캐시 값을 반환한다', async () => {
-      const cachedCafeterias = [makeCafeteria()];
-      cacheManager.get.mockResolvedValue(cachedCafeterias);
+      const cachedResult = { cafeterias: [makeCafeteria()] };
+      cacheManager.get.mockResolvedValue(cachedResult);
 
       const result = await service.getCafeterias(1);
 
-      expect(result).toBe(cachedCafeterias);
+      expect(result).toBe(cachedResult);
       expect(cafeteriasRepository.findCafeteriasByCampusId).not.toHaveBeenCalled();
     });
   });

@@ -5,20 +5,13 @@ import {
   DietDate,
   DietTime,
 } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
+import { CafeteriaDietResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
+import { CafeteriaListResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
 import {
   getDietTime,
   getTodayOrTomorrow,
 } from 'src/api/public/cafeterias/utils/time';
 import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
-import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
-
-export interface CafeteriaDietResult {
-  cafeteria: Cafeteria;
-  diets: CafeteriaDiet[];
-  date: Date;
-  time: DietTime;
-}
 
 @Injectable()
 export class CafeteriasService {
@@ -35,8 +28,9 @@ export class CafeteriasService {
   @CacheKey({
     key: ([campusId]) => `cafeteria-list:campus:${campusId as number}`,
   })
-  public async getCafeterias(campusId: number): Promise<Cafeteria[]> {
-    return this.cafeteriasRepository.findCafeteriasByCampusId(campusId);
+  public async getCafeterias(campusId: number): Promise<CafeteriaListResult> {
+    const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId(campusId);
+    return { cafeterias };
   }
 
   /**
