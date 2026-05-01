@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TextCard } from 'src/api/common/interfaces/response/fields/component';
-import {
-  Button,
-  QuickReply,
-} from 'src/api/common/interfaces/response/fields/etc';
+import { Button, QuickReply } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createTextCard } from 'src/api/common/utils/component';
 import { BlockId } from 'src/api/common/utils/constants';
@@ -31,7 +28,7 @@ export class ScheduleMessagesService {
       description = '등록된 학사일정이 없습니다.';
     } else {
       description = schedules
-        .map((schedule) => {
+        .map(schedule => {
           const startDate = new Date(schedule.startDate);
           const endDate = new Date(schedule.endDate);
 
@@ -50,8 +47,7 @@ export class ScheduleMessagesService {
       {
         label: '더보기',
         action: 'webLink',
-        webLinkUrl:
-          'https://www.gnu.ac.kr/main/ps/schdul/selectSchdulMainList.do?mi=1084',
+        webLinkUrl: 'https://www.gnu.ac.kr/main/ps/schdul/selectSchdulMainList.do?mi=1084',
       },
     ];
 

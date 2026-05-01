@@ -79,7 +79,7 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      expect(result.size).toBe(0);
+      expect(result.noticesMap.size).toBe(0);
     });
 
     it('공지사항이 없으면 빈 Map을 반환한다', async () => {
@@ -89,7 +89,7 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      expect(result.size).toBe(0);
+      expect(result.noticesMap.size).toBe(0);
     });
 
     it('공지가 있으면 카테고리-공지 Map을 반환한다', async () => {
@@ -102,9 +102,9 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      expect(result.size).toBe(1);
-      expect([...result.keys()][0]).toBe(category);
-      expect([...result.values()][0]).toEqual([notice]);
+      expect(result.noticesMap.size).toBe(1);
+      expect([...result.noticesMap.keys()][0]).toBe(category);
+      expect([...result.noticesMap.values()][0]).toEqual([notice]);
     });
 
     it('TARGET_CATEGORIES 순서대로 Map이 구성된다', async () => {
@@ -113,7 +113,7 @@ describe('NoticesService', () => {
         makeCategory({ id: idx + 1, category: cat }),
       );
       const noticeMap = new Map(
-        categories.map((cat) => [cat.id, [makeNotice({ categoryId: cat.id })]]),
+        categories.map(cat => [cat.id, [makeNotice({ categoryId: cat.id })]]),
       );
 
       noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue(categories);
@@ -121,7 +121,7 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      const keys = [...result.keys()].map((c) => c.category);
+      const keys = [...result.noticesMap.keys()].map(c => c.category);
       expect(keys).toEqual(TARGET_CATEGORIES);
     });
 
@@ -138,8 +138,8 @@ describe('NoticesService', () => {
 
       const result = await service.getUniversityNotices();
 
-      expect(result.size).toBe(1);
-      expect([...result.keys()][0].id).toBe(1);
+      expect(result.noticesMap.size).toBe(1);
+      expect([...result.noticesMap.keys()][0].id).toBe(1);
     });
 
     it('department_id 117로 카테고리를 조회한다', async () => {
@@ -160,7 +160,7 @@ describe('NoticesService', () => {
 
       const result = await service.getDepartmentNotices(user);
 
-      expect(result.size).toBe(0);
+      expect(result.noticesMap.size).toBe(0);
     });
 
     it('카테고리가 없으면 빈 Map을 반환한다', async () => {
@@ -169,7 +169,7 @@ describe('NoticesService', () => {
 
       const result = await service.getDepartmentNotices(user);
 
-      expect(result.size).toBe(0);
+      expect(result.noticesMap.size).toBe(0);
     });
 
     it('공지사항이 없으면 빈 Map을 반환한다', async () => {
@@ -180,7 +180,7 @@ describe('NoticesService', () => {
 
       const result = await service.getDepartmentNotices(user);
 
-      expect(result.size).toBe(0);
+      expect(result.noticesMap.size).toBe(0);
     });
 
     it('공지가 있으면 카테고리-공지 Map을 반환한다', async () => {
@@ -193,7 +193,7 @@ describe('NoticesService', () => {
 
       const result = await service.getDepartmentNotices(user);
 
-      expect(result.size).toBe(1);
+      expect(result.noticesMap.size).toBe(1);
     });
 
     it('parentDepartmentId가 있으면 departmentIds에 부모 학과 ID도 포함된다', async () => {

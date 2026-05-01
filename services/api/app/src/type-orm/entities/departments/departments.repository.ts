@@ -11,10 +11,7 @@ export class DepartmentsRepository {
     private readonly departmentsRepository: Repository<Department>,
   ) {}
 
-  findByCollegeId(
-    collegeId: number,
-    page: number,
-  ): Promise<[Department[], number]> {
+  findByCollegeId(collegeId: number, page: number): Promise<[Department[], number]> {
     return this.departmentsRepository
       .createQueryBuilder('department')
       .where('department.college_id = :collegeId', {

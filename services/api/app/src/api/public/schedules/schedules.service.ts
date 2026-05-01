@@ -1,20 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { AcademicCalendar } from 'src/type-orm/entities/academic-calendars/academic-calendar.entity';
+import { AcademicScheduleResult } from 'src/api/public/schedules/dtos/results/academic-schedule-result.dto';
 import { AcademicCalendarsRepository } from 'src/type-orm/entities/academic-calendars/academic-calendars.repository';
-
-export interface AcademicScheduleResult {
-  year: number;
-  month: number;
-  schedules: AcademicCalendar[];
-}
 
 @Injectable()
 export class SchedulesService {
   private readonly UNDERGRADUATE_CALENDAR_TYPE = 1;
 
-  constructor(
-    private readonly academicCalendarsRepository: AcademicCalendarsRepository,
-  ) {}
+  constructor(private readonly academicCalendarsRepository: AcademicCalendarsRepository) {}
 
   /**
    * 학사일정 조회

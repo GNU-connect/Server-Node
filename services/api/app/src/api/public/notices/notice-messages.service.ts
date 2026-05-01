@@ -12,9 +12,7 @@ export class NoticeMessagesService {
    * @param noticesByCategory 카테고리별 공지사항 Map
    * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
    */
-  createUniversityNoticeCarousel(
-    noticesByCategory: Map<NoticeCategory, Notice[]>,
-  ): SkillTemplate {
+  createUniversityNoticeCarousel(noticesByCategory: Map<NoticeCategory, Notice[]>): SkillTemplate {
     const carouselItems: ListCard['listCard'][] = [];
 
     for (const [category, notices] of noticesByCategory) {
@@ -22,15 +20,11 @@ export class NoticeMessagesService {
         title: `${category.category} 공지`,
       };
 
-      const items: ListItem[] = notices.map((notice) => ({
+      const items: ListItem[] = notices.map(notice => ({
         title: notice.title,
         description: this.formatNoticeDate(notice.createdAt),
         link: {
-          web: this.createNoticeLinkUrl(
-            category.mi,
-            category.bbsId,
-            notice.nttSn,
-          ),
+          web: this.createNoticeLinkUrl(category.mi, category.bbsId, notice.nttSn),
         },
       }));
 
@@ -57,9 +51,7 @@ export class NoticeMessagesService {
    * @param noticesByCategory 카테고리별 공지사항 Map (department relation 포함)
    * @returns SkillTemplate (캐러셀 형태의 여러 ListCard)
    */
-  createDepartmentNoticeCarousel(
-    noticesByCategory: Map<NoticeCategory, Notice[]>,
-  ): SkillTemplate {
+  createDepartmentNoticeCarousel(noticesByCategory: Map<NoticeCategory, Notice[]>): SkillTemplate {
     const carouselItems: ListCard['listCard'][] = [];
 
     for (const [category, notices] of noticesByCategory) {
@@ -67,7 +59,7 @@ export class NoticeMessagesService {
         title: `${category.department.name} - ${category.category}`,
       };
 
-      const items: ListItem[] = notices.map((notice) => ({
+      const items: ListItem[] = notices.map(notice => ({
         title: notice.title,
         description: this.formatNoticeDate(notice.createdAt),
         link: {
@@ -146,11 +138,7 @@ export class NoticeMessagesService {
    * @param bbsId notice_category.bbs_id
    * @returns 공지사항 게시판 목록 URL
    */
-  private createNoticeBoardListUrl(
-    departmentEn: string,
-    mi: number,
-    bbsId: number,
-  ): string {
+  private createNoticeBoardListUrl(departmentEn: string, mi: number, bbsId: number): string {
     return `https://www.gnu.ac.kr/${departmentEn}/na/ntt/selectNttList.do?mi=${mi}&bbsId=${bbsId}`;
   }
 

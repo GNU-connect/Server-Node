@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { College } from '../colleges/college.entity';
 import { User } from '../users/users.entity';
 
@@ -23,10 +16,10 @@ export class Department {
   @Column({ name: 'parent_department_id', nullable: true })
   parentDepartmentId: number;
 
-  @OneToMany(() => User, (users) => users.department)
+  @OneToMany(() => User, users => users.department)
   users: User[];
 
-  @ManyToOne(() => College, (college) => college.departments)
+  @ManyToOne(() => College, college => college.departments)
   @JoinColumn({ name: 'college_id' })
   college: College;
 

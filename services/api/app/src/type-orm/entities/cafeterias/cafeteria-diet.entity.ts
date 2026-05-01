@@ -1,11 +1,5 @@
 import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('cafeteria_diet')
 export class CafeteriaDiet {
@@ -30,7 +24,7 @@ export class CafeteriaDiet {
   @Column({ name: 'dish_name' })
   dishName: string;
 
-  @ManyToOne(() => Cafeteria, (cafeteria) => cafeteria.cafeteriaDiets)
+  @ManyToOne(() => Cafeteria, cafeteria => cafeteria.cafeteriaDiets)
   @JoinColumn({ name: 'cafeteria_id' })
   cafeteria: Cafeteria;
 }

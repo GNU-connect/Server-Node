@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UpsertDepartmentRequestDto } from './dtos/requests/upsert-department-request.dto';
 import { UsersService } from './users.service';
 
 jest.mock('typeorm-transactional', () => ({
@@ -67,15 +66,18 @@ describe('UsersService', () => {
   });
 
   describe('upsert', () => {
-    it('userId와 extra로 사용자 학과 정보를 저장한다', async () => {
+    it('userId와 campusId, departmentId로 사용자 학과 정보를 저장한다', async () => {
       const user = makeUser();
-      const extra = { campusId: 1, departmentId: 10 } as UpsertDepartmentRequestDto;
       usersRepository.save.mockResolvedValue(user);
 
-      const result = await service.upsert('kakao-user-id', extra);
+      const result = await service.upsert('kakao-user-id', 1, 10);
 
       expect(usersRepository.save).toHaveBeenCalledWith('kakao-user-id', 1, 10);
-      expect(result).toBe(user);
+      expect(result).toEqual({
+        userId: user.id,
+        campusId: user.campus.id,
+        departmentId: user.department.id,
+      });
     });
   });
 });

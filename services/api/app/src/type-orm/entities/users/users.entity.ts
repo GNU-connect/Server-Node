@@ -7,11 +7,11 @@ export class User {
   @PrimaryColumn()
   id: string;
 
-  @ManyToOne(() => Campus, (campus) => campus.users)
+  @ManyToOne(() => Campus, campus => campus.users)
   @JoinColumn({ name: 'campus_id' })
   campus: Campus;
 
-  @ManyToOne(() => Department, (department) => department.users)
+  @ManyToOne(() => Department, department => department.users)
   @JoinColumn({ name: 'department_id' })
   department: Department;
 }

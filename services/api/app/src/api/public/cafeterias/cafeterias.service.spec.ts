@@ -55,16 +55,16 @@ describe('CafeteriasService', () => {
       const result = await service.getCafeterias(1);
 
       expect(cafeteriasRepository.findCafeteriasByCampusId).toHaveBeenCalledWith(1);
-      expect(result).toBe(cafeterias);
+      expect(result.cafeterias).toBe(cafeterias);
     });
 
     it('cache hit이면 DB 조회 없이 캐시 값을 반환한다', async () => {
-      const cachedCafeterias = [makeCafeteria()];
-      cacheManager.get.mockResolvedValue(cachedCafeterias);
+      const cachedResult = { cafeterias: [makeCafeteria()] };
+      cacheManager.get.mockResolvedValue(cachedResult);
 
       const result = await service.getCafeterias(1);
 
-      expect(result).toBe(cachedCafeterias);
+      expect(result).toBe(cachedResult);
       expect(cafeteriasRepository.findCafeteriasByCampusId).not.toHaveBeenCalled();
     });
   });
@@ -73,7 +73,13 @@ describe('CafeteriasService', () => {
     it('식당 정보와 식단 목록을 포함한 결과를 반환한다', async () => {
       const cafeteria = makeCafeteria({ id: 5 });
       const diets: CafeteriaDiet[] = [
-        { id: 1, cafeteriaId: 5, dishName: '김치찌개', dishCategory: '한식', dishType: '국' } as any,
+        {
+          id: 1,
+          cafeteriaId: 5,
+          dishName: '김치찌개',
+          dishCategory: '한식',
+          dishType: '국',
+        } as any,
       ];
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue(diets);

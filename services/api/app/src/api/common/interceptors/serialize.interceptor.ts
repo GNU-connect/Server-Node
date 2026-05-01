@@ -10,7 +10,7 @@ export class SerializeInterceptor implements NestInterceptor {
     const path = request.url;
 
     // 제외 경로에 해당하는 경우 인터셉터를 건너뜁니다
-    if (this.excludePaths.some((excludePath) => path.includes(excludePath))) {
+    if (this.excludePaths.some(excludePath => path.includes(excludePath))) {
       return next.handle();
     }
 

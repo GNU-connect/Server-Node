@@ -40,14 +40,17 @@ export class CafeteriasController {
 
     // '더보기' 버튼 또는 캠퍼스 미설정 → 캠퍼스 선택 카드 반환
     if (requestedCampusId === -1 || (!requestedCampusId && !userCampusId)) {
-      const campuses = await this.campusesService.findAll();
-      const template = this.campusMessagesService.createCampusListCard(campuses, BlockId.CAFETERIA_LIST);
+      const result = await this.campusesService.findAll();
+      const template = this.campusMessagesService.createCampusListCard(
+        result.campuses,
+        BlockId.CAFETERIA_LIST,
+      );
       return new ResponseDTO(template);
     }
 
     const campusId = requestedCampusId ?? userCampusId;
-    const cafeterias = await this.cafeteriasService.getCafeterias(campusId);
-    const template = this.cafeteriaMessagesService.cafeteriasListCard(cafeterias);
+    const result = await this.cafeteriasService.getCafeterias(campusId);
+    const template = this.cafeteriaMessagesService.cafeteriasListCard(result.cafeterias);
     return new ResponseDTO(template);
   }
 

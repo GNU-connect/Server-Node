@@ -21,8 +21,8 @@ export class ShuttlesController {
 
   @Post('routes')
   public async getRoutesList(): Promise<ResponseDTO> {
-    const routes = await this.shuttlesService.getRoutes();
-    const template = this.shuttleMessagesService.createRoutesListCard(routes);
+    const result = await this.shuttlesService.getRoutes();
+    const template = this.shuttleMessagesService.createRoutesListCard(result.routes);
     return new ResponseDTO(template);
   }
 
@@ -32,8 +32,8 @@ export class ShuttlesController {
     @ClientExtra(GetShuttleTimetableRequestDto)
     extra: GetShuttleTimetableRequestDto,
   ): Promise<ResponseDTO> {
-    const record = await this.shuttlesService.getTimetable(extra.routeName);
-    const template = this.shuttleMessagesService.createTimetableTextCard(record);
+    const result = await this.shuttlesService.getTimetable(extra.routeName);
+    const template = this.shuttleMessagesService.createTimetableTextCard(result.timetable);
     return new ResponseDTO(template);
   }
 }

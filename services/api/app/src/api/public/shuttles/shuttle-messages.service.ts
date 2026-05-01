@@ -20,7 +20,7 @@ export class ShuttleMessagesService {
 
     const header: ListItem = { title };
 
-    const items: ListItem[] = routes.map((route) => ({
+    const items: ListItem[] = routes.map(route => ({
       title: route.routeName,
       action: 'block',
       blockId: BlockId.SHUTTLE_TIMETABLE,
@@ -58,15 +58,12 @@ export class ShuttleMessagesService {
       {
         label: '공식 홈페이지',
         action: 'webLink',
-        webLinkUrl:
-          'https://www.gnu.ac.kr/main/cm/cntnts/cntntsView.do?mi=1358&cntntsId=1194',
+        webLinkUrl: 'https://www.gnu.ac.kr/main/cm/cntnts/cntntsView.do?mi=1358&cntntsId=1194',
       },
     ];
 
     return {
-      outputs: [
-        createTextCard(`🚌 ${record.routeName} 셔틀`, descLines.join('\n'), buttons),
-      ],
+      outputs: [createTextCard(`🚌 ${record.routeName} 셔틀`, descLines.join('\n'), buttons)],
     };
   }
 }

@@ -14,8 +14,8 @@ export class CampusesNativeController {
   @Get()
   @ApiOkResponse({ type: NativeResponseDto<CampusResponseDto[]> })
   async getCampuses(): Promise<NativeResponseDto<CampusResponseDto[]>> {
-    const campuses = await this.campusesService.findAll();
-    const data = campuses.map((campus) => ({
+    const result = await this.campusesService.findAll();
+    const data = result.campuses.map(campus => ({
       id: campus.id,
       name: campus.name,
       thumbnailUrl: campus.thumbnailUrl,

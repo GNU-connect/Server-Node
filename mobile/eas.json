@@ -5,6 +5,9 @@
   },
   "build": {
     "preview": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://connectgnu.kro.kr/api"
+      },
       "android": {
         "buildType": "apk"
       }

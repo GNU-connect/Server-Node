@@ -19,7 +19,7 @@ export class CollegeMessagesService {
       title: '단과대학 선택',
     };
 
-    const items: ListItem[] = colleges.map((college) => {
+    const items: ListItem[] = colleges.map(college => {
       return {
         title: college.name,
         imageUrl: college.thumbnailUrl,

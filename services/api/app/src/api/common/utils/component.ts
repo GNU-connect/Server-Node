@@ -29,10 +29,7 @@ export function createSimpleText(text: string): SimpleText {
 }
 
 // SimpleImage 생성 함수
-export function createSimpleImage(
-  imageUrl: string,
-  altText: string,
-): SimpleImage {
+export function createSimpleImage(imageUrl: string, altText: string): SimpleImage {
   return {
     simpleImage: {
       imageUrl,

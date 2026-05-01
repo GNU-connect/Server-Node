@@ -10,10 +10,7 @@ import * as winston from 'winston';
       useFactory: (configService: ConfigService) => ({
         transports: [
           new winston.transports.Console({
-            level:
-              configService.get('NODE_ENV') === 'production'
-                ? 'silly'
-                : 'silly',
+            level: configService.get('NODE_ENV') === 'production' ? 'silly' : 'silly',
             format: winston.format.combine(
               winston.format.timestamp(),
               utilities.format.nestLike('connect-gnu', {

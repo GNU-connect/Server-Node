@@ -12,10 +12,10 @@ Sentry.init({
   // The value is automatically adjusted depending on the environment
   // Learn more about sampling here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/sampling/
   tracesSampler: ({ name }) => {
-    if (name.includes("/api/metrics")) {
+    if (name.includes('/api/metrics')) {
       return 0;
     }
-  
+
     return 1.0;
   },
 
@@ -38,10 +38,10 @@ Sentry.init({
 
   // Advanced, optional: Called for transaction events, you can further debug your transactions here
   beforeSendTransaction(event) {
-    if (event.transaction === "/api/metrics") {
+    if (event.transaction === '/api/metrics') {
       return null;
     }
-    
+
     return event;
   },
 });

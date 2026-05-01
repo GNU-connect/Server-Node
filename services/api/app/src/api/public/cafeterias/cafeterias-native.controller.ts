@@ -22,8 +22,8 @@ export class CafeteriasNativeController {
   async getCafeterias(
     @Query() query: GetCafeteriasQueryDto,
   ): Promise<NativeResponseDto<CafeteriaResponseDto[]>> {
-    const cafeterias = await this.cafeteriasService.getCafeterias(query.campusId ?? 1);
-    const data = cafeterias.map(cafeteria => ({
+    const result = await this.cafeteriasService.getCafeterias(query.campusId ?? 1);
+    const data = result.cafeterias.map(cafeteria => ({
       id: cafeteria.id,
       name: cafeteria.name,
       thumbnailUrl: cafeteria.thumbnailUrl,
