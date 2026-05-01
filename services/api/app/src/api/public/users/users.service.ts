@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpsertDepartmentRequestDto } from 'src/api/public/users/dtos/requests/upsert-department-request.dto';
+import { UpsertDepartmentResult } from 'src/api/public/users/dtos/results/upsert-department-result.dto';
 import { Transactional } from 'typeorm-transactional';
 import { User } from '../../../type-orm/entities/users/users.entity';
 import { UsersRepository } from '../../../type-orm/entities/users/users.repository';
@@ -13,10 +13,16 @@ export class UsersService {
   }
 
   @Transactional()
-  public upsert(
+  public async upsert(
     userId: string,
-    extra: UpsertDepartmentRequestDto,
-  ): Promise<User> {
-    return this.usersRepository.save(userId, extra.campusId, extra.departmentId);
+    campusId: number,
+    departmentId: number,
+  ): Promise<UpsertDepartmentResult> {
+    const user = await this.usersRepository.save(userId, campusId, departmentId);
+    return {
+      userId: user.id,
+      campusId: user.campus.id,
+      departmentId: user.department.id,
+    };
   }
 }

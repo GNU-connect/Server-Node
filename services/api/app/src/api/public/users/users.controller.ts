@@ -48,8 +48,11 @@ export class UsersController {
 
   @Post('campuses/list')
   async listCampuses(): Promise<ResponseDTO> {
-    const campuses = await this.campusesService.findAll();
-    const template = this.campusMessagesService.createCampusListCard(campuses, BlockId.COLLEGE_LIST);
+    const result = await this.campusesService.findAll();
+    const template = this.campusMessagesService.createCampusListCard(
+      result.campuses,
+      BlockId.COLLEGE_LIST,
+    );
     return new ResponseDTO(template);
   }
 
@@ -58,10 +61,10 @@ export class UsersController {
   async listColleges(
     @ClientExtra(ListCollegesRequestDto) extra: ListCollegesRequestDto,
   ): Promise<ResponseDTO> {
-    const [colleges, total] = await this.collegesService.findAll(extra.page ?? 1);
+    const result = await this.collegesService.findAll(extra.page ?? 1);
     const template = this.collegeMessagesService.collegesListCard(
-      colleges,
-      total,
+      result.colleges,
+      result.total,
       extra.campusId,
       extra.page ?? 1,
       BlockId.DEPARTMENT_LIST,
@@ -74,10 +77,10 @@ export class UsersController {
   async listDepartments(
     @ClientExtra(ListDepartmentsRequestDto) extra: ListDepartmentsRequestDto,
   ): Promise<ResponseDTO> {
-    const [departments, total] = await this.departmentsService.findAll(extra);
+    const result = await this.departmentsService.findAll(extra.collegeId, extra.page);
     const template = await this.departmentMessagesService.departmentsListCard(
-      departments,
-      total,
+      result.departments,
+      result.total,
       extra,
       BlockId.UPDATE_DEPARTMENT,
     );
@@ -91,7 +94,7 @@ export class UsersController {
     @CurrentUser() user: User,
     @ClientExtra(UpsertDepartmentRequestDto) extra: UpsertDepartmentRequestDto,
   ): Promise<ResponseDTO> {
-    await this.usersService.upsert(user.id, extra);
+    await this.usersService.upsert(user.id, extra.campusId, extra.departmentId);
     const template = this.commonMessagesService.createSimpleText('학과 정보를 등록했어!');
     return new ResponseDTO(template);
   }
