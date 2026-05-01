@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+      - dev
+
     paths:
       - 'services/api/app/**'
       - '.github/workflows/api-ci.yml'
