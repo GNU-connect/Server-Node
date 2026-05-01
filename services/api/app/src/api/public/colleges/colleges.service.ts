@@ -1,6 +1,6 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { College } from 'src/type-orm/entities/colleges/college.entity';
+import { CollegeListResult } from 'src/api/public/colleges/dtos/results/college-list-result.dto';
 import { CollegesRepository } from 'src/type-orm/entities/colleges/colleges.repository';
 import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
 
@@ -16,7 +16,8 @@ export class CollegesService {
   @CacheKey({
     key: ([page]) => `colleges:page:${page as number}`,
   })
-  public findAll(page: number): Promise<[College[], number]> {
-    return this.collegesRepository.findAll(page);
+  public async findAll(page: number): Promise<CollegeListResult> {
+    const [colleges, total] = await this.collegesRepository.findAll(page);
+    return { colleges, total };
   }
 }
