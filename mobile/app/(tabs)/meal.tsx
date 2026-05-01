@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   View,
@@ -29,6 +29,13 @@ import {
   type Cafeteria,
   type MenuCategory,
 } from '@/services/cafeteriaApi';
+import {
+  getDietPreference,
+  saveDietCafeteriaId,
+  saveDietCampusId,
+  selectByStoredId,
+  type DietPreference,
+} from '@/services/preferenceStorage';
 import { toIsoDate } from '@/utils/date';
 import { getDietTime, type DietTimeLabel } from '@/utils/dietTime';
 
@@ -39,6 +46,8 @@ const WEEK_DATES: Date[] = Array.from({ length: 7 }, (_, i) => {
 });
 
 export default function MealScreen() {
+  const dietPreferenceRef = useRef<DietPreference>({ campusId: null, cafeteriaId: null });
+
   const [campuses, setCampuses] = useState<Campus[]>([]);
   const [cafeterias, setCafeterias] = useState<Cafeteria[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
@@ -57,20 +66,47 @@ export default function MealScreen() {
 
   // 마운트 시 캠퍼스 목록 불러오기
   useEffect(() => {
+    let canceled = false;
+
     setLoadingCampuses(true);
     setError(null);
-    getCampuses()
-      .then(data => {
+
+    Promise.all([getCampuses(), getDietPreference()])
+      .then(([data, preference]) => {
+        if (canceled) return;
+
+        dietPreferenceRef.current = preference;
         setCampuses(data);
-        if (data.length > 0) setSelectedCampus(data[0]);
+
+        const nextCampus = selectByStoredId(data, preference.campusId);
+        setSelectedCampus(nextCampus);
+
+        if (nextCampus && nextCampus.id !== preference.campusId) {
+          dietPreferenceRef.current = {
+            ...dietPreferenceRef.current,
+            campusId: nextCampus.id,
+          };
+          void saveDietCampusId(nextCampus.id);
+        }
       })
-      .catch(() => setError('캠퍼스 정보를 불러오지 못했습니다.'))
-      .finally(() => setLoadingCampuses(false));
+      .catch(() => {
+        if (!canceled) setError('캠퍼스 정보를 불러오지 못했습니다.');
+      })
+      .finally(() => {
+        if (!canceled) setLoadingCampuses(false);
+      });
+
+    return () => {
+      canceled = true;
+    };
   }, []);
 
   // 캠퍼스 변경 시 식당 목록 불러오기
   useEffect(() => {
     if (!selectedCampus) return;
+
+    let canceled = false;
+
     setLoadingCafeterias(true);
     setError(null);
     setSelectedCafeteria(null);
@@ -78,11 +114,31 @@ export default function MealScreen() {
     setMenuCategories([]);
     getCafeterias(selectedCampus.id)
       .then(data => {
+        if (canceled) return;
+
         setCafeterias(data);
-        if (data.length > 0) setSelectedCafeteria(data[0]);
+
+        const nextCafeteria = selectByStoredId(data, dietPreferenceRef.current.cafeteriaId);
+        setSelectedCafeteria(nextCafeteria);
+
+        if (nextCafeteria && nextCafeteria.id !== dietPreferenceRef.current.cafeteriaId) {
+          dietPreferenceRef.current = {
+            ...dietPreferenceRef.current,
+            cafeteriaId: nextCafeteria.id,
+          };
+          void saveDietCafeteriaId(nextCafeteria.id);
+        }
       })
-      .catch(() => setError('식당 정보를 불러오지 못했습니다.'))
-      .finally(() => setLoadingCafeterias(false));
+      .catch(() => {
+        if (!canceled) setError('식당 정보를 불러오지 못했습니다.');
+      })
+      .finally(() => {
+        if (!canceled) setLoadingCafeterias(false);
+      });
+
+    return () => {
+      canceled = true;
+    };
   }, [selectedCampus]);
 
   // 식당/요일/끼니 변경 시 식단 불러오기
@@ -98,6 +154,24 @@ export default function MealScreen() {
       })
       .finally(() => setLoadingDiet(false));
   }, [selectedCafeteria, selectedDate, mealType]);
+
+  const handleCampusSelect = useCallback((campus: Campus) => {
+    dietPreferenceRef.current = {
+      ...dietPreferenceRef.current,
+      campusId: campus.id,
+    };
+    setSelectedCampus(campus);
+    void saveDietCampusId(campus.id);
+  }, []);
+
+  const handleCafeteriaSelect = useCallback((cafeteria: Cafeteria) => {
+    dietPreferenceRef.current = {
+      ...dietPreferenceRef.current,
+      cafeteriaId: cafeteria.id,
+    };
+    setSelectedCafeteria(cafeteria);
+    void saveDietCafeteriaId(cafeteria.id);
+  }, []);
 
   const badgeLabel =
     selectedCampus && selectedCafeteria
@@ -155,7 +229,7 @@ export default function MealScreen() {
               key={c.id}
               label={c.name}
               selected={selectedCafeteria?.id === c.id}
-              onPress={() => setSelectedCafeteria(c)}
+              onPress={() => handleCafeteriaSelect(c)}
             />
           ))}
         </ScrollView>
@@ -202,7 +276,7 @@ export default function MealScreen() {
         visible={campusSheetOpen}
         campuses={campuses}
         selectedCampus={selectedCampus}
-        onSelect={setSelectedCampus}
+        onSelect={handleCampusSelect}
         onClose={() => setCampusSheetOpen(false)}
       />
     </SafeAreaView>

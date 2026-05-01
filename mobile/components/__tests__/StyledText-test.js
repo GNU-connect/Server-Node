@@ -1,10 +1,18 @@
 import * as React from 'react';
-import renderer from 'react-test-renderer';
+import renderer, { act } from 'react-test-renderer';
 
 import { MonoText } from '../StyledText';
 
-it(`renders correctly`, () => {
-  const tree = renderer.create(<MonoText>Snapshot test!</MonoText>).toJSON();
+it(`정상적으로 렌더링된다`, async () => {
+  let component;
 
-  expect(tree).toMatchSnapshot();
+  await act(async () => {
+    component = renderer.create(<MonoText>Snapshot test!</MonoText>);
+  });
+
+  expect(component.toJSON()).toMatchSnapshot();
+
+  await act(async () => {
+    component.unmount();
+  });
 });

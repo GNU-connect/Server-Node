@@ -1,0 +1,4 @@
+interface:
+  display_name: 'GitHub PR 본문 작성'
+  short_description: 'Epic 변경 기반 PR 본문 작성'
+  default_prompt: 'Use $github-pr-body to draft a Korean pull request body from the current branch changes.'
