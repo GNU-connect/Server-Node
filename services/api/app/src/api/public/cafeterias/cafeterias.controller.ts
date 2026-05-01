@@ -6,9 +6,9 @@ import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { ListCafeteriaDietExtraRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
 import { ListCafeteriaRequestDto } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-request.dto';
-import { CafeteriaMessagesService } from 'src/api/public/cafeterias/cafeteria-messages.service';
+import { CafeteriaMessageFactory } from 'src/api/public/cafeterias/cafeteria-message.factory';
 import { CampusesService } from 'src/api/public/campuses/campuses.service';
-import { CampusMessagesService } from 'src/api/public/campuses/campus-messages.service';
+import { CampusMessageFactory } from 'src/api/public/campuses/campus-message.factory';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { BlockId } from 'src/api/common/utils/constants';
@@ -23,9 +23,9 @@ import { CafeteriasService } from './cafeterias.service';
 export class CafeteriasController {
   constructor(
     private readonly cafeteriasService: CafeteriasService,
-    private readonly cafeteriaMessagesService: CafeteriaMessagesService,
+    private readonly cafeteriaMessageFactory: CafeteriaMessageFactory,
     private readonly campusesService: CampusesService,
-    private readonly campusMessagesService: CampusMessagesService,
+    private readonly campusMessageFactory: CampusMessageFactory,
   ) {}
 
   @Post()
@@ -41,8 +41,8 @@ export class CafeteriasController {
     // '더보기' 버튼 또는 캠퍼스 미설정 → 캠퍼스 선택 카드 반환
     if (requestedCampusId === -1 || (!requestedCampusId && !userCampusId)) {
       const result = await this.campusesService.findAll();
-      const template = this.campusMessagesService.createCampusListCard(
-        result.campuses,
+      const template = this.campusMessageFactory.createCampusListCard(
+        result,
         BlockId.CAFETERIA_LIST,
       );
       return new ResponseDTO(template);
@@ -50,7 +50,7 @@ export class CafeteriasController {
 
     const campusId = requestedCampusId ?? userCampusId;
     const result = await this.cafeteriasService.getCafeterias(campusId);
-    const template = this.cafeteriaMessagesService.cafeteriasListCard(result.cafeterias);
+    const template = this.cafeteriaMessageFactory.createCafeteriaListCard(result);
     return new ResponseDTO(template);
   }
 
@@ -62,12 +62,7 @@ export class CafeteriasController {
   ) {
     const { cafeteriaId, date, time } = extra;
     const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, time);
-    const template = this.cafeteriaMessagesService.cafeteriaDietsListCard(
-      result.cafeteria,
-      result.date,
-      result.time,
-      result.diets,
-    );
+    const template = this.cafeteriaMessageFactory.createCafeteriaDietListCard(result);
     return new ResponseDTO(template);
   }
 }

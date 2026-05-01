@@ -6,7 +6,7 @@ import { createSimpleText, createTextCard } from 'src/api/common/utils/component
 import { BlockId } from 'src/api/common/utils/constants';
 
 @Injectable()
-export class CommonMessagesService {
+export class CommonMessageFactory {
   createSimpleText(text: string): SkillTemplate {
     return {
       outputs: [createSimpleText(text)],

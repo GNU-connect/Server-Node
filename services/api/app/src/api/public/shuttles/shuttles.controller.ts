@@ -5,7 +5,7 @@ import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
 import { GetShuttleTimetableRequestDto } from './dtos/request/get-shuttle-timetable-request.dto';
-import { ShuttleMessagesService } from './shuttle-messages.service';
+import { ShuttleMessageFactory } from './shuttle-message.factory';
 import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { ShuttlesService } from './shuttles.service';
 
@@ -16,13 +16,13 @@ import { ShuttlesService } from './shuttles.service';
 export class ShuttlesController {
   constructor(
     private readonly shuttlesService: ShuttlesService,
-    private readonly shuttleMessagesService: ShuttleMessagesService,
+    private readonly shuttleMessageFactory: ShuttleMessageFactory,
   ) {}
 
   @Post('routes')
   public async getRoutesList(): Promise<ResponseDTO> {
     const result = await this.shuttlesService.getRoutes();
-    const template = this.shuttleMessagesService.createRoutesListCard(result.routes);
+    const template = this.shuttleMessageFactory.createRoutesListCard(result);
     return new ResponseDTO(template);
   }
 
@@ -33,7 +33,7 @@ export class ShuttlesController {
     extra: GetShuttleTimetableRequestDto,
   ): Promise<ResponseDTO> {
     const result = await this.shuttlesService.getTimetable(extra.routeName);
-    const template = this.shuttleMessagesService.createTimetableTextCard(result.timetable);
+    const template = this.shuttleMessageFactory.createTimetableTextCard(result);
     return new ResponseDTO(template);
   }
 }

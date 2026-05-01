@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NoticeListResult } from 'src/api/public/notices/dtos/results/notice-list-result.dto';
+import {
+  NoticeCategoryResult,
+  NoticeListResult,
+} from 'src/api/public/notices/dtos/results/notice-list-result.dto';
 import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice-categories.repository';
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
@@ -30,7 +33,7 @@ export class NoticesService {
     );
 
     if (categories.length === 0) {
-      return { noticesMap: new Map() };
+      return { categories: [] };
     }
 
     const categoryIds = categories.map(category => category.id);
@@ -39,19 +42,19 @@ export class NoticesService {
       this.CAROUSEL_ITEMS_LIMIT,
     );
 
-    const result = new Map<NoticeCategory, Notice[]>();
+    const categoriesResult: NoticeCategoryResult[] = [];
 
     for (const targetCategory of this.TARGET_CATEGORIES) {
       const category = categories.find(c => c.category === targetCategory);
       if (category) {
         const notices = noticesByCategory.get(category.id) || [];
         if (notices.length > 0) {
-          result.set(category, notices);
+          categoriesResult.push(this.createNoticeCategoryResult(category, notices));
         }
       }
     }
 
-    return { noticesMap: result };
+    return { categories: categoriesResult };
   }
 
   /**
@@ -61,7 +64,7 @@ export class NoticesService {
    */
   async getDepartmentNotices(user: User): Promise<NoticeListResult> {
     if (!user.department) {
-      return { noticesMap: new Map() };
+      return { categories: [] };
     }
 
     const departmentIds: number[] = [user.department.id];
@@ -72,7 +75,7 @@ export class NoticesService {
     const categories = await this.noticeCategoriesRepository.findByDepartmentIds(departmentIds);
 
     if (categories.length === 0) {
-      return { noticesMap: new Map() };
+      return { categories: [] };
     }
 
     const categoryIds = categories.map(category => category.id);
@@ -81,15 +84,33 @@ export class NoticesService {
       this.CAROUSEL_ITEMS_LIMIT,
     );
 
-    const result = new Map<NoticeCategory, Notice[]>();
+    const categoriesResult: NoticeCategoryResult[] = [];
 
     for (const category of categories) {
       const notices = noticesByCategory.get(category.id) || [];
       if (notices.length > 0) {
-        result.set(category, notices);
+        categoriesResult.push(this.createNoticeCategoryResult(category, notices));
       }
     }
 
-    return { noticesMap: result };
+    return { categories: categoriesResult };
+  }
+
+  private createNoticeCategoryResult(
+    category: NoticeCategory,
+    notices: Notice[],
+  ): NoticeCategoryResult {
+    return {
+      category: category.category,
+      mi: category.mi,
+      bbsId: category.bbsId,
+      departmentName: category.department?.name,
+      departmentEn: category.department?.departmentEn,
+      notices: notices.map(notice => ({
+        title: notice.title,
+        nttSn: notice.nttSn,
+        createdAt: notice.createdAt,
+      })),
+    };
   }
 }

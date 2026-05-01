@@ -4,13 +4,12 @@ import { ListItem } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createListCard } from 'src/api/common/utils/component';
 import { BlockId, ListCardConfig } from 'src/api/common/utils/constants';
-import { College } from 'src/type-orm/entities/colleges/college.entity';
+import { CollegeListResult } from 'src/api/public/colleges/dtos/results/college-list-result.dto';
 
 @Injectable()
-export class CollegeMessagesService {
-  public collegesListCard(
-    colleges: College[],
-    total: number,
+export class CollegeMessageFactory {
+  public createCollegeListCard(
+    result: CollegeListResult,
     campusId: number,
     page: number,
     blockId: string,
@@ -19,7 +18,7 @@ export class CollegeMessagesService {
       title: '단과대학 선택',
     };
 
-    const items: ListItem[] = colleges.map(college => {
+    const items: ListItem[] = result.colleges.map(college => {
       return {
         title: college.name,
         imageUrl: college.thumbnailUrl,
@@ -34,7 +33,7 @@ export class CollegeMessagesService {
 
     const collegeListCard: ListCard = createListCard(header, items);
 
-    const totalPages = Math.ceil(total / ListCardConfig.LIMIT);
+    const totalPages = Math.ceil(result.total / ListCardConfig.LIMIT);
     const paginationButtons = [];
 
     if (page > 1) {

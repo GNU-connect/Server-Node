@@ -27,7 +27,18 @@ export class CafeteriasService {
   })
   public async getCafeterias(campusId: number): Promise<CafeteriaListResult> {
     const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId(campusId);
-    return { cafeterias };
+    return {
+      cafeterias: cafeterias.map(cafeteria => ({
+        id: cafeteria.id,
+        name: cafeteria.name,
+        thumbnailUrl: cafeteria.thumbnailUrl,
+        campus: {
+          id: cafeteria.campus.id,
+          name: cafeteria.campus.name,
+          thumbnailUrl: cafeteria.campus.thumbnailUrl,
+        },
+      })),
+    };
   }
 
   /**
@@ -52,7 +63,25 @@ export class CafeteriasService {
       resolvedTime,
     );
 
-    return { cafeteria, diets, date, time: resolvedTime };
+    return {
+      cafeteria: {
+        id: cafeteria.id,
+        name: cafeteria.name,
+        thumbnailUrl: cafeteria.thumbnailUrl,
+        campus: {
+          id: cafeteria.campus.id,
+          name: cafeteria.campus.name,
+          thumbnailUrl: cafeteria.campus.thumbnailUrl,
+        },
+      },
+      diets: diets.map(diet => ({
+        dishCategory: diet.dishCategory,
+        dishType: diet.dishType,
+        dishName: diet.dishName,
+      })),
+      date,
+      time: resolvedTime,
+    };
   }
 
   /**
@@ -85,6 +114,24 @@ export class CafeteriasService {
       time,
     );
 
-    return { cafeteria, diets, date, time };
+    return {
+      cafeteria: {
+        id: cafeteria.id,
+        name: cafeteria.name,
+        thumbnailUrl: cafeteria.thumbnailUrl,
+        campus: {
+          id: cafeteria.campus.id,
+          name: cafeteria.campus.name,
+          thumbnailUrl: cafeteria.campus.thumbnailUrl,
+        },
+      },
+      diets: diets.map(diet => ({
+        dishCategory: diet.dishCategory,
+        dishType: diet.dishType,
+        dishName: diet.dishName,
+      })),
+      date,
+      time,
+    };
   }
 }

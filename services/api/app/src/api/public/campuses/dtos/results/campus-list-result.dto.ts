@@ -1,5 +1,9 @@
-import { Campus } from 'src/type-orm/entities/campuses/campus.entity';
+export interface CampusItemResult {
+  id: number;
+  name: string;
+  thumbnailUrl: string;
+}
 
 export interface CampusListResult {
-  campuses: Campus[];
+  campuses: CampusItemResult[];
 }

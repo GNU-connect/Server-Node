@@ -3,16 +3,15 @@ import { Button, ListItem } from 'src/api/common/interfaces/response/fields/etc'
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createListCard, createTextCard } from 'src/api/common/utils/component';
 import { BlockId } from 'src/api/common/utils/constants';
-import { ShuttleTimetable } from 'src/type-orm/entities/shuttle-timetables/shuttle-timetable.entity';
-
-type TimetableJson = Record<string, string[]>;
+import { ShuttleRouteListResult } from 'src/api/public/shuttles/dtos/results/shuttle-route-list-result.dto';
+import { ShuttleTimetableResult } from 'src/api/public/shuttles/dtos/results/shuttle-timetable-result.dto';
 
 @Injectable()
-export class ShuttleMessagesService {
-  public createRoutesListCard(routes: ShuttleTimetable[]): SkillTemplate {
+export class ShuttleMessageFactory {
+  public createRoutesListCard(result: ShuttleRouteListResult): SkillTemplate {
     const title = '🚌 셔틀버스 노선 선택';
 
-    if (routes.length === 0) {
+    if (result.routes.length === 0) {
       return {
         outputs: [createTextCard(title, '현재 등록된 노선이 없습니다.')],
       };
@@ -20,7 +19,7 @@ export class ShuttleMessagesService {
 
     const header: ListItem = { title };
 
-    const items: ListItem[] = routes.map(route => ({
+    const items: ListItem[] = result.routes.map(route => ({
       title: route.routeName,
       action: 'block',
       blockId: BlockId.SHUTTLE_TIMETABLE,
@@ -32,13 +31,10 @@ export class ShuttleMessagesService {
     };
   }
 
-  public createTimetableTextCard(record: ShuttleTimetable): SkillTemplate {
-    const timetable = record.timetable as TimetableJson;
-    const updatedAt = record.updatedAt;
-
+  public createTimetableTextCard(result: ShuttleTimetableResult): SkillTemplate {
     const descLines: string[] = [];
 
-    for (const [section, times] of Object.entries(timetable)) {
+    for (const [section, times] of Object.entries(result.timetable)) {
       descLines.push(`[${section}]`);
       for (const time of times) {
         descLines.push(time.replace(/\(금요일 미운행\)/, '❌ 금요일 미운행'));
@@ -46,7 +42,7 @@ export class ShuttleMessagesService {
       descLines.push('');
     }
 
-    const formattedDate = updatedAt.toISOString().slice(0, 16).replace('T', ' ');
+    const formattedDate = result.updatedAt.toISOString().slice(0, 16).replace('T', ' ');
     descLines.push(`ℹ️ 시간표 업데이트: ${formattedDate}`);
 
     const buttons: Button[] = [
@@ -63,7 +59,7 @@ export class ShuttleMessagesService {
     ];
 
     return {
-      outputs: [createTextCard(`🚌 ${record.routeName} 셔틀`, descLines.join('\n'), buttons)],
+      outputs: [createTextCard(`🚌 ${result.routeName} 셔틀`, descLines.join('\n'), buttons)],
     };
   }
 }

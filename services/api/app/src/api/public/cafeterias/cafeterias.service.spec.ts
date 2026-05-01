@@ -11,7 +11,7 @@ const makeCafeteria = (overrides: Partial<Cafeteria> = {}): Cafeteria =>
     id: 1,
     name: '제1학생회관',
     thumbnailUrl: 'https://example.com/thumb.jpg',
-    campus: { id: 1, name: '가좌캠퍼스' },
+    campus: { id: 1, name: '가좌캠퍼스', thumbnailUrl: 'https://example.com/campus.jpg' },
     ...overrides,
   } as Cafeteria);
 
@@ -55,7 +55,18 @@ describe('CafeteriasService', () => {
       const result = await service.getCafeterias(1);
 
       expect(cafeteriasRepository.findCafeteriasByCampusId).toHaveBeenCalledWith(1);
-      expect(result.cafeterias).toBe(cafeterias);
+      expect(result.cafeterias).toEqual([
+        {
+          id: 1,
+          name: '제1학생회관',
+          thumbnailUrl: 'https://example.com/thumb.jpg',
+          campus: {
+            id: 1,
+            name: '가좌캠퍼스',
+            thumbnailUrl: 'https://example.com/campus.jpg',
+          },
+        },
+      ]);
     });
 
     it('cache hit이면 DB 조회 없이 캐시 값을 반환한다', async () => {
@@ -86,8 +97,23 @@ describe('CafeteriasService', () => {
 
       const result = await service.getCafeteriaDiet(5, '오늘', '점심');
 
-      expect(result.cafeteria).toBe(cafeteria);
-      expect(result.diets).toBe(diets);
+      expect(result.cafeteria).toEqual({
+        id: 5,
+        name: '제1학생회관',
+        thumbnailUrl: 'https://example.com/thumb.jpg',
+        campus: {
+          id: 1,
+          name: '가좌캠퍼스',
+          thumbnailUrl: 'https://example.com/campus.jpg',
+        },
+      });
+      expect(result.diets).toEqual([
+        {
+          dishName: '김치찌개',
+          dishCategory: '한식',
+          dishType: '국',
+        },
+      ]);
       expect(result.time).toBe('점심');
       expect(result.date).toBeInstanceOf(Date);
     });

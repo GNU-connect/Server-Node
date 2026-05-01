@@ -8,18 +8,21 @@ import {
   DietDate,
   DietTime,
 } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
+import { CafeteriaDietResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
+import {
+  CafeteriaItemResult,
+  CafeteriaListResult,
+} from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
 import { getDayWeek } from 'src/api/public/cafeterias/utils/time';
-import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
 
 @Injectable()
-export class CafeteriaMessagesService {
-  public cafeteriasListCard(cafeterias: Cafeteria[]): SkillTemplate {
+export class CafeteriaMessageFactory {
+  public createCafeteriaListCard(result: CafeteriaListResult): SkillTemplate {
     const header: ListItem = {
       title: '어떤 교내 식당 정보가 알고 싶어?',
     };
 
-    const items: ListItem[] = cafeterias.map(cafeteria => ({
+    const items: ListItem[] = result.cafeterias.map(cafeteria => ({
       title: cafeteria.name,
       description: cafeteria.campus.name,
       imageUrl: cafeteria.thumbnailUrl,
@@ -48,12 +51,8 @@ export class CafeteriaMessagesService {
     };
   }
 
-  public cafeteriaDietsListCard(
-    cafeteria: Cafeteria,
-    date: Date,
-    time: DietTime,
-    diets: CafeteriaDiet[],
-  ): SkillTemplate {
+  public createCafeteriaDietListCard(result: CafeteriaDietResult): SkillTemplate {
+    const { cafeteria, date, time, diets } = result;
     const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -105,7 +104,7 @@ export class CafeteriaMessagesService {
     };
   }
 
-  private createDishDateQuickReplies(cafeteria: Cafeteria): QuickReply[] {
+  private createDishDateQuickReplies(cafeteria: CafeteriaItemResult): QuickReply[] {
     const dishDateTypes: DietDate[] = ['오늘', '내일'];
     const times: DietTime[] = ['아침', '점심', '저녁'];
 

@@ -4,8 +4,8 @@ import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
-import { CommonMessagesService } from 'src/api/public/common/common-messages.service';
-import { ScheduleMessagesService } from 'src/api/public/schedules/schedule-messages.service';
+import { CommonMessageFactory } from 'src/api/public/common/common-message.factory';
+import { ScheduleMessageFactory } from 'src/api/public/schedules/schedule-message.factory';
 import { ListAcademicScheduleExtraDto } from './dtos/requests/list-academic-schedule-request.dto';
 import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { SchedulesService } from './schedules.service';
@@ -17,8 +17,8 @@ import { SchedulesService } from './schedules.service';
 export class SchedulesController {
   constructor(
     private readonly schedulesService: SchedulesService,
-    private readonly scheduleMessagesService: ScheduleMessagesService,
-    private readonly commonMessagesService: CommonMessagesService,
+    private readonly scheduleMessageFactory: ScheduleMessageFactory,
+    private readonly commonMessageFactory: CommonMessageFactory,
   ) {}
 
   @Post()
@@ -30,16 +30,12 @@ export class SchedulesController {
 
     if (month !== undefined && (month < 1 || month > 12)) {
       const template =
-        this.commonMessagesService.createSimpleText('올바른 월을 입력해주세요. (1-12)');
+        this.commonMessageFactory.createSimpleText('올바른 월을 입력해주세요. (1-12)');
       return new ResponseDTO(template);
     }
 
     const result = await this.schedulesService.getAcademicSchedules(month);
-    const template = this.scheduleMessagesService.createAcademicScheduleTextCard(
-      result.year,
-      result.month,
-      result.schedules,
-    );
+    const template = this.scheduleMessageFactory.createAcademicScheduleTextCard(result);
     return new ResponseDTO(template);
   }
 }
