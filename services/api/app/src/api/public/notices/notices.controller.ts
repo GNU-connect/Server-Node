@@ -27,14 +27,14 @@ export class NoticesController {
   @Post('university')
   @ApiSkillBody(ListUniversityNoticeRequestDto)
   async listUniversityNotices() {
-    const noticesMap = await this.noticesService.getUniversityNotices();
+    const result = await this.noticesService.getUniversityNotices();
 
-    if (noticesMap.size === 0) {
+    if (result.noticesMap.size === 0) {
       const template = this.commonMessagesService.createSimpleText('현재 등록된 공지사항이 없어!');
       return new ResponseDTO(template);
     }
 
-    const template = this.noticeMessagesService.createUniversityNoticeCarousel(noticesMap);
+    const template = this.noticeMessagesService.createUniversityNoticeCarousel(result.noticesMap);
     return new ResponseDTO(template);
   }
 
@@ -47,14 +47,14 @@ export class NoticesController {
       return new ResponseDTO(template);
     }
 
-    const noticesMap = await this.noticesService.getDepartmentNotices(user);
+    const result = await this.noticesService.getDepartmentNotices(user);
 
-    if (noticesMap.size === 0) {
+    if (result.noticesMap.size === 0) {
       const template = this.commonMessagesService.createSimpleText('현재 등록된 공지사항이 없어!');
       return new ResponseDTO(template);
     }
 
-    const template = this.noticeMessagesService.createDepartmentNoticeCarousel(noticesMap);
+    const template = this.noticeMessagesService.createDepartmentNoticeCarousel(result.noticesMap);
     return new ResponseDTO(template);
   }
 }

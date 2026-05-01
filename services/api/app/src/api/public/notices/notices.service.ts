@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { NoticeListResult } from 'src/api/public/notices/dtos/results/notice-list-result.dto';
 import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice-categories.repository';
 import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
 import { Notice } from 'src/type-orm/entities/notices/notice.entity';
@@ -28,7 +29,7 @@ export class NoticesService {
    * 학교 공지사항 조회
    * @returns 카테고리별 공지사항 Map (데이터가 없으면 빈 Map)
    */
-  async getUniversityNotices(): Promise<Map<NoticeCategory, Notice[]>> {
+  async getUniversityNotices(): Promise<NoticeListResult> {
     const categories =
       await this.noticeCategoriesRepository.findByDepartmentIdAndCategories(
         this.UNIVERSITY_DEPARTMENT_ID,
@@ -36,10 +37,10 @@ export class NoticesService {
       );
 
     if (categories.length === 0) {
-      return new Map();
+      return { noticesMap: new Map() };
     }
 
-    const categoryIds = categories.map((category) => category.id);
+    const categoryIds = categories.map(category => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
       this.CAROUSEL_ITEMS_LIMIT,
@@ -48,7 +49,7 @@ export class NoticesService {
     const result = new Map<NoticeCategory, Notice[]>();
 
     for (const targetCategory of this.TARGET_CATEGORIES) {
-      const category = categories.find((c) => c.category === targetCategory);
+      const category = categories.find(c => c.category === targetCategory);
       if (category) {
         const notices = noticesByCategory.get(category.id) || [];
         if (notices.length > 0) {
@@ -57,7 +58,7 @@ export class NoticesService {
       }
     }
 
-    return result;
+    return { noticesMap: result };
   }
 
   /**
@@ -65,9 +66,9 @@ export class NoticesService {
    * @param user 현재 사용자 (department 미설정 시 빈 Map 반환)
    * @returns 카테고리별 공지사항 Map
    */
-  async getDepartmentNotices(user: User): Promise<Map<NoticeCategory, Notice[]>> {
+  async getDepartmentNotices(user: User): Promise<NoticeListResult> {
     if (!user.department) {
-      return new Map();
+      return { noticesMap: new Map() };
     }
 
     const departmentIds: number[] = [user.department.id];
@@ -80,7 +81,7 @@ export class NoticesService {
     );
 
     if (categories.length === 0) {
-      return new Map();
+      return { noticesMap: new Map() };
     }
 
     const categoryIds = categories.map((category) => category.id);
@@ -98,6 +99,6 @@ export class NoticesService {
       }
     }
 
-    return result;
+    return { noticesMap: result };
   }
 }
