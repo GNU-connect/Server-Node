@@ -7,9 +7,14 @@ export interface CafeteriaDietItemResult {
   dishName: string;
 }
 
+export interface CafeteriaMenuGroupResult {
+  category: string;
+  items: string[];
+}
+
 export interface CafeteriaDietResult {
   cafeteria: CafeteriaItemResult;
-  diets: CafeteriaDietItemResult[];
+  menuGroups: CafeteriaMenuGroupResult[];
   date: Date;
   time: DietTime;
 }

@@ -22,7 +22,6 @@ import { SchedulesModule } from './api/public/schedules/schedules.module';
 import { ShuttlesModule } from './api/public/shuttles/shuttles.module';
 import { MetricsInterceptor } from './api/common/interceptors/metrics.interceptor';
 import { HealthModule } from './api/internal/health/health.module';
-import { WarmupModule } from './api/internal/warmup/warmup.module';
 
 @Module({
   imports: [
@@ -44,7 +43,6 @@ import { WarmupModule } from './api/internal/warmup/warmup.module';
     SchedulesModule,
     ShuttlesModule,
     HealthModule,
-    WarmupModule,
   ],
   providers: [
     {
