@@ -1,0 +1,16 @@
+{
+  "name": "server-node",
+  "private": true,
+  "packageManager": "pnpm@9.9.0",
+  "scripts": {
+    "prepare": "husky",
+    "lint-staged": "lint-staged",
+    "test": "pnpm run test:api && pnpm run test:mobile",
+    "test:api": "pnpm --dir services/api/app test -- --runInBand",
+    "test:mobile": "pnpm --dir mobile test -- --runInBand"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  }
+}
