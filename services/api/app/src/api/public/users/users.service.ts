@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UpsertDepartmentResult } from 'src/api/public/users/dtos/results/upsert-department-result.dto';
 import { UserProfileResult } from 'src/api/public/users/dtos/results/user-profile-result.dto';
-import { Transactional } from 'typeorm-transactional';
 import { User } from '../../../type-orm/entities/users/users.entity';
 import { UsersRepository } from '../../../type-orm/entities/users/users.repository';
 
@@ -28,7 +27,6 @@ export class UsersService {
     };
   }
 
-  @Transactional()
   public async upsert(
     userId: string,
     campusId: number,

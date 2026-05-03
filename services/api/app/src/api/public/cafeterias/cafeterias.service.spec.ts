@@ -82,6 +82,7 @@ describe('CafeteriasService', () => {
 
   describe('getCafeteriaDiet', () => {
     it('식당 정보와 식단 목록을 포함한 결과를 반환한다', async () => {
+      const date = new Date('2026-04-21T00:00:00.000Z');
       const cafeteria = makeCafeteria({ id: 5 });
       const diets: CafeteriaDiet[] = [
         {
@@ -95,7 +96,7 @@ describe('CafeteriasService', () => {
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue(diets);
 
-      const result = await service.getCafeteriaDiet(5, '오늘', '점심');
+      const result = await service.getCafeteriaDiet(5, date, '점심');
 
       expect(result.cafeteria).toEqual({
         id: 5,
@@ -107,61 +108,93 @@ describe('CafeteriasService', () => {
           thumbnailUrl: 'https://example.com/campus.jpg',
         },
       });
-      expect(result.diets).toEqual([
+      expect(result.menuGroups).toEqual([
         {
-          dishName: '김치찌개',
-          dishCategory: '한식',
-          dishType: '국',
+          category: '한식',
+          items: ['김치찌개'],
         },
       ]);
       expect(result.time).toBe('점심');
-      expect(result.date).toBeInstanceOf(Date);
-    });
-
-    it('dietTime이 없으면 현재 시각 기반으로 자동 결정된다', async () => {
-      const cafeteria = makeCafeteria();
-      cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
-      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
-
-      const result = await service.getCafeteriaDiet(1, '오늘', undefined);
-
-      expect(['아침', '점심', '저녁']).toContain(result.time);
-    });
-
-    it('dietDate가 "내일"이면 내일 날짜로 조회한다', async () => {
-      const cafeteria = makeCafeteria();
-      cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
-      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
-
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-
-      const result = await service.getCafeteriaDiet(1, '내일', '아침');
-
-      expect(result.date.getDate()).toBe(tomorrow.getDate());
-    });
-
-    it('식당을 찾을 수 없으면 NotFoundException을 던진다', async () => {
-      cafeteriasRepository.findCafeteriaById.mockResolvedValue(null);
-      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
-
-      await expect(service.getCafeteriaDiet(999, '오늘', '점심')).rejects.toThrow(
-        NotFoundException,
+      expect(result.date).toBe(date);
+      expect(cafeteriasRepository.findCafeteriaDietsByCafeteriaId).toHaveBeenCalledWith(
+        5,
+        date,
+        '점심',
       );
     });
 
+    it('식단을 카테고리 우선순위에 따라 그룹화한다', async () => {
+      const date = new Date('2026-04-21T00:00:00.000Z');
+      const cafeteria = makeCafeteria();
+      const diets: CafeteriaDiet[] = [
+        {
+          id: 1,
+          cafeteriaId: 1,
+          dishName: '김치찌개',
+          dishCategory: '한식',
+          dishType: '국',
+        } as any,
+        {
+          id: 2,
+          cafeteriaId: 1,
+          dishName: '된장국',
+          dishCategory: null,
+          dishType: '국',
+        } as any,
+        {
+          id: 3,
+          cafeteriaId: 1,
+          dishName: '잡곡밥',
+          dishCategory: null,
+          dishType: null,
+        } as any,
+        {
+          id: 4,
+          cafeteriaId: 1,
+          dishName: '제육볶음',
+          dishCategory: '한식',
+          dishType: '볶음',
+        } as any,
+      ];
+      cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
+      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue(diets);
+
+      const result = await service.getCafeteriaDiet(1, date, '점심');
+
+      expect(result.menuGroups).toEqual([
+        {
+          category: '한식',
+          items: ['김치찌개', '제육볶음'],
+        },
+        {
+          category: '국',
+          items: ['된장국'],
+        },
+        {
+          category: '',
+          items: ['잡곡밥'],
+        },
+      ]);
+    });
+
+    it('식당을 찾을 수 없으면 NotFoundException을 던진다', async () => {
+      const date = new Date('2026-04-21T00:00:00.000Z');
+      cafeteriasRepository.findCafeteriaById.mockResolvedValue(null);
+      cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
+
+      await expect(service.getCafeteriaDiet(999, date, '점심')).rejects.toThrow(NotFoundException);
+    });
+
     it('cache miss이면 DB를 조회하고 결과를 캐시에 저장한다', async () => {
+      const date = new Date('2026-04-21T00:00:00.000Z');
       cacheManager.get.mockResolvedValue(null);
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(makeCafeteria());
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
 
-      const result = await service.getCafeteriaDiet(1, '오늘', '점심');
+      const result = await service.getCafeteriaDiet(1, date, '점심');
 
       expect(cafeteriasRepository.findCafeteriaById).toHaveBeenCalledWith(1);
-      expect(cacheManager.set).toHaveBeenCalledWith(
-        expect.stringMatching(/^diet:1:\d{4}-\d{2}-\d{2}:점심$/),
-        result,
-      );
+      expect(cacheManager.set).toHaveBeenCalledWith('diet:1:2026-04-21:점심', result);
     });
   });
 });

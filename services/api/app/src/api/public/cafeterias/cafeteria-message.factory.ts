@@ -52,7 +52,7 @@ export class CafeteriaMessageFactory {
   }
 
   public createCafeteriaDietListCard(result: CafeteriaDietResult): SkillTemplate {
-    const { cafeteria, date, time, diets } = result;
+    const { cafeteria, date, time, menuGroups } = result;
     const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
@@ -60,22 +60,13 @@ export class CafeteriaMessageFactory {
 
     let description = `${year}-${month}-${day}(${getDayWeek(date)}) ${time} 메뉴\n\n`;
 
-    if (diets.length > 0) {
-      // dishCategory 또는 dishType 별로 그룹화
-      const grouped: Record<string, string[]> = {};
-      diets.forEach(diet => {
-        const type = diet.dishCategory || diet.dishType || '';
-        if (!grouped[type]) grouped[type] = [];
-        grouped[type].push(diet.dishName);
-      });
-
-      // 출력
-      description += Object.entries(grouped)
-        .map(([type, names]) => {
-          if (type) {
-            return `[${type}]\n${names.join('\n')}`;
+    if (menuGroups.length > 0) {
+      description += menuGroups
+        .map(({ category, items }) => {
+          if (category) {
+            return `[${category}]\n${items.join('\n')}`;
           } else {
-            return names.join('\n');
+            return items.join('\n');
           }
         })
         .join('\n\n');

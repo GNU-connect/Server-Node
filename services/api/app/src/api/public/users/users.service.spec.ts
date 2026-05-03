@@ -1,11 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-
-jest.mock('typeorm-transactional', () => ({
-  initializeTransactionalContext: jest.fn(),
-  Transactional: () => (_target: any, _key: string, descriptor: PropertyDescriptor) => descriptor,
-}));
-
 import { User } from 'src/type-orm/entities/users/users.entity';
 import { UsersRepository } from 'src/type-orm/entities/users/users.repository';
 

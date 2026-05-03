@@ -14,6 +14,7 @@ import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-
 import { BlockId } from 'src/api/common/utils/constants';
 import { User } from 'src/type-orm/entities/users/users.entity';
 import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
+import { getDietTime, getTodayOrTomorrow } from 'src/api/public/cafeterias/utils/time';
 import { CafeteriasService } from './cafeterias.service';
 
 @ApiTags('cafeterias')
@@ -60,7 +61,9 @@ export class CafeteriasController {
     @ClientExtra(ListCafeteriaDietExtraRequestDto)
     extra: ListCafeteriaDietExtraRequestDto,
   ) {
-    const { cafeteriaId, date, time } = extra;
+    const { cafeteriaId } = extra;
+    const date = getTodayOrTomorrow(extra.date);
+    const time = extra.time ?? getDietTime(date);
     const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, time);
     const template = this.cafeteriaMessageFactory.createCafeteriaDietListCard(result);
     return new ResponseDTO(template);

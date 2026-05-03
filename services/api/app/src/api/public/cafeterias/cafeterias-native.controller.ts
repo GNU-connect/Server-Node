@@ -4,10 +4,7 @@ import { NativeResponseDto } from 'src/api/common/dtos/native-response.dto';
 import { JwtAuthGuard } from 'src/api/public/users/guards/jwt-auth.guard';
 import { GetCafeteriaDietQueryDto } from './dtos/requests/get-cafeteria-diet-query.dto';
 import { GetCafeteriasQueryDto } from './dtos/requests/get-cafeterias-query.dto';
-import {
-  CafeteriaDietResponseDto,
-  MenuCategoryDto,
-} from './dtos/responses/cafeteria-diet-response.dto';
+import { CafeteriaDietResponseDto } from './dtos/responses/cafeteria-diet-response.dto';
 import { CafeteriaResponseDto } from './dtos/responses/cafeteria-response.dto';
 import { CafeteriasService } from './cafeterias.service';
 
@@ -42,27 +39,8 @@ export class CafeteriasNativeController {
     @Param('cafeteriaId', ParseIntPipe) cafeteriaId: number,
     @Query() query: GetCafeteriaDietQueryDto,
   ): Promise<NativeResponseDto<CafeteriaDietResponseDto>> {
-    const date = query.date ? new Date(query.date) : new Date();
-    const result = await this.cafeteriasService.getCafeteriaDietByDate(
-      cafeteriaId,
-      date,
-      query.time,
-    );
-
-    const grouped = new Map<string, string[]>();
-    for (const diet of result.diets) {
-      const key = diet.dishCategory || diet.dishType || '';
-      let items = grouped.get(key);
-      if (!items) {
-        items = [];
-        grouped.set(key, items);
-      }
-      items.push(diet.dishName);
-    }
-    const menus: MenuCategoryDto[] = Array.from(grouped.entries()).map(([category, items]) => ({
-      category,
-      items,
-    }));
+    const date = new Date(query.date);
+    const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, query.time);
 
     const data: CafeteriaDietResponseDto = {
       cafeteria: {
@@ -77,7 +55,7 @@ export class CafeteriasNativeController {
       },
       date: result.date.toISOString().slice(0, 10),
       time: result.time,
-      menus,
+      menus: result.menuGroups,
     };
 
     return new NativeResponseDto(data);
