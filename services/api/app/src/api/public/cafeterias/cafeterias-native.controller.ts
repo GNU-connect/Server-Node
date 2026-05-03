@@ -2,7 +2,6 @@ import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { NativeResponseDto } from 'src/api/common/dtos/native-response.dto';
 import { JwtAuthGuard } from 'src/api/public/users/guards/jwt-auth.guard';
-import { getDietTime } from 'src/api/public/cafeterias/utils/time';
 import { GetCafeteriaDietQueryDto } from './dtos/requests/get-cafeteria-diet-query.dto';
 import { GetCafeteriasQueryDto } from './dtos/requests/get-cafeterias-query.dto';
 import { CafeteriaDietResponseDto } from './dtos/responses/cafeteria-diet-response.dto';
@@ -40,9 +39,8 @@ export class CafeteriasNativeController {
     @Param('cafeteriaId', ParseIntPipe) cafeteriaId: number,
     @Query() query: GetCafeteriaDietQueryDto,
   ): Promise<NativeResponseDto<CafeteriaDietResponseDto>> {
-    const date = query.date ? new Date(query.date) : new Date();
-    const time = query.time ?? getDietTime(date);
-    const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, time);
+    const date = new Date(query.date);
+    const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, query.time);
 
     const data: CafeteriaDietResponseDto = {
       cafeteria: {
