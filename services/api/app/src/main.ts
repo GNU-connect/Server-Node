@@ -2,7 +2,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { initializeTransactionalContext } from 'typeorm-transactional';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
 import { SentryInterceptor } from './api/common/interceptors/sentry.interceptor';
 import { AppModule } from './app.module';
@@ -10,7 +9,6 @@ import './instrument';
 import { SentryFilter } from './api/common/filters/sentry.filter';
 
 async function bootstrap() {
-  initializeTransactionalContext();
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });

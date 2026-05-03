@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as path from 'path';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource, getDataSourceByName } from 'typeorm-transactional';
 
 @Module({
   imports: [
@@ -32,13 +30,6 @@ import { addTransactionalDataSource, getDataSourceByName } from 'typeorm-transac
           statement_timeout: 1800, // 스테이트먼트 타임아웃 시간 (default: 0ms, 무제한)
         },
       }),
-      async dataSourceFactory(options) {
-        if (!options) throw new Error('Invalid options passed');
-
-        return (
-          getDataSourceByName('default') || addTransactionalDataSource(new DataSource(options))
-        );
-      },
     }),
   ],
   controllers: [],
