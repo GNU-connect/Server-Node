@@ -8,21 +8,18 @@ import {
   DietDate,
   DietTime,
 } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
-import { CafeteriaDietResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
-import {
-  CafeteriaItemResult,
-  CafeteriaListResult,
-} from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
+import { CafeteriaDietResponseDto } from 'src/api/public/cafeterias/dtos/responses/cafeteria-diet-response.dto';
+import { CafeteriaResponseDto } from 'src/api/public/cafeterias/dtos/responses/cafeteria-response.dto';
 import { getDayWeek } from 'src/api/public/cafeterias/utils/time';
 
 @Injectable()
 export class CafeteriaMessageFactory {
-  public createCafeteriaListCard(result: CafeteriaListResult): SkillTemplate {
+  public createCafeteriaListCard(result: CafeteriaResponseDto[]): SkillTemplate {
     const header: ListItem = {
       title: '어떤 교내 식당 정보가 알고 싶어?',
     };
 
-    const items: ListItem[] = result.cafeterias.map(cafeteria => ({
+    const items: ListItem[] = result.map(cafeteria => ({
       title: cafeteria.name,
       description: cafeteria.campus.name,
       imageUrl: cafeteria.thumbnailUrl,
@@ -51,17 +48,18 @@ export class CafeteriaMessageFactory {
     };
   }
 
-  public createCafeteriaDietListCard(result: CafeteriaDietResult): SkillTemplate {
-    const { cafeteria, date, time, menuGroups } = result;
+  public createCafeteriaDietListCard(result: CafeteriaDietResponseDto): SkillTemplate {
+    const { cafeteria, date, time, menus } = result;
+    const parsedDate = new Date(date);
     const title = `🍱 ${cafeteria.name}(${cafeteria.campus.name.slice(0, 2)})`;
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth() + 1;
+    const day = parsedDate.getDate();
 
-    let description = `${year}-${month}-${day}(${getDayWeek(date)}) ${time} 메뉴\n\n`;
+    let description = `${year}-${month}-${day}(${getDayWeek(parsedDate)}) ${time} 메뉴\n\n`;
 
-    if (menuGroups.length > 0) {
-      description += menuGroups
+    if (menus.length > 0) {
+      description += menus
         .map(({ category, items }) => {
           if (category) {
             return `[${category}]\n${items.join('\n')}`;
@@ -95,7 +93,7 @@ export class CafeteriaMessageFactory {
     };
   }
 
-  private createDishDateQuickReplies(cafeteria: CafeteriaItemResult): QuickReply[] {
+  private createDishDateQuickReplies(cafeteria: CafeteriaResponseDto): QuickReply[] {
     const dishDateTypes: DietDate[] = ['오늘', '내일'];
     const times: DietTime[] = ['아침', '점심', '저녁'];
 

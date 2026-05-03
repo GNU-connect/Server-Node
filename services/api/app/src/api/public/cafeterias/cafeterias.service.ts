@@ -1,14 +1,14 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
-import { DietTime } from 'src/api/public/cafeterias/dtos/requests/list-cafeteria-diet-request.dto';
-import {
-  CafeteriaDietItemResult,
-  CafeteriaDietResult,
-  CafeteriaMenuGroupResult,
-} from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
-import { CafeteriaListResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
+import { CafeteriaResponseDto } from 'src/api/public/cafeterias/dtos/responses/cafeteria-response.dto';
 import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
+import { CafeteriaDietQuery } from 'src/api/public/cafeterias/dtos/cafeteria-diet.query';
+import {
+  CafeteriaDietResponseDto,
+  MenuCategoryDto,
+} from 'src/api/public/cafeterias/dtos/responses/cafeteria-diet-response.dto';
+import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
 
 @Injectable()
 export class CafeteriasService {
@@ -23,72 +23,45 @@ export class CafeteriasService {
   @CacheKey({
     key: ([campusId]) => `cafeteria-list:campus:${campusId as number}`,
   })
-  public async getCafeterias(campusId: number): Promise<CafeteriaListResult> {
+  public async getCafeterias(campusId: number): Promise<CafeteriaResponseDto[]> {
     const cafeterias = await this.cafeteriasRepository.findCafeteriasByCampusId(campusId);
-    return {
-      cafeterias: cafeterias.map(cafeteria => ({
-        id: cafeteria.id,
-        name: cafeteria.name,
-        thumbnailUrl: cafeteria.thumbnailUrl,
-        campus: {
-          id: cafeteria.campus.id,
-          name: cafeteria.campus.name,
-          thumbnailUrl: cafeteria.campus.thumbnailUrl,
-        },
-      })),
-    };
+    return cafeterias.map(cafeteria => CafeteriaResponseDto.from(cafeteria));
   }
 
   /**
    * 식당 식단 정보 조회
    */
   @CacheKey({
-    key: ([cafeteriaId, date, time]) =>
-      `diet:${cafeteriaId as number}:${(date as Date).toISOString().slice(0, 10)}:${
-        time as DietTime
-      }`,
+    key: ([query]) => {
+      const { cafeteriaId, date, time } = query as CafeteriaDietQuery;
+      return `diet:${cafeteriaId}:${date.toISOString().slice(0, 10)}:${time}`;
+    },
   })
-  public async getCafeteriaDiet(
-    cafeteriaId: number,
-    date: Date,
-    time: DietTime,
-  ): Promise<CafeteriaDietResult> {
+  public async getCafeteriaDiet(query: CafeteriaDietQuery): Promise<CafeteriaDietResponseDto> {
+    const { cafeteriaId, date, time } = query;
+    // 1. 식당 조회
     const cafeteria = await this.cafeteriasRepository.findCafeteriaById(cafeteriaId);
 
     if (!cafeteria) {
       throw new NotFoundException(`식당(${cafeteriaId}) 정보를 찾을 수 없습니다.`);
     }
 
+    // 2. 식단 조회
     const diets = await this.cafeteriasRepository.findCafeteriaDietsByCafeteriaId(
       cafeteriaId,
       date,
       time,
     );
 
-    const dietResults = diets.map(diet => ({
-      dishCategory: diet.dishCategory,
-      dishType: diet.dishType,
-      dishName: diet.dishName,
-    }));
-
     return {
-      cafeteria: {
-        id: cafeteria.id,
-        name: cafeteria.name,
-        thumbnailUrl: cafeteria.thumbnailUrl,
-        campus: {
-          id: cafeteria.campus.id,
-          name: cafeteria.campus.name,
-          thumbnailUrl: cafeteria.campus.thumbnailUrl,
-        },
-      },
-      menuGroups: this.groupDietsByCategory(dietResults),
-      date,
+      cafeteria: CafeteriaResponseDto.from(cafeteria),
+      menus: this.groupDietsByCategory(diets),
+      date: date.toISOString().slice(0, 10),
       time,
     };
   }
 
-  private groupDietsByCategory(diets: CafeteriaDietItemResult[]): CafeteriaMenuGroupResult[] {
+  private groupDietsByCategory(diets: CafeteriaDiet[]): MenuCategoryDto[] {
     const grouped = new Map<string, string[]>();
 
     for (const diet of diets) {

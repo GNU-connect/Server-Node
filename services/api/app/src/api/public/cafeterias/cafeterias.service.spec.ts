@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
 import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
 import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
+import { CafeteriaDietQuery } from 'src/api/public/cafeterias/dtos/cafeteria-diet.query';
 import { CafeteriasService } from './cafeterias.service';
 
 const makeCafeteria = (overrides: Partial<Cafeteria> = {}): Cafeteria =>
@@ -55,7 +56,7 @@ describe('CafeteriasService', () => {
       const result = await service.getCafeterias(1);
 
       expect(cafeteriasRepository.findCafeteriasByCampusId).toHaveBeenCalledWith(1);
-      expect(result.cafeterias).toEqual([
+      expect(result).toEqual([
         {
           id: 1,
           name: '제1학생회관',
@@ -96,7 +97,7 @@ describe('CafeteriasService', () => {
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue(diets);
 
-      const result = await service.getCafeteriaDiet(5, date, '점심');
+      const result = await service.getCafeteriaDiet(new CafeteriaDietQuery(5, date, '점심'));
 
       expect(result.cafeteria).toEqual({
         id: 5,
@@ -108,14 +109,14 @@ describe('CafeteriasService', () => {
           thumbnailUrl: 'https://example.com/campus.jpg',
         },
       });
-      expect(result.menuGroups).toEqual([
+      expect(result.menus).toEqual([
         {
           category: '한식',
           items: ['김치찌개'],
         },
       ]);
       expect(result.time).toBe('점심');
-      expect(result.date).toBe(date);
+      expect(result.date).toBe('2026-04-21');
       expect(cafeteriasRepository.findCafeteriaDietsByCafeteriaId).toHaveBeenCalledWith(
         5,
         date,
@@ -159,9 +160,9 @@ describe('CafeteriasService', () => {
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(cafeteria);
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue(diets);
 
-      const result = await service.getCafeteriaDiet(1, date, '점심');
+      const result = await service.getCafeteriaDiet(new CafeteriaDietQuery(1, date, '점심'));
 
-      expect(result.menuGroups).toEqual([
+      expect(result.menus).toEqual([
         {
           category: '한식',
           items: ['김치찌개', '제육볶음'],
@@ -182,7 +183,9 @@ describe('CafeteriasService', () => {
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(null);
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
 
-      await expect(service.getCafeteriaDiet(999, date, '점심')).rejects.toThrow(NotFoundException);
+      await expect(
+        service.getCafeteriaDiet(new CafeteriaDietQuery(999, date, '점심')),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('cache miss이면 DB를 조회하고 결과를 캐시에 저장한다', async () => {
@@ -191,7 +194,7 @@ describe('CafeteriasService', () => {
       cafeteriasRepository.findCafeteriaById.mockResolvedValue(makeCafeteria());
       cafeteriasRepository.findCafeteriaDietsByCafeteriaId.mockResolvedValue([]);
 
-      const result = await service.getCafeteriaDiet(1, date, '점심');
+      const result = await service.getCafeteriaDiet(new CafeteriaDietQuery(1, date, '점심'));
 
       expect(cafeteriasRepository.findCafeteriaById).toHaveBeenCalledWith(1);
       expect(cacheManager.set).toHaveBeenCalledWith('diet:1:2026-04-21:점심', result);

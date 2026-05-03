@@ -7,6 +7,7 @@ import { GetCafeteriasQueryDto } from './dtos/requests/get-cafeterias-query.dto'
 import { CafeteriaDietResponseDto } from './dtos/responses/cafeteria-diet-response.dto';
 import { CafeteriaResponseDto } from './dtos/responses/cafeteria-response.dto';
 import { CafeteriasService } from './cafeterias.service';
+import { CafeteriaDietQuery } from './dtos/cafeteria-diet.query';
 
 @ApiTags('cafeterias')
 @Controller('cafeterias')
@@ -19,17 +20,7 @@ export class CafeteriasNativeController {
   async getCafeterias(
     @Query() query: GetCafeteriasQueryDto,
   ): Promise<NativeResponseDto<CafeteriaResponseDto[]>> {
-    const result = await this.cafeteriasService.getCafeterias(query.campusId ?? 1);
-    const data = result.cafeterias.map(cafeteria => ({
-      id: cafeteria.id,
-      name: cafeteria.name,
-      thumbnailUrl: cafeteria.thumbnailUrl,
-      campus: {
-        id: cafeteria.campus.id,
-        name: cafeteria.campus.name,
-        thumbnailUrl: cafeteria.campus.thumbnailUrl,
-      },
-    }));
+    const data = await this.cafeteriasService.getCafeterias(query.campusId);
     return new NativeResponseDto(data);
   }
 
@@ -39,25 +30,8 @@ export class CafeteriasNativeController {
     @Param('cafeteriaId', ParseIntPipe) cafeteriaId: number,
     @Query() query: GetCafeteriaDietQueryDto,
   ): Promise<NativeResponseDto<CafeteriaDietResponseDto>> {
-    const date = new Date(query.date);
-    const result = await this.cafeteriasService.getCafeteriaDiet(cafeteriaId, date, query.time);
-
-    const data: CafeteriaDietResponseDto = {
-      cafeteria: {
-        id: result.cafeteria.id,
-        name: result.cafeteria.name,
-        thumbnailUrl: result.cafeteria.thumbnailUrl,
-        campus: {
-          id: result.cafeteria.campus.id,
-          name: result.cafeteria.campus.name,
-          thumbnailUrl: result.cafeteria.campus.thumbnailUrl,
-        },
-      },
-      date: result.date.toISOString().slice(0, 10),
-      time: result.time,
-      menus: result.menuGroups,
-    };
-
+    const dietQuery = new CafeteriaDietQuery(cafeteriaId, new Date(query.date), query.time);
+    const data = await this.cafeteriasService.getCafeteriaDiet(dietQuery);
     return new NativeResponseDto(data);
   }
 }

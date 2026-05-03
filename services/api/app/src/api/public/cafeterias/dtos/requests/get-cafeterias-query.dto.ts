@@ -8,5 +8,5 @@ export class GetCafeteriasQueryDto {
   @Min(1)
   @Type(() => Number)
   @ApiPropertyOptional({ description: '캠퍼스 ID', example: 1 })
-  campusId?: number;
+  campusId: number = 1;
 }
