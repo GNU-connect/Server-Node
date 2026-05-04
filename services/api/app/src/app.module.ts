@@ -20,6 +20,7 @@ import { SchedulesModule } from './api/public/schedules/schedules.module';
 import { ShuttlesModule } from './api/public/shuttles/shuttles.module';
 import { MetricsInterceptor } from './api/common/interceptors/metrics.interceptor';
 import { HealthModule } from './api/internal/health/health.module';
+import { MealsModule } from './api/v2/meals/meals.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { HealthModule } from './api/internal/health/health.module';
     NoticesModule,
     SchedulesModule,
     ShuttlesModule,
+    MealsModule,
     HealthModule,
   ],
   providers: [
