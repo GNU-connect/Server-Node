@@ -12,14 +12,17 @@ export class DepartmentsRepository {
   ) {}
 
   findByCollegeId(collegeId: number, page: number): Promise<[Department[], number]> {
-    return this.departmentsRepository
-      .createQueryBuilder('department')
-      .where('department.college_id = :collegeId', {
+    const limit = ListCardConfig.LIMIT;
+
+    return this.departmentsRepository.findAndCount({
+      where: {
         collegeId,
-      })
-      .orderBy('department.name', 'ASC')
-      .take(ListCardConfig.LIMIT)
-      .skip(ListCardConfig.LIMIT * (page - 1))
-      .getManyAndCount();
+      },
+      order: {
+        name: 'ASC',
+      },
+      take: limit,
+      skip: limit * (page - 1),
+    });
   }
 }

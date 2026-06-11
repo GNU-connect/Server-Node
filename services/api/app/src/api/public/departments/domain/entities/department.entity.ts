@@ -7,6 +7,9 @@ export class Department {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ name: 'college_id' })
+  collegeId: number;
+
   @Column({ name: 'department_ko' })
   name: string;
 

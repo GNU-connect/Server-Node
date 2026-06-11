@@ -14,7 +14,7 @@ export class CafeteriasRepository {
     private readonly cafeteriaDietRepository: Repository<CafeteriaDiet>,
   ) {}
 
-  findCafeteriasByCampusId(campusId = 1): Promise<Cafeteria[]> {
+  findCafeteriasByCampusId(campusId: number): Promise<Cafeteria[]> {
     return this.cafeteriaRepository.find({
       where: {
         campus: {
@@ -24,16 +24,21 @@ export class CafeteriasRepository {
       order: {
         name: 'ASC',
       },
-      relations: ['campus'],
+      relations: {
+        campus: true,
+      },
     });
   }
 
   findCafeteriaById(cafeteriaId: number): Promise<Cafeteria | null> {
-    return this.cafeteriaRepository
-      .createQueryBuilder('cafeteria')
-      .leftJoinAndSelect('cafeteria.campus', 'campus')
-      .where('cafeteria.id = :cafeteriaId', { cafeteriaId })
-      .getOne();
+    return this.cafeteriaRepository.findOne({
+      where: {
+        id: cafeteriaId,
+      },
+      relations: {
+        campus: true,
+      },
+    });
   }
 
   /**
@@ -47,12 +52,17 @@ export class CafeteriasRepository {
     date: Date,
     time: DietTime,
   ): Promise<CafeteriaDiet[]> {
-    return this.cafeteriaDietRepository
-      .createQueryBuilder('diet')
-      .select(['diet.dishCategory', 'diet.dishType', 'diet.dishName'])
-      .where('diet.date = :date', { date })
-      .andWhere('diet.cafeteria_id = :cafeteriaId', { cafeteriaId })
-      .andWhere('diet.time = :time', { time })
-      .getMany();
+    return this.cafeteriaDietRepository.find({
+      select: {
+        dishCategory: true,
+        dishType: true,
+        dishName: true,
+      },
+      where: {
+        date,
+        cafeteriaId,
+        time,
+      },
+    });
   }
 }

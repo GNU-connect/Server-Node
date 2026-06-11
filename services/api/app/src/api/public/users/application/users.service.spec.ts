@@ -6,6 +6,8 @@ import { UsersRepository } from 'src/api/public/users/infrastructure/users.repos
 const makeUser = (overrides: Partial<User> = {}): User =>
   ({
     id: 'kakao-user-id',
+    campusId: 1,
+    departmentId: 10,
     campus: { id: 1, name: '가좌캠퍼스' } as any,
     department: {
       id: 10,
@@ -61,16 +63,22 @@ describe('UsersService', () => {
 
   describe('upsert', () => {
     it('userId와 campusId, departmentId로 사용자 학과 정보를 저장한다', async () => {
-      const user = makeUser();
+      const user = makeUser({ campusId: 2, departmentId: 20 });
       usersRepository.save.mockResolvedValue(user);
 
-      const result = await service.upsert('kakao-user-id', 1, 10);
+      const result = await service.upsert('kakao-user-id', 2, 20);
 
-      expect(usersRepository.save).toHaveBeenCalledWith('kakao-user-id', 1, 10);
+      expect(usersRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'kakao-user-id',
+          campusId: 2,
+          departmentId: 20,
+        }),
+      );
       expect(result).toEqual({
         userId: user.id,
-        campusId: user.campus.id,
-        departmentId: user.department.id,
+        campusId: user.campusId,
+        departmentId: user.departmentId,
       });
     });
   });
