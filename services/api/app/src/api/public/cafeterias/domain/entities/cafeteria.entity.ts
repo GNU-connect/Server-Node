@@ -7,6 +7,9 @@ export class Cafeteria {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ name: 'campus_id' })
+  campusId: number;
+
   @Column({ name: 'cafeteria_name_ko' })
   name: string;
 

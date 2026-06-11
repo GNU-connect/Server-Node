@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ListCardConfig } from 'src/api/common/utils/constants';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { College } from 'src/api/public/colleges/domain/entities/college.entity';
 
 @Injectable()
@@ -12,12 +12,17 @@ export class CollegesRepository {
   ) {}
 
   findAll(page: number): Promise<[College[], number]> {
-    return this.collegesRepository
-      .createQueryBuilder('college')
-      .where("college.name != '공통'")
-      .orderBy('college.name', 'ASC')
-      .take(ListCardConfig.LIMIT)
-      .skip(ListCardConfig.LIMIT * (page - 1))
-      .getManyAndCount();
+    const limit = ListCardConfig.LIMIT;
+
+    return this.collegesRepository.findAndCount({
+      where: {
+        name: Not('공통'),
+      },
+      order: {
+        name: 'ASC',
+      },
+      take: limit,
+      skip: limit * (page - 1),
+    });
   }
 }

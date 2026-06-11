@@ -10,21 +10,21 @@ export class UsersRepository {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  save(userId: string, campusId: number, departmentId: number): Promise<User> {
-    return this.usersRepository.save({
-      id: userId,
-      campus: { id: campusId },
-      department: { id: departmentId },
-    });
+  save(user: Partial<User>): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
-  findOne(userId: string): Promise<User> {
-    return this.usersRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.campus', 'campus')
-      .leftJoinAndSelect('user.department', 'department')
-      .leftJoinAndSelect('department.college', 'college')
-      .where('user.id = :userId', { userId })
-      .getOne();
+  findOne(userId: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        campus: true,
+        department: {
+          college: true,
+        },
+      },
+    });
   }
 }

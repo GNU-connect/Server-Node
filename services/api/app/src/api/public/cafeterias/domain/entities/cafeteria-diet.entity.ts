@@ -6,6 +6,9 @@ export class CafeteriaDiet {
   @PrimaryGeneratedColumn({ name: 'diet_id' })
   id: number;
 
+  @Column({ name: 'cafeteria_id' })
+  cafeteriaId: number;
+
   @Column()
   date: Date;
 

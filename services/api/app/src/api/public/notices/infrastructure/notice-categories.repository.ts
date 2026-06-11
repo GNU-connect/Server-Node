@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NoticeCategory } from 'src/api/public/notices/domain/entities/notice-category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class NoticeCategoriesRepository {
@@ -54,11 +54,12 @@ export class NoticeCategoriesRepository {
     departmentId: number,
     categoryNames: string[],
   ): Promise<NoticeCategory[]> {
-    return this.noticeCategoryRepository
-      .createQueryBuilder('category')
-      .where('category.department_id = :departmentId', { departmentId })
-      .andWhere('category.category IN (:...categoryNames)', { categoryNames })
-      .getMany();
+    return this.noticeCategoryRepository.find({
+      where: {
+        departmentId,
+        category: In(categoryNames),
+      },
+    });
   }
 
   /**

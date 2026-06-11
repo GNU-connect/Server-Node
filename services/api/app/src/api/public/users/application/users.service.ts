@@ -8,7 +8,7 @@ import { UsersRepository } from 'src/api/public/users/infrastructure/users.repos
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  public findOne(userId: string): Promise<User> {
+  public findOne(userId: string): Promise<User | null> {
     return this.usersRepository.findOne(userId);
   }
 
@@ -32,11 +32,16 @@ export class UsersService {
     campusId: number,
     departmentId: number,
   ): Promise<UpsertDepartmentResult> {
-    const user = await this.usersRepository.save(userId, campusId, departmentId);
+    const user = new User();
+
+    user.updateProfile(userId, campusId, departmentId);
+
+    const userResult = await this.usersRepository.save(user);
+
     return {
-      userId: user.id,
-      campusId: user.campus.id,
-      departmentId: user.department.id,
+      userId: userResult.id,
+      campusId: userResult.campusId,
+      departmentId: userResult.departmentId,
     };
   }
 }
