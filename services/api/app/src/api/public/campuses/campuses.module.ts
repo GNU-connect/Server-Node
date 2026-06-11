@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Campus } from 'src/type-orm/entities/campuses/campus.entity';
-import { CampusesRepository } from 'src/type-orm/entities/campuses/campuses.repository';
+import { Campus } from 'src/api/public/campuses/entities/campus.entity';
+import { CampusesRepository } from 'src/api/public/campuses/campuses.repository';
 import { CampusesNativeController } from './campuses-native.controller';
 import { CampusesService } from './campuses.service';
 

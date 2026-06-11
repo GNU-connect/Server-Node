@@ -1,6 +1,6 @@
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
+import { Cafeteria } from 'src/api/public/cafeterias/entities/cafeteria.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../users/users.entity';
+import { User } from 'src/api/public/users/entities/users.entity';
 
 @Entity('campus')
 export class Campus {

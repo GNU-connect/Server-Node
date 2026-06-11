@@ -1,5 +1,5 @@
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Department } from '../departments/department.entity';
+import { Department } from 'src/api/public/departments/entities/department.entity';
 
 @Entity('college')
 export class College {

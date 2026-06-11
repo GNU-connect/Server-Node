@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ShuttleRouteListResult } from 'src/api/public/shuttles/dtos/results/shuttle-route-list-result.dto';
 import { ShuttleTimetableResult } from 'src/api/public/shuttles/dtos/results/shuttle-timetable-result.dto';
-import { ShuttleTimetableRepository } from 'src/type-orm/entities/shuttle-timetables/shuttle-timetable.repository';
+import { ShuttleTimetableRepository } from 'src/api/public/shuttles/shuttle-timetable.repository';
 
 @Injectable()
 export class ShuttlesService {

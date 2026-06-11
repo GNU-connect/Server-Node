@@ -1,6 +1,6 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-import { Campus } from '../campuses/campus.entity';
-import { Department } from '../departments/department.entity';
+import { Campus } from 'src/api/public/campuses/entities/campus.entity';
+import { Department } from 'src/api/public/departments/entities/department.entity';
 
 @Entity('kakao-user')
 export class User {

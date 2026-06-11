@@ -1,9 +1,9 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
-import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
+import { CafeteriaDiet } from 'src/api/public/cafeterias/entities/cafeteria-diet.entity';
+import { Cafeteria } from 'src/api/public/cafeterias/entities/cafeteria.entity';
+import { CafeteriasRepository } from 'src/api/public/cafeterias/cafeterias.repository';
 import { CafeteriasService } from './cafeterias.service';
 
 const makeCafeteria = (overrides: Partial<Cafeteria> = {}): Cafeteria =>

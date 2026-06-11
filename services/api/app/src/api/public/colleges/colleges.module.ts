@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { College } from 'src/type-orm/entities/colleges/college.entity';
-import { CollegesRepository } from 'src/type-orm/entities/colleges/colleges.repository';
+import { College } from 'src/api/public/colleges/entities/college.entity';
+import { CollegesRepository } from 'src/api/public/colleges/colleges.repository';
 import { CollegesService } from './colleges.service';
 
 @Module({
