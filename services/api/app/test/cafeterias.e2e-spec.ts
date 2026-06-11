@@ -2,11 +2,11 @@ import { ForbiddenException, INestApplication, Module, ValidationPipe } from '@n
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { CafeteriasController } from 'src/api/public/cafeterias/cafeterias.controller';
-import { CafeteriasService } from 'src/api/public/cafeterias/cafeterias.service';
-import { AuthGuard } from 'src/api/public/users/guards/auth.guard';
-import { CurrentUserInterceptor } from 'src/api/public/users/interceptors/current-user.interceptor';
-import { UsersService } from 'src/api/public/users/users.service';
+import { CafeteriasController } from 'src/api/public/cafeterias/presentation/cafeterias.controller';
+import { CafeteriasService } from 'src/api/public/cafeterias/application/cafeterias.service';
+import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
+import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
+import { UsersService } from 'src/api/public/users/application/users.service';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 
 const CAMPUS_LIST_TEMPLATE: SkillTemplate = {
@@ -37,7 +37,7 @@ const mockUsersService = {
   providers: [
     { provide: CafeteriasService, useValue: mockCafeteriasService },
     { provide: UsersService, useValue: mockUsersService },
-    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: KakaoAuthGuard },
     { provide: APP_INTERCEPTOR, useClass: CurrentUserInterceptor },
   ],
 })

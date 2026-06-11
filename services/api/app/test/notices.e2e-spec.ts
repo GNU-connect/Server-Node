@@ -2,11 +2,11 @@ import { INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { NoticesController } from 'src/api/public/notices/notices.controller';
-import { NoticesService } from 'src/api/public/notices/notices.service';
-import { AuthGuard } from 'src/api/public/users/guards/auth.guard';
-import { CurrentUserInterceptor } from 'src/api/public/users/interceptors/current-user.interceptor';
-import { UsersService } from 'src/api/public/users/users.service';
+import { NoticesController } from 'src/api/public/notices/presentation/notices.controller';
+import { NoticesService } from 'src/api/public/notices/application/notices.service';
+import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
+import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
+import { UsersService } from 'src/api/public/users/application/users.service';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 
 const AUTH_REQUIRED_TEMPLATE: SkillTemplate = {
@@ -35,7 +35,7 @@ const mockUsersService = {
   providers: [
     { provide: NoticesService, useValue: mockNoticesService },
     { provide: UsersService, useValue: mockUsersService },
-    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: KakaoAuthGuard },
     { provide: APP_INTERCEPTOR, useClass: CurrentUserInterceptor },
   ],
 })

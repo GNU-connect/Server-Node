@@ -15,7 +15,7 @@ import * as path from 'path';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         synchronize: false,
-        entities: [path.join(__dirname, '../**/*.entity{.ts,.js}')],
+        entities: [path.join(__dirname, '../../**/*.entity{.ts,.js}')],
         logging: configService.get('NODE_ENV') === 'production' ? ['error', 'warn'] : 'all',
         logger: 'advanced-console',
         maxQueryExecutionTime: 1000, // 롱 쿼리 로그 출력 시간
