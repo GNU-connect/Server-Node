@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { College } from 'src/api/public/colleges/entities/college.entity';
-import { CollegesRepository } from 'src/api/public/colleges/colleges.repository';
-import { CollegesService } from './colleges.service';
+import { College } from 'src/api/public/colleges/domain/entities/college.entity';
+import { CollegesRepository } from 'src/api/public/colleges/infrastructure/colleges.repository';
+import { CollegesService } from 'src/api/public/colleges/application/colleges.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([College])],

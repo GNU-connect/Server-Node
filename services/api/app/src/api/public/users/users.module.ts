@@ -4,16 +4,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CampusesModule } from 'src/api/public/campuses/campuses.module';
 import { CollegesModule } from 'src/api/public/colleges/colleges.module';
 import { DepartmentsModule } from 'src/api/public/departments/departments.module';
-import { CurrentUserInterceptor } from 'src/api/public/users/interceptors/current-user.interceptor';
-import { User } from 'src/api/public/users/entities/users.entity';
-import { UsersRepository } from 'src/api/public/users/users.repository';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { UserMessageFactory } from 'src/api/public/users/user-message.factory';
-import { CommonMessageFactory } from 'src/api/public/common/common-message.factory';
-import { CampusMessageFactory } from 'src/api/public/campuses/campus-message.factory';
-import { CollegeMessageFactory } from 'src/api/public/colleges/college-message.factory';
-import { DepartmentMessageFactory } from 'src/api/public/departments/department-message.factory';
+import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
+import { User } from 'src/api/public/users/domain/entities/users.entity';
+import { UsersRepository } from 'src/api/public/users/infrastructure/users.repository';
+import { UsersController } from 'src/api/public/users/presentation/users.controller';
+import { UsersService } from 'src/api/public/users/application/users.service';
+import { UserMessageFactory } from 'src/api/public/users/presentation/user-message.factory';
+import { CommonMessageFactory } from 'src/api/public/common/presentation/common-message.factory';
+import { CampusMessageFactory } from 'src/api/public/campuses/presentation/campus-message.factory';
+import { CollegeMessageFactory } from 'src/api/public/colleges/presentation/college-message.factory';
+import { DepartmentMessageFactory } from 'src/api/public/departments/presentation/department-message.factory';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), CampusesModule, CollegesModule, DepartmentsModule],
