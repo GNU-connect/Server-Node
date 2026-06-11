@@ -8,13 +8,13 @@ import {
   makeHistogramProvider,
   PrometheusModule,
 } from '@willsoto/nestjs-prometheus';
-import { LoggerModule } from 'src/api/internal/logger/logger.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { CafeteriasModule } from 'src/api/public/cafeterias/cafeterias.module';
 import { CampusesModule } from './api/public/campuses/campuses.module';
 import { CollegesModule } from './api/public/colleges/colleges.module';
 import { DepartmentsModule } from './api/public/departments/departments.module';
 import { UsersModule } from './api/public/users/users.module';
-import { DatabaseModule } from './type-orm/database.module';
+import { DatabaseModule } from './infrastructure/type-orm/database.module';
 import { NoticesModule } from './api/public/notices/notices.module';
 import { SchedulesModule } from './api/public/schedules/schedules.module';
 import { ShuttlesModule } from './api/public/shuttles/shuttles.module';

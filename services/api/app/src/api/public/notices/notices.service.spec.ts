@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoticeCategoriesRepository } from 'src/type-orm/entities/notices/notice-categories.repository';
-import { NoticeCategory } from 'src/type-orm/entities/notices/notice-category.entity';
-import { Notice } from 'src/type-orm/entities/notices/notice.entity';
-import { NoticesRepository } from 'src/type-orm/entities/notices/notices.repository';
-import { User } from 'src/type-orm/entities/users/users.entity';
+import { NoticeCategoriesRepository } from 'src/api/public/notices/notice-categories.repository';
+import { NoticeCategory } from 'src/api/public/notices/entities/notice-category.entity';
+import { Notice } from 'src/api/public/notices/entities/notice.entity';
+import { NoticesRepository } from 'src/api/public/notices/notices.repository';
+import { User } from 'src/api/public/users/entities/users.entity';
 import { NoticesService } from './notices.service';
 
 const makeCategory = (overrides: Partial<NoticeCategory> = {}): NoticeCategory =>

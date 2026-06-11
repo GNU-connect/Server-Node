@@ -12,7 +12,7 @@ import { CampusMessageFactory } from 'src/api/public/campuses/campus-message.fac
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
 import { BlockId } from 'src/api/common/utils/constants';
-import { User } from 'src/type-orm/entities/users/users.entity';
+import { User } from 'src/api/public/users/entities/users.entity';
 import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';
 import { getDietTime, getTodayOrTomorrow } from 'src/api/public/cafeterias/utils/time';
 import { CafeteriasService } from './cafeterias.service';

@@ -1,5 +1,5 @@
-import { CafeteriaDiet } from 'src/type-orm/entities/cafeterias/cafeteria-diet.entity';
-import { Campus } from 'src/type-orm/entities/campuses/campus.entity';
+import { CafeteriaDiet } from 'src/api/public/cafeterias/entities/cafeteria-diet.entity';
+import { Campus } from 'src/api/public/campuses/entities/campus.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('cafeteria')

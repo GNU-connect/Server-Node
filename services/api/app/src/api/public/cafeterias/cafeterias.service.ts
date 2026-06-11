@@ -8,7 +8,7 @@ import {
   CafeteriaMenuGroupResult,
 } from 'src/api/public/cafeterias/dtos/results/cafeteria-diet-result.dto';
 import { CafeteriaListResult } from 'src/api/public/cafeterias/dtos/results/cafeteria-list-result.dto';
-import { CafeteriasRepository } from 'src/type-orm/entities/cafeterias/cafeterias.repository';
+import { CafeteriasRepository } from 'src/api/public/cafeterias/cafeterias.repository';
 
 @Injectable()
 export class CafeteriasService {

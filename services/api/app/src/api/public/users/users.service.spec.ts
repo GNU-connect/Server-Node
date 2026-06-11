@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { User } from 'src/type-orm/entities/users/users.entity';
-import { UsersRepository } from 'src/type-orm/entities/users/users.repository';
+import { User } from 'src/api/public/users/entities/users.entity';
+import { UsersRepository } from 'src/api/public/users/users.repository';
 
 const makeUser = (overrides: Partial<User> = {}): User =>
   ({

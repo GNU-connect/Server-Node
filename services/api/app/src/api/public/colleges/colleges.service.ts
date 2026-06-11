@@ -1,7 +1,7 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CollegeListResult } from 'src/api/public/colleges/dtos/results/college-list-result.dto';
-import { CollegesRepository } from 'src/type-orm/entities/colleges/colleges.repository';
+import { CollegesRepository } from 'src/api/public/colleges/colleges.repository';
 import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
 
 @Injectable()

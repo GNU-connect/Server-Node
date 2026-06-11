@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AcademicScheduleResult } from 'src/api/public/schedules/dtos/results/academic-schedule-result.dto';
-import { AcademicCalendarsRepository } from 'src/type-orm/entities/academic-calendars/academic-calendars.repository';
+import { AcademicCalendarsRepository } from 'src/api/public/schedules/academic-calendars.repository';
 
 @Injectable()
 export class SchedulesService {

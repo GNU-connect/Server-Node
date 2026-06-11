@@ -13,7 +13,7 @@ import { CollegeMessageFactory } from 'src/api/public/colleges/college-message.f
 import { CommonMessageFactory } from 'src/api/public/common/common-message.factory';
 import { DepartmentMessageFactory } from 'src/api/public/departments/department-message.factory';
 import { UserMessageFactory } from 'src/api/public/users/user-message.factory';
-import { User } from '../../../type-orm/entities/users/users.entity';
+import { User } from 'src/api/public/users/entities/users.entity';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { FetchCurrentUser } from './decorators/fetch-current-user.decorator';
 import { ListCollegesRequestDto } from './dtos/requests/list-college-request.dto';

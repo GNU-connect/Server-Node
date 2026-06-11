@@ -1,4 +1,4 @@
-import { Cafeteria } from 'src/type-orm/entities/cafeterias/cafeteria.entity';
+import { Cafeteria } from 'src/api/public/cafeterias/entities/cafeteria.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('cafeteria_diet')

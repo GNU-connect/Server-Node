@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Department } from 'src/type-orm/entities/departments/department.entity';
-import { DepartmentsRepository } from 'src/type-orm/entities/departments/departments.repository';
+import { Department } from 'src/api/public/departments/entities/department.entity';
+import { DepartmentsRepository } from 'src/api/public/departments/departments.repository';
 import { DepartmentsService } from './departments.service';
 
 @Module({

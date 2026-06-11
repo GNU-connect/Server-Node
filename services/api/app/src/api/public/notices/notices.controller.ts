@@ -7,7 +7,7 @@ import { CommonMessageFactory } from 'src/api/public/common/common-message.facto
 import { NoticeMessageFactory } from 'src/api/public/notices/notice-message.factory';
 import { CurrentUser } from 'src/api/public/users/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/decorators/fetch-current-user.decorator';
-import { User } from 'src/type-orm/entities/users/users.entity';
+import { User } from 'src/api/public/users/entities/users.entity';
 import { ListDepartmentNoticeRequestDto } from './dtos/requests/list-department-notice-request.dto';
 import { ListUniversityNoticeRequestDto } from './dtos/requests/list-university-notice-request.dto';
 import { KakaoAuthGuard } from 'src/api/public/users/guards/kakao-auth.guard';

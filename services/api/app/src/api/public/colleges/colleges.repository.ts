@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ListCardConfig } from 'src/api/common/utils/constants';
 import { Repository } from 'typeorm';
-import { College } from './college.entity';
+import { College } from './entities/college.entity';
 
 @Injectable()
 export class CollegesRepository {

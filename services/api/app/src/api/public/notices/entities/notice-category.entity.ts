@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Department } from '../departments/department.entity';
+import { Department } from 'src/api/public/departments/entities/department.entity';
 import { Notice } from './notice.entity';
 
 @Entity('notice_category')

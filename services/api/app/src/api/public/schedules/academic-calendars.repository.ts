@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AcademicCalendar } from './academic-calendar.entity';
+import { AcademicCalendar } from './entities/academic-calendar.entity';
 
 @Injectable()
 export class AcademicCalendarsRepository {
