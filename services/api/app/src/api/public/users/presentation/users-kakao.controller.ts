@@ -4,7 +4,10 @@ import { ApiSkillBody } from 'src/api/common/decorators/api-skill-body.decorator
 import { ClientExtra } from 'src/api/common/decorators/skill-extra.decorator';
 import { ResponseDTO } from 'src/api/common/dtos/response.dto';
 import { OpenBuilderExceptionFilter } from 'src/api/common/filters/open-builder-exception.filter';
-import { BlockId } from 'src/api/common/utils/constants';
+import {
+  KakaoBlockId,
+  KAKAO_LIST_CARD_ITEM_LIMIT,
+} from 'src/api/common/presentation/kakao.constants';
 import { CampusesService } from 'src/api/public/campuses/application/campuses.service';
 import { CollegesService } from 'src/api/public/colleges/application/colleges.service';
 import { DepartmentsService } from 'src/api/public/departments/application/departments.service';
@@ -26,7 +29,7 @@ import { UsersService } from 'src/api/public/users/application/users.service';
 @Controller('users')
 @UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
-export class UsersController {
+export class UsersKakaoController {
   constructor(
     private readonly usersService: UsersService,
     private readonly campusesService: CampusesService,
@@ -50,7 +53,10 @@ export class UsersController {
   @Post('campuses/list')
   async listCampuses(): Promise<ResponseDTO> {
     const result = await this.campusesService.findAll();
-    const template = this.campusMessageFactory.createCampusListCard(result, BlockId.COLLEGE_LIST);
+    const template = this.campusMessageFactory.createCampusListCard(
+      result,
+      KakaoBlockId.COLLEGE_LIST,
+    );
     return new ResponseDTO(template);
   }
 
@@ -59,12 +65,12 @@ export class UsersController {
   async listColleges(
     @ClientExtra(ListCollegesRequestDto) extra: ListCollegesRequestDto,
   ): Promise<ResponseDTO> {
-    const result = await this.collegesService.findAll(extra.page ?? 1);
+    const result = await this.collegesService.findAll(extra.page ?? 1, KAKAO_LIST_CARD_ITEM_LIMIT);
     const template = this.collegeMessageFactory.createCollegeListCard(
       result,
       extra.campusId,
       extra.page ?? 1,
-      BlockId.DEPARTMENT_LIST,
+      KakaoBlockId.DEPARTMENT_LIST,
     );
     return new ResponseDTO(template);
   }
@@ -74,11 +80,15 @@ export class UsersController {
   async listDepartments(
     @ClientExtra(ListDepartmentsRequestDto) extra: ListDepartmentsRequestDto,
   ): Promise<ResponseDTO> {
-    const result = await this.departmentsService.findAll(extra.collegeId, extra.page);
+    const result = await this.departmentsService.findAll(
+      extra.collegeId,
+      extra.page ?? 1,
+      KAKAO_LIST_CARD_ITEM_LIMIT,
+    );
     const template = this.departmentMessageFactory.createDepartmentListCard(
       result,
       extra,
-      BlockId.UPDATE_DEPARTMENT,
+      KakaoBlockId.UPDATE_DEPARTMENT,
     );
     return new ResponseDTO(template);
   }

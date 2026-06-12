@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DietTime } from 'src/api/public/cafeterias/presentation/dtos/requests/list-cafeteria-diet-request.dto';
+import { DietTime } from 'src/api/public/cafeterias/application/utils/time';
 import { CafeteriaDiet } from 'src/api/public/cafeterias/domain/entities/cafeteria-diet.entity';
 import { Cafeteria } from 'src/api/public/cafeterias/domain/entities/cafeteria.entity';
 import { Repository } from 'typeorm';

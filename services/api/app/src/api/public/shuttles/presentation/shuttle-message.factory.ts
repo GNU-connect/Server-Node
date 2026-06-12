@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Button, ListItem } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createListCard, createTextCard } from 'src/api/common/utils/component';
-import { BlockId } from 'src/api/common/utils/constants';
+import { KakaoBlockId } from 'src/api/common/presentation/kakao.constants';
 import { ShuttleRouteListResult } from 'src/api/public/shuttles/application/dtos/results/shuttle-route-list-result.dto';
 import { ShuttleTimetableResult } from 'src/api/public/shuttles/application/dtos/results/shuttle-timetable-result.dto';
 
@@ -22,7 +22,7 @@ export class ShuttleMessageFactory {
     const items: ListItem[] = result.routes.map(route => ({
       title: route.routeName,
       action: 'block',
-      blockId: BlockId.SHUTTLE_TIMETABLE,
+      blockId: KakaoBlockId.SHUTTLE_TIMETABLE,
       extra: { routeName: route.routeName },
     }));
 
@@ -49,7 +49,7 @@ export class ShuttleMessageFactory {
       {
         label: '뒤로 가기',
         action: 'block',
-        blockId: BlockId.SHUTTLE_ROUTES,
+        blockId: KakaoBlockId.SHUTTLE_ROUTES,
       },
       {
         label: '공식 홈페이지',

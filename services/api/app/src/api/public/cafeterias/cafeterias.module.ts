@@ -7,12 +7,12 @@ import { Cafeteria } from 'src/api/public/cafeterias/domain/entities/cafeteria.e
 import { CampusesModule } from 'src/api/public/campuses/campuses.module';
 import { CampusMessageFactory } from 'src/api/public/campuses/presentation/campus-message.factory';
 import { CafeteriasNativeController } from 'src/api/public/cafeterias/presentation/cafeterias-native.controller';
-import { CafeteriasController } from 'src/api/public/cafeterias/presentation/cafeterias.controller';
+import { CafeteriasKakaoController } from 'src/api/public/cafeterias/presentation/cafeterias-kakao.controller';
 import { CafeteriasService } from 'src/api/public/cafeterias/application/cafeterias.service';
 
 @Module({
   imports: [CampusesModule, TypeOrmModule.forFeature([Cafeteria, CafeteriaDiet])],
-  controllers: [CafeteriasController, CafeteriasNativeController],
+  controllers: [CafeteriasKakaoController, CafeteriasNativeController],
   providers: [
     CafeteriasService,
     CafeteriasRepository,

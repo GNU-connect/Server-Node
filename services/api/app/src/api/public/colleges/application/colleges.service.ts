@@ -14,10 +14,12 @@ export class CollegesService {
   ) {}
 
   @CacheKey({
-    key: ([page]) => `colleges:page:${page as number}`,
+    key: ([page, pageSize]) =>
+      `colleges:page:${Math.max(page as number, 1)}:size:${pageSize as number}`,
   })
-  public async findAll(page: number): Promise<CollegeListResult> {
-    const [colleges, total] = await this.collegesRepository.findAll(page);
+  public async findAll(page: number, pageSize: number): Promise<CollegeListResult> {
+    const safePage = Math.max(page, 1);
+    const [colleges, total] = await this.collegesRepository.findAll(safePage, pageSize);
     return {
       colleges: colleges.map(college => ({
         id: college.id,

@@ -4,12 +4,12 @@ import { CommonMessageFactory } from 'src/api/public/common/presentation/common-
 import { AcademicCalendarsRepository } from 'src/api/public/schedules/infrastructure/academic-calendars.repository';
 import { AcademicCalendar } from 'src/api/public/schedules/domain/entities/academic-calendar.entity';
 import { ScheduleMessageFactory } from 'src/api/public/schedules/presentation/schedule-message.factory';
-import { SchedulesController } from 'src/api/public/schedules/presentation/schedules.controller';
+import { SchedulesKakaoController } from 'src/api/public/schedules/presentation/schedules-kakao.controller';
 import { SchedulesService } from 'src/api/public/schedules/application/schedules.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([AcademicCalendar])],
-  controllers: [SchedulesController],
+  controllers: [SchedulesKakaoController],
   providers: [
     SchedulesService,
     AcademicCalendarsRepository,

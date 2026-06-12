@@ -14,7 +14,7 @@ import { SchedulesService } from 'src/api/public/schedules/application/schedules
 @Controller('schedules')
 @UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
-export class SchedulesController {
+export class SchedulesKakaoController {
   constructor(
     private readonly schedulesService: SchedulesService,
     private readonly scheduleMessageFactory: ScheduleMessageFactory,

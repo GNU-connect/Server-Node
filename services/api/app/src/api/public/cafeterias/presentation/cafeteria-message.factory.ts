@@ -3,17 +3,20 @@ import { BasicCard, ListCard } from 'src/api/common/interfaces/response/fields/c
 import { Button, ListItem, QuickReply } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createBasicCard, createListCard } from 'src/api/common/utils/component';
-import { BlockId } from 'src/api/common/utils/constants';
 import {
-  DietDate,
+  KakaoBlockId,
+  KAKAO_REQUEST_CAMPUS_SELECTION_ID,
+} from 'src/api/common/presentation/kakao.constants';
+import {
   DietTime,
-} from 'src/api/public/cafeterias/presentation/dtos/requests/list-cafeteria-diet-request.dto';
+  getDayWeek,
+  RelativeDietDate,
+} from 'src/api/public/cafeterias/application/utils/time';
 import { CafeteriaDietResult } from 'src/api/public/cafeterias/application/dtos/results/cafeteria-diet-result.dto';
 import {
   CafeteriaItemResult,
   CafeteriaListResult,
 } from 'src/api/public/cafeterias/application/dtos/results/cafeteria-list-result.dto';
-import { getDayWeek } from 'src/api/public/cafeterias/application/utils/time';
 
 @Injectable()
 export class CafeteriaMessageFactory {
@@ -27,7 +30,7 @@ export class CafeteriaMessageFactory {
       description: cafeteria.campus.name,
       imageUrl: cafeteria.thumbnailUrl,
       action: 'block',
-      blockId: BlockId.CAFETERIA_DIET_LIST,
+      blockId: KakaoBlockId.CAFETERIA_DIET_LIST,
       extra: {
         cafeteriaId: cafeteria.id,
       },
@@ -37,9 +40,9 @@ export class CafeteriaMessageFactory {
       {
         label: '더보기',
         action: 'block',
-        blockId: BlockId.CAFETERIA_LIST,
+        blockId: KakaoBlockId.CAFETERIA_LIST,
         extra: {
-          campusId: -1,
+          campusId: KAKAO_REQUEST_CAMPUS_SELECTION_ID,
         },
       },
     ];
@@ -96,14 +99,14 @@ export class CafeteriaMessageFactory {
   }
 
   private createDishDateQuickReplies(cafeteria: CafeteriaItemResult): QuickReply[] {
-    const dishDateTypes: DietDate[] = ['오늘', '내일'];
+    const dishDateTypes: RelativeDietDate[] = ['오늘', '내일'];
     const times: DietTime[] = ['아침', '점심', '저녁'];
 
     return dishDateTypes.flatMap(dishDateType =>
       times.map(time => ({
         label: `${dishDateType} ${time}`,
         action: 'block',
-        blockId: BlockId.CAFETERIA_DIET_LIST,
+        blockId: KakaoBlockId.CAFETERIA_DIET_LIST,
         extra: {
           cafeteriaId: cafeteria.id,
           date: dishDateType,

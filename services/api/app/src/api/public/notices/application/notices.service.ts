@@ -15,7 +15,7 @@ export class NoticesService {
 
   private readonly TARGET_CATEGORIES = ['기관', '채용', '장학', '외부기관 행사', '학사'];
 
-  private readonly CAROUSEL_ITEMS_LIMIT = 4;
+  private readonly DEFAULT_LIMIT_PER_CATEGORY = 10;
 
   constructor(
     private readonly noticesRepository: NoticesRepository,
@@ -26,7 +26,8 @@ export class NoticesService {
    * 학교 공지사항 조회
    * @returns 카테고리별 공지사항 Map (데이터가 없으면 빈 Map)
    */
-  async getUniversityNotices(): Promise<NoticeListResult> {
+  async getUniversityNotices(options?: { limitPerCategory?: number }): Promise<NoticeListResult> {
+    const limitPerCategory = options?.limitPerCategory ?? this.DEFAULT_LIMIT_PER_CATEGORY;
     const categories = await this.noticeCategoriesRepository.findByDepartmentIdAndCategories(
       this.UNIVERSITY_DEPARTMENT_ID,
       this.TARGET_CATEGORIES,
@@ -39,7 +40,7 @@ export class NoticesService {
     const categoryIds = categories.map(category => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
-      this.CAROUSEL_ITEMS_LIMIT,
+      limitPerCategory,
     );
 
     const categoriesResult: NoticeCategoryResult[] = [];
@@ -62,10 +63,14 @@ export class NoticesService {
    * @param user 현재 사용자 (department 미설정 시 빈 Map 반환)
    * @returns 카테고리별 공지사항 Map
    */
-  async getDepartmentNotices(user: User): Promise<NoticeListResult> {
+  async getDepartmentNotices(
+    user: User,
+    options?: { limitPerCategory?: number },
+  ): Promise<NoticeListResult> {
     if (!user.department) {
       return { categories: [] };
     }
+    const limitPerCategory = options?.limitPerCategory ?? this.DEFAULT_LIMIT_PER_CATEGORY;
 
     const departmentIds: number[] = [user.department.id];
     if (user.department.parentDepartmentId) {
@@ -81,7 +86,7 @@ export class NoticesService {
     const categoryIds = categories.map(category => category.id);
     const noticesByCategory = await this.noticesRepository.findRecentByCategoryIds(
       categoryIds,
-      this.CAROUSEL_ITEMS_LIMIT,
+      limitPerCategory,
     );
 
     const categoriesResult: NoticeCategoryResult[] = [];

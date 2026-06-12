@@ -1,4 +1,5 @@
-import { DietDate } from 'src/api/public/cafeterias/presentation/dtos/requests/list-cafeteria-diet-request.dto';
+export type RelativeDietDate = '오늘' | '내일';
+export type DietTime = '아침' | '점심' | '저녁';
 
 /** 한국은 연중 UTC+9 (DST 없음). Intl 없이 서울 벽시계 시·분을 쓸 때 사용 */
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
@@ -28,7 +29,7 @@ const getTomorrow = (): Date => {
  * - dietDate가 제공되면 해당 날짜 반환
  * - 제공되지 않으면 서울 시간 기준 19시 전후로 오늘/내일 결정
  */
-export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
+export const getTodayOrTomorrow = (dietDate?: RelativeDietDate): Date => {
   if (dietDate) {
     return dietDate === '오늘' ? new Date() : getTomorrow();
   }
@@ -42,7 +43,7 @@ export const getTodayOrTomorrow = (dietDate?: DietDate): Date => {
  * - 서울 시간으로 변환 후 아침 시간 범위 내면 아침, 점심 시간 범위 내면 점심, 이후면 저녁
  * - 19:00 ~ 09:29: 아침, 09:30 ~ 13:29: 점심, 13:30 ~ 23:59: 저녁
  */
-export const getDietTime = (date: Date) => {
+export const getDietTime = (date: Date): DietTime => {
   const { hours, minutes } = getSeoulHoursMinutes(date);
   const totalMinutes = hours * 60 + minutes;
 

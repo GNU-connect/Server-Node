@@ -2,7 +2,7 @@ import { ForbiddenException, INestApplication, Module, ValidationPipe } from '@n
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { CafeteriasController } from 'src/api/public/cafeterias/presentation/cafeterias.controller';
+import { CafeteriasKakaoController } from 'src/api/public/cafeterias/presentation/cafeterias-kakao.controller';
 import { CafeteriasService } from 'src/api/public/cafeterias/application/cafeterias.service';
 import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
 import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
@@ -33,7 +33,7 @@ const mockUsersService = {
 };
 
 @Module({
-  controllers: [CafeteriasController],
+  controllers: [CafeteriasKakaoController],
   providers: [
     { provide: CafeteriasService, useValue: mockCafeteriasService },
     { provide: UsersService, useValue: mockUsersService },

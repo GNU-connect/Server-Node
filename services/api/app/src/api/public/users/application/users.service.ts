@@ -13,17 +13,26 @@ export class UsersService {
   }
 
   public createProfileResult(user: User): UserProfileResult {
-    const campusName = user.campus?.name || '미등록';
-    const collegeName = user.department?.college?.name;
-    const departmentName = user.department?.name;
-
     return {
       userId: user.id,
-      campusName,
-      affiliationName:
-        !collegeName && !departmentName
-          ? '미등록'
-          : [collegeName, departmentName].filter(Boolean).join(' '),
+      campus: user.campus
+        ? {
+            id: user.campus.id,
+            name: user.campus.name,
+          }
+        : null,
+      college: user.department?.college
+        ? {
+            id: user.department.college.id,
+            name: user.department.college.name,
+          }
+        : null,
+      department: user.department
+        ? {
+            id: user.department.id,
+            name: user.department.name,
+          }
+        : null,
     };
   }
 

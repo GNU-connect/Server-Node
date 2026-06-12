@@ -7,7 +7,7 @@ import { DepartmentsModule } from 'src/api/public/departments/departments.module
 import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
 import { User } from 'src/api/public/users/domain/entities/users.entity';
 import { UsersRepository } from 'src/api/public/users/infrastructure/users.repository';
-import { UsersController } from 'src/api/public/users/presentation/users.controller';
+import { UsersKakaoController } from 'src/api/public/users/presentation/users-kakao.controller';
 import { UsersService } from 'src/api/public/users/application/users.service';
 import { UserMessageFactory } from 'src/api/public/users/presentation/user-message.factory';
 import { CommonMessageFactory } from 'src/api/public/common/presentation/common-message.factory';
@@ -17,7 +17,7 @@ import { DepartmentMessageFactory } from 'src/api/public/departments/presentatio
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), CampusesModule, CollegesModule, DepartmentsModule],
-  controllers: [UsersController],
+  controllers: [UsersKakaoController],
   providers: [
     UsersService,
     UsersRepository,
