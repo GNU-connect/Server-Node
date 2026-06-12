@@ -14,16 +14,24 @@ export class DepartmentsService {
   ) {}
 
   @CacheKey({
-    key: ([collegeId, page]) => {
-      return `departments:college:${collegeId}:page:${page}`;
+    key: ([collegeId, page, pageSize]) => {
+      return `departments:college:${collegeId}:page:${Math.max(
+        page as number,
+        1,
+      )}:size:${pageSize}`;
     },
   })
-  public async findAll(collegeId: number, page: number): Promise<DepartmentListResult> {
+  public async findAll(
+    collegeId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<DepartmentListResult> {
     const safePage = Math.max(page, 1);
 
     const [departments, total] = await this.departmentsRepository.findByCollegeId(
       collegeId,
       safePage,
+      pageSize,
     );
 
     return {

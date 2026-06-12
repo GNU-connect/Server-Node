@@ -165,6 +165,26 @@ describe('NoticesService', () => {
         expect.any(Array),
       );
     });
+
+    it('기본 limitPerCategory 10으로 공지사항을 조회한다', async () => {
+      const category = makeCategory({ id: 1, category: '학사' });
+      noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([category]);
+      noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
+
+      await service.getUniversityNotices();
+
+      expect(noticesRepository.findRecentByCategoryIds).toHaveBeenCalledWith([1], 10);
+    });
+
+    it('limitPerCategory 옵션으로 카테고리별 조회 개수를 변경한다', async () => {
+      const category = makeCategory({ id: 1, category: '학사' });
+      noticeCategoriesRepository.findByDepartmentIdAndCategories.mockResolvedValue([category]);
+      noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
+
+      await service.getUniversityNotices({ limitPerCategory: 10 });
+
+      expect(noticesRepository.findRecentByCategoryIds).toHaveBeenCalledWith([1], 10);
+    });
   });
 
   describe('getDepartmentNotices', () => {
@@ -241,6 +261,28 @@ describe('NoticesService', () => {
       await service.getDepartmentNotices(user);
 
       expect(noticeCategoriesRepository.findByDepartmentIds).toHaveBeenCalledWith([10]);
+    });
+
+    it('기본 limitPerCategory 10으로 학과 공지사항을 조회한다', async () => {
+      const user = makeUser();
+      const category = makeCategory({ id: 1 });
+      noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([category]);
+      noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
+
+      await service.getDepartmentNotices(user);
+
+      expect(noticesRepository.findRecentByCategoryIds).toHaveBeenCalledWith([1], 10);
+    });
+
+    it('limitPerCategory 옵션으로 학과 공지사항 조회 개수를 변경한다', async () => {
+      const user = makeUser();
+      const category = makeCategory({ id: 1 });
+      noticeCategoriesRepository.findByDepartmentIds.mockResolvedValue([category]);
+      noticesRepository.findRecentByCategoryIds.mockResolvedValue(new Map());
+
+      await service.getDepartmentNotices(user, { limitPerCategory: 10 });
+
+      expect(noticesRepository.findRecentByCategoryIds).toHaveBeenCalledWith([1], 10);
     });
   });
 });

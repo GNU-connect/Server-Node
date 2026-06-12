@@ -1,13 +1,13 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
-import { DietTime } from 'src/api/public/cafeterias/presentation/dtos/requests/list-cafeteria-diet-request.dto';
 import {
   CafeteriaDietItemResult,
   CafeteriaDietResult,
   CafeteriaMenuGroupResult,
 } from 'src/api/public/cafeterias/application/dtos/results/cafeteria-diet-result.dto';
 import { CafeteriaListResult } from 'src/api/public/cafeterias/application/dtos/results/cafeteria-list-result.dto';
+import { DietTime } from 'src/api/public/cafeterias/application/utils/time';
 import { CafeteriasRepository } from 'src/api/public/cafeterias/infrastructure/cafeterias.repository';
 
 @Injectable()

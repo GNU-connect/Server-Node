@@ -12,12 +12,13 @@ import { ListDepartmentNoticeRequestDto } from './dtos/requests/list-department-
 import { ListUniversityNoticeRequestDto } from './dtos/requests/list-university-notice-request.dto';
 import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
 import { NoticesService } from 'src/api/public/notices/application/notices.service';
+import { KAKAO_NOTICE_CAROUSEL_ITEM_LIMIT } from 'src/api/common/presentation/kakao.constants';
 
 @ApiTags('notices')
 @Controller('notices')
 @UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
-export class NoticesController {
+export class NoticesKakaoController {
   constructor(
     private readonly noticesService: NoticesService,
     private readonly noticeMessageFactory: NoticeMessageFactory,
@@ -27,7 +28,9 @@ export class NoticesController {
   @Post('university')
   @ApiSkillBody(ListUniversityNoticeRequestDto)
   async listUniversityNotices() {
-    const result = await this.noticesService.getUniversityNotices();
+    const result = await this.noticesService.getUniversityNotices({
+      limitPerCategory: KAKAO_NOTICE_CAROUSEL_ITEM_LIMIT,
+    });
 
     if (result.categories.length === 0) {
       const template = this.commonMessageFactory.createSimpleText('현재 등록된 공지사항이 없어!');
@@ -47,7 +50,9 @@ export class NoticesController {
       return new ResponseDTO(template);
     }
 
-    const result = await this.noticesService.getDepartmentNotices(user);
+    const result = await this.noticesService.getDepartmentNotices(user, {
+      limitPerCategory: KAKAO_NOTICE_CAROUSEL_ITEM_LIMIT,
+    });
 
     if (result.categories.length === 0) {
       const template = this.commonMessageFactory.createSimpleText('현재 등록된 공지사항이 없어!');

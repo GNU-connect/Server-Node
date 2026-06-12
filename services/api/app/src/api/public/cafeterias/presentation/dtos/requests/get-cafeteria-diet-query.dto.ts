@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDefined, IsIn, IsISO8601 } from 'class-validator';
-import { DietTime } from './list-cafeteria-diet-request.dto';
+import { DietTime } from 'src/api/public/cafeterias/application/utils/time';
 
 export class GetCafeteriaDietQueryDto {
   @IsDefined({ message: 'date는 필수입니다.' })

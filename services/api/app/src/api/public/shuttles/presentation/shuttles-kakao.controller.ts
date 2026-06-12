@@ -13,7 +13,7 @@ import { ShuttlesService } from 'src/api/public/shuttles/application/shuttles.se
 @Controller('shuttles')
 @UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
-export class ShuttlesController {
+export class ShuttlesKakaoController {
   constructor(
     private readonly shuttlesService: ShuttlesService,
     private readonly shuttleMessageFactory: ShuttleMessageFactory,

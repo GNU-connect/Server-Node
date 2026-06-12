@@ -3,7 +3,10 @@ import { ListCard } from 'src/api/common/interfaces/response/fields/component';
 import { ListItem } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createListCard } from 'src/api/common/utils/component';
-import { BlockId, ListCardConfig } from 'src/api/common/utils/constants';
+import {
+  KakaoBlockId,
+  KAKAO_LIST_CARD_ITEM_LIMIT,
+} from 'src/api/common/presentation/kakao.constants';
 import { CollegeListResult } from 'src/api/public/colleges/application/dtos/results/college-list-result.dto';
 
 @Injectable()
@@ -33,14 +36,14 @@ export class CollegeMessageFactory {
 
     const collegeListCard: ListCard = createListCard(header, items);
 
-    const totalPages = Math.ceil(result.total / ListCardConfig.LIMIT);
+    const totalPages = Math.ceil(result.total / KAKAO_LIST_CARD_ITEM_LIMIT);
     const paginationButtons = [];
 
     if (page > 1) {
       paginationButtons.push({
         label: '이전',
         action: 'block',
-        blockId: BlockId.COLLEGE_LIST,
+        blockId: KakaoBlockId.COLLEGE_LIST,
         extra: {
           campusId: campusId,
           page: page - 1,
@@ -52,7 +55,7 @@ export class CollegeMessageFactory {
       paginationButtons.push({
         label: '다음',
         action: 'block',
-        blockId: BlockId.COLLEGE_LIST,
+        blockId: KakaoBlockId.COLLEGE_LIST,
         extra: {
           campusId: campusId,
           page: page + 1,

@@ -3,7 +3,7 @@ import { TextCard } from 'src/api/common/interfaces/response/fields/component';
 import { Button } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createSimpleText, createTextCard } from 'src/api/common/utils/component';
-import { BlockId } from 'src/api/common/utils/constants';
+import { KakaoBlockId } from 'src/api/common/presentation/kakao.constants';
 
 @Injectable()
 export class CommonMessageFactory {
@@ -22,7 +22,7 @@ export class CommonMessageFactory {
       {
         label: '학과 등록',
         action: 'block',
-        blockId: BlockId.CHANGE_PROFILE,
+        blockId: KakaoBlockId.CHANGE_PROFILE,
       },
     ];
 

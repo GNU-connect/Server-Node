@@ -1,4 +1,4 @@
-export const enum BlockId {
+export const enum KakaoBlockId {
   // COMMON
   COLLEGE_LIST = '66cf226fa14fe55e3fc92498',
   DEPARTMENT_LIST = '66d05728e5715f75b2552b2c',
@@ -21,6 +21,6 @@ export const enum BlockId {
   SHUTTLE_TIMETABLE = '69b2c0babb823869c1c7fae6',
 }
 
-export const enum ListCardConfig {
-  LIMIT = 5,
-}
+export const KAKAO_LIST_CARD_ITEM_LIMIT = 5;
+export const KAKAO_NOTICE_CAROUSEL_ITEM_LIMIT = 4;
+export const KAKAO_REQUEST_CAMPUS_SELECTION_ID = -1;

@@ -6,12 +6,12 @@ import { Notice } from 'src/api/public/notices/domain/entities/notice.entity';
 import { NoticeCategoriesRepository } from 'src/api/public/notices/infrastructure/notice-categories.repository';
 import { NoticeMessageFactory } from 'src/api/public/notices/presentation/notice-message.factory';
 import { NoticesRepository } from 'src/api/public/notices/infrastructure/notices.repository';
-import { NoticesController } from 'src/api/public/notices/presentation/notices.controller';
+import { NoticesKakaoController } from 'src/api/public/notices/presentation/notices-kakao.controller';
 import { NoticesService } from 'src/api/public/notices/application/notices.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Notice, NoticeCategory])],
-  controllers: [NoticesController],
+  controllers: [NoticesKakaoController],
   providers: [
     NoticesService,
     NoticesRepository,

@@ -11,7 +11,10 @@ import { CampusesService } from 'src/api/public/campuses/application/campuses.se
 import { CampusMessageFactory } from 'src/api/public/campuses/presentation/campus-message.factory';
 import { CurrentUser } from 'src/api/public/users/presentation/decorators/current-user.decorator';
 import { FetchCurrentUser } from 'src/api/public/users/presentation/decorators/fetch-current-user.decorator';
-import { BlockId } from 'src/api/common/utils/constants';
+import {
+  KakaoBlockId,
+  KAKAO_REQUEST_CAMPUS_SELECTION_ID,
+} from 'src/api/common/presentation/kakao.constants';
 import { User } from 'src/api/public/users/domain/entities/users.entity';
 import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
 import { getDietTime, getTodayOrTomorrow } from 'src/api/public/cafeterias/application/utils/time';
@@ -21,7 +24,7 @@ import { CafeteriasService } from 'src/api/public/cafeterias/application/cafeter
 @Controller('cafeterias')
 @UseGuards(KakaoAuthGuard)
 @UseFilters(OpenBuilderExceptionFilter)
-export class CafeteriasController {
+export class CafeteriasKakaoController {
   constructor(
     private readonly cafeteriasService: CafeteriasService,
     private readonly cafeteriaMessageFactory: CafeteriaMessageFactory,
@@ -40,11 +43,14 @@ export class CafeteriasController {
     const userCampusId = user.campus?.id;
 
     // '더보기' 버튼 또는 캠퍼스 미설정 → 캠퍼스 선택 카드 반환
-    if (requestedCampusId === -1 || (!requestedCampusId && !userCampusId)) {
+    if (
+      requestedCampusId === KAKAO_REQUEST_CAMPUS_SELECTION_ID ||
+      (!requestedCampusId && !userCampusId)
+    ) {
       const result = await this.campusesService.findAll();
       const template = this.campusMessageFactory.createCampusListCard(
         result,
-        BlockId.CAFETERIA_LIST,
+        KakaoBlockId.CAFETERIA_LIST,
       );
       return new ResponseDTO(template);
     }

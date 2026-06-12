@@ -4,13 +4,13 @@ import { ShuttleTimetable } from 'src/api/public/shuttles/domain/entities/shuttl
 import { ShuttleTimetableRepository } from 'src/api/public/shuttles/infrastructure/shuttle-timetable.repository';
 import { ShuttleMessageFactory } from 'src/api/public/shuttles/presentation/shuttle-message.factory';
 import { ShuttleTimetableCalculator } from 'src/api/public/shuttles/application/shuttle-timetable.calculator';
-import { ShuttlesController } from 'src/api/public/shuttles/presentation/shuttles.controller';
+import { ShuttlesKakaoController } from 'src/api/public/shuttles/presentation/shuttles-kakao.controller';
 import { ShuttlesNativeController } from 'src/api/public/shuttles/presentation/shuttles-native.controller';
 import { ShuttlesService } from 'src/api/public/shuttles/application/shuttles.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ShuttleTimetable])],
-  controllers: [ShuttlesController, ShuttlesNativeController],
+  controllers: [ShuttlesKakaoController, ShuttlesNativeController],
   providers: [
     ShuttlesService,
     ShuttleTimetableRepository,

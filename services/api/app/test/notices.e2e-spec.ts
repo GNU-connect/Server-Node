@@ -2,7 +2,7 @@ import { INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { NoticesController } from 'src/api/public/notices/presentation/notices.controller';
+import { NoticesKakaoController } from 'src/api/public/notices/presentation/notices-kakao.controller';
 import { NoticesService } from 'src/api/public/notices/application/notices.service';
 import { KakaoAuthGuard } from 'src/api/public/users/presentation/guards/kakao-auth.guard';
 import { CurrentUserInterceptor } from 'src/api/public/users/presentation/interceptors/current-user.interceptor';
@@ -31,7 +31,7 @@ const mockUsersService = {
 };
 
 @Module({
-  controllers: [NoticesController],
+  controllers: [NoticesKakaoController],
   providers: [
     { provide: NoticesService, useValue: mockNoticesService },
     { provide: UsersService, useValue: mockUsersService },

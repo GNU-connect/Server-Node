@@ -1,4 +1,4 @@
-import { DietTime } from 'src/api/public/cafeterias/presentation/dtos/requests/list-cafeteria-diet-request.dto';
+import { DietTime } from 'src/api/public/cafeterias/application/utils/time';
 import { CafeteriaItemResult } from 'src/api/public/cafeterias/application/dtos/results/cafeteria-list-result.dto';
 
 export interface CafeteriaDietItemResult {

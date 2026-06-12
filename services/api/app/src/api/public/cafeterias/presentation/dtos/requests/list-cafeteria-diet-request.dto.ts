@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ClientExtraDto } from 'src/api/common/dtos/requests';
+import { DietTime, RelativeDietDate } from 'src/api/public/cafeterias/application/utils/time';
 
-export type DietDate = '오늘' | '내일';
-export type DietTime = '아침' | '점심' | '저녁';
+export type DietDate = RelativeDietDate;
 
 export class ListCafeteriaDietExtraRequestDto extends ClientExtraDto {
   @ApiProperty({ description: '식당 ID', example: 1 })

@@ -61,6 +61,43 @@ describe('UsersService', () => {
     });
   });
 
+  describe('createProfileResult', () => {
+    it('사용자 프로필을 구조화된 값으로 반환한다', () => {
+      const user = makeUser();
+
+      const result = service.createProfileResult(user);
+
+      expect(result).toEqual({
+        userId: 'kakao-user-id',
+        campus: {
+          id: 1,
+          name: '가좌캠퍼스',
+        },
+        college: {
+          id: 3,
+          name: '공과대학',
+        },
+        department: {
+          id: 10,
+          name: '컴퓨터공학부',
+        },
+      });
+    });
+
+    it('캠퍼스와 학과가 없으면 null로 반환한다', () => {
+      const user = makeUser({ campus: null, department: null });
+
+      const result = service.createProfileResult(user);
+
+      expect(result).toEqual({
+        userId: 'kakao-user-id',
+        campus: null,
+        college: null,
+        department: null,
+      });
+    });
+  });
+
   describe('upsert', () => {
     it('userId와 campusId, departmentId로 사용자 학과 정보를 저장한다', async () => {
       const user = makeUser({ campusId: 2, departmentId: 20 });

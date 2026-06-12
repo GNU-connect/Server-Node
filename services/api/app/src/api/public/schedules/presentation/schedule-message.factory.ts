@@ -3,7 +3,7 @@ import { TextCard } from 'src/api/common/interfaces/response/fields/component';
 import { Button, QuickReply } from 'src/api/common/interfaces/response/fields/etc';
 import { SkillTemplate } from 'src/api/common/interfaces/response/fields/template';
 import { createTextCard } from 'src/api/common/utils/component';
-import { BlockId } from 'src/api/common/utils/constants';
+import { KakaoBlockId } from 'src/api/common/presentation/kakao.constants';
 import { AcademicScheduleResult } from 'src/api/public/schedules/application/dtos/results/academic-schedule-result.dto';
 
 @Injectable()
@@ -75,7 +75,7 @@ export class ScheduleMessageFactory {
       replies.push({
         label: `${month}월`,
         action: 'block',
-        blockId: BlockId.ACADEMIC_SCHEDULE,
+        blockId: KakaoBlockId.ACADEMIC_SCHEDULE,
         extra: { month },
       });
     }
