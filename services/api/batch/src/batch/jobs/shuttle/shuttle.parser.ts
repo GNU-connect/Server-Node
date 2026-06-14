@@ -1,15 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import {
   ParsedShuttleTimetable,
+  ParsedShuttleTimetablePage,
   ShuttleTimetableMap,
 } from './type/parsed-shuttle-timetable';
 
 @Injectable()
 export class ShuttleParser {
-  parse(raw: string): ParsedShuttleTimetable[] {
-    return this.extractTables(raw)
+  parse(raw: string): ParsedShuttleTimetablePage {
+    const timetables = this.extractTables(raw)
       .map((table) => this.parseTable(table))
-      .filter((timetable): timetable is ParsedShuttleTimetable => timetable !== null);
+      .filter(
+        (timetable): timetable is ParsedShuttleTimetable => timetable !== null,
+      );
+
+    if (timetables.length !== 2) {
+      throw new Error('셔틀 시간표 테이블을 찾을 수 없습니다.');
+    }
+
+    return {
+      updatedAt: this.extractUpdatedAt(raw),
+      timetables,
+    };
   }
 
   private parseTable(table: string): ParsedShuttleTimetable | null {
@@ -31,8 +43,9 @@ export class ShuttleParser {
     }
 
     const timeGroups = this.extractCells(rows[headerIndex], 'th');
-    const timetable = rows.slice(headerIndex + 1).reduce<ShuttleTimetableMap>(
-      (acc, row) => {
+    const timetable = rows
+      .slice(headerIndex + 1)
+      .reduce<ShuttleTimetableMap>((acc, row) => {
         const times = this.extractCells(row, 'td', { removeEmpty: false });
 
         timeGroups.forEach((timeGroup, index) => {
@@ -46,9 +59,7 @@ export class ShuttleParser {
         });
 
         return acc;
-      },
-      {},
-    );
+      }, {});
 
     return { routeName, timetable };
   }
@@ -66,7 +77,10 @@ export class ShuttleParser {
     tagName: 'td' | 'th',
     options: { removeEmpty?: boolean } = { removeEmpty: true },
   ): string[] {
-    const cellRegex = new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, 'gi');
+    const cellRegex = new RegExp(
+      `<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`,
+      'gi',
+    );
     const cells = [...row.matchAll(cellRegex)];
     const texts = cells.map((cell) => this.normalizeText(cell[1]));
 
@@ -90,6 +104,21 @@ export class ShuttleParser {
     }
 
     return null;
+  }
+
+  private extractUpdatedAt(raw: string): Date {
+    const updatedAtMatch = raw.match(
+      /최근\s*업데이트\s*일시\s*:\s*(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/,
+    );
+
+    if (!updatedAtMatch) {
+      throw new Error('셔틀 시간표 최근 업데이트 일시를 찾을 수 없습니다.');
+    }
+
+    const [, year, month, day, hour, minute, second] =
+      updatedAtMatch.map(Number);
+
+    return new Date(year, month - 1, day, hour, minute, second);
   }
 
   private normalizeText(html: string): string {

@@ -16,3 +16,8 @@ export interface ParsedShuttleTimetable {
   routeName: string;
   timetable: ShuttleTimetableMap;
 }
+
+export interface ParsedShuttleTimetablePage {
+  updatedAt: Date;
+  timetables: ParsedShuttleTimetable[];
+}
