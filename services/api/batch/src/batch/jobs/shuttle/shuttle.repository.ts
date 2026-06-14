@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ShuttleTimetable } from './shuttle.interface';
+import { ShuttleTimetable } from './domain/shuttle-timetable.entity';
 
 @Injectable()
 export class ShuttleRepository {

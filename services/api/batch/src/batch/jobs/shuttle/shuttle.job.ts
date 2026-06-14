@@ -17,6 +17,7 @@ export class ShuttleJob implements BatchJob {
   async run(): Promise<void> {
     const raw = await this.client.fetch();
     const shuttles = this.parser.parse(raw);
+    console.log(shuttles);
     //await this.repository.save(shuttles);
   }
 }
