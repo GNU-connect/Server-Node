@@ -14,4 +14,5 @@ const projectCommands = (projectDir, files) => {
 module.exports = {
   'services/api/app/**/*.{js,ts}': files => projectCommands('services/api/app', files),
   'mobile/**/*.{js,jsx,ts,tsx}': files => projectCommands('mobile', files),
+  'services/api/batch/**/*.{js,ts}': files => projectCommands('services/api/batch', files),
 };

@@ -72,7 +72,7 @@ export class FetchHttpClient implements HttpClient {
     options: HttpRequestOptions,
     timeoutMs: number,
   ): Promise<Response> {
-    const { retry: _retry, signal, ...fetchOptions } = options;
+    const { signal, ...fetchOptions } = options;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -91,10 +91,24 @@ export class FetchHttpClient implements HttpClient {
   }
 
   private getRetryOptions(retry?: RetryOptions): Required<RetryOptions> {
+    const retries = retry?.retries ?? DEFAULT_RETRIES;
+    const retryDelayMs = retry?.retryDelayMs ?? DEFAULT_RETRY_DELAY_MS;
+    const timeoutMs = retry?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+
+    if (!Number.isInteger(retries) || retries < 0) {
+      throw new HttpRequestError('Invalid retry.retries: must be >= 0');
+    }
+    if (retryDelayMs < 0) {
+      throw new HttpRequestError('Invalid retry.retryDelayMs: must be >= 0');
+    }
+    if (timeoutMs <= 0) {
+      throw new HttpRequestError('Invalid retry.timeoutMs: must be > 0');
+    }
+
     return {
-      retries: retry?.retries ?? DEFAULT_RETRIES,
-      retryDelayMs: retry?.retryDelayMs ?? DEFAULT_RETRY_DELAY_MS,
-      timeoutMs: retry?.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      retries,
+      retryDelayMs,
+      timeoutMs,
       retryOnStatuses: retry?.retryOnStatuses ?? DEFAULT_RETRY_ON_STATUSES,
     };
   }

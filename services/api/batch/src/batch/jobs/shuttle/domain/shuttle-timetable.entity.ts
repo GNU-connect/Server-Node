@@ -1,9 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import type { ShuttleTimetableMap } from '../type/parsed-shuttle-timetable';
 
 @Entity('shuttle_timetable')
@@ -14,9 +9,22 @@ export class ShuttleTimetable {
   @Column({ name: 'route_name', length: 100, unique: true })
   routeName: string;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: false })
   timetable: ShuttleTimetableMap;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @Column({
+    name: 'updated_at',
+    type: 'timestamp',
+    nullable: false,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
+
+  @Column({
+    name: 'last_success_at',
+    type: 'timestamp',
+    nullable: false,
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  lastSuccessAt: Date;
 }
