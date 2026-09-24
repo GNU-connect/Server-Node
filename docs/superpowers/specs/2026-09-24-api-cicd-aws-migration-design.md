@@ -152,9 +152,14 @@ if [ "$status" != healthy ]; then
   exit 1
 fi
 
-# nginx 설정 반영 (재생성 직후 pid 미생성 대비 reload 재시도)
+# nginx 설정 반영: 실행 중인 컨테이너를 건드리기 전에 일회성 컨테이너로 검사
+# (먼저 up 하면 compose 정의 변경 시 재생성되어, 잘못된 설정이면 80/443이 내려간다)
+if ! docker compose run --rm --no-deps -T nginx nginx -t; then
+  echo "nginx config test failed"
+  exit 1
+fi
 docker compose up -d --no-deps nginx
-docker compose exec -T nginx nginx -t
+# 재생성 직후 pid 미생성 대비 reload 재시도
 reloaded=false
 for _ in 1 2 3 4 5; do
   if docker compose exec -T nginx nginx -s reload; then reloaded=true; break; fi
@@ -172,7 +177,7 @@ docker image prune -f
 동작 규칙:
 
 - 헬스체크 실패 시 로그를 출력하고 실패 처리한다. nginx reload와 prune은 실행하지 않는다. 자동 롤백은 하지 않는다.
-- `nginx -t`가 실패하면 reload하지 않고 워크플로가 실패한다. 기존 nginx 프로세스는 이전 설정으로 계속 동작한다.
+- `nginx -t`는 `docker compose run --rm`으로 실행 중인 nginx와 분리해 먼저 검사한다. 실패하면 nginx를 재생성·reload하지 않고 워크플로가 실패하며, 기존 nginx는 이전 설정으로 계속 동작한다.
 - `sudo`를 쓰지 않는다 (`ec2-user`가 `docker` 그룹 소속이라는 전제).
 - `docker image prune -af` 대신 `-f`를 사용해 dangling 이미지만 정리한다.
 
