@@ -34,7 +34,7 @@ API 서버(app + nginx) 배포 대상을 GCP VM에서 AWS EC2(t3.micro, amd64, A
 | 항목 | 결정 | 이유 |
 |---|---|---|
 | EC2 접근 | SSH 키 (`appleboy/scp-action`, `appleboy/ssh-action`) | 기존 흐름 유지, 마이그레이션 위험 최소화 |
-| 로깅 | `json-file` + 로테이션 (`10m` × 3) | 추가 AWS 설정 없음, 에러 추적은 Sentry가 담당 |
+| 로깅 | `json-file` + 로테이션 (`10m` × 3), 서비스별 동일 블록 | 추가 AWS 설정 없음, 에러 추적은 Sentry가 담당 |
 | 파일 동기화 | `docker-compose.yml`, `nginx/prod.conf`만 | `letsencrypt/`는 root 소유이고 인증서는 certbot이 관리 |
 | 워크플로 구조 | CI를 `workflow_call`로 재사용, CD가 호출 | CI 정의 단일화, 파일 역할 유지 |
 | 이미지 레지스트리 | DockerHub 유지 | 변경 필요 없음 |
@@ -162,17 +162,15 @@ docker image prune -f
 
 ## 7. `services/api/docker-compose.yml` 변경
 
-1. 로깅을 공통 앵커로 정의하고 app, nginx, certbot에 적용한다.
+1. 로깅: app, nginx, certbot 모두 아래 블록을 서비스별로 명시한다 (적용 완료).
 
    ```yaml
-   x-logging: &default-logging
+   logging:
      driver: json-file
      options:
        max-size: "10m"
        max-file: "3"
    ```
-
-   app, nginx의 `gcplogs` 설정을 제거한다.
 
 2. nginx 설정을 단일 파일 마운트에서 디렉터리 마운트로 변경한다.
 
@@ -185,7 +183,9 @@ docker image prune -f
 
    이유: scp-action은 tar 해제로 파일을 새로 생성하므로 inode가 바뀐다. 단일 파일 bind mount는 기존 inode를 계속 참조하므로 `nginx -s reload`를 해도 새 설정이 반영되지 않는다. 디렉터리 마운트는 이 문제가 없다.
 
-3. 이미지, healthcheck, certbot, 네트워크 설정은 유지한다. `docker-compose.dev.yml`은 변경하지 않는다.
+3. 이미지, app healthcheck, nginx `depends_on: app`, certbot, 네트워크 설정은 유지한다. 배포 스크립트의 헬스 대기는 app healthcheck에 의존하므로 제거하면 안 된다. `docker-compose.dev.yml`은 변경하지 않는다.
+
+4. `nginx/prod.conf`는 서버 반영본 기준이다: 도메인 `api.connectgnu.kro.kr`, `/api/metrics`는 모니터링 서버 IP(`35.212.243.112`, GCP 유지)만 허용.
 
 ## 8. GitHub Secrets
 
