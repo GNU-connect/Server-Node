@@ -5,43 +5,59 @@ on:
     branches:
       - main
     paths:
-      - "services/api/app/src/**"
-      - "services/api/app/package.json"
-      - "services/api/app/pnpm-lock.yaml"
-      - "services/api/app/Dockerfile"
-      - "services/api/docker-compose.yml"
-      - "services/api/nginx/**"
-      - ".github/workflows/api-cd.yml"
+      - 'services/api/app/src/**'
+      - 'services/api/app/package.json'
+      - 'services/api/app/pnpm-lock.yaml'
+      - 'services/api/app/Dockerfile'
+      - 'services/api/app/.dockerignore'
+      - 'services/api/app/tsconfig*.json'
+      - 'services/api/app/nest-cli.json'
+      - 'services/api/docker-compose.yml'
+      - 'services/api/nginx/**'
+      - '.github/workflows/api-cd.yml'
 
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: api-cd-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
-  ROOT_DIR: ./connect-gnu/services/api
+  DEPLOY_DIR: /opt/connectgnu/api
 
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/api-ci.yml
+
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
+    needs: ci
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker Image
-        uses: docker/build-push-action@v6
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v7
         with:
+          context: services/api/app
+          target: prod
           push: true
           pull: true
-          context: services/api/app
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
@@ -52,28 +68,74 @@ jobs:
     name: Deploy to API Server
     runs-on: ubuntu-latest
     needs: build-and-push
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.API_SSH_HOST }}
           username: ${{ secrets.API_SSH_USERNAME }}
           key: ${{ secrets.API_SSH_PRIVATE_KEY }}
-          source: services/api/docker-compose.yml,services/api/nginx,services/api/letsencrypt/init-letsencrypt.sh
-          target: ${{ env.ROOT_DIR }}
+          source: services/api/docker-compose.yml,services/api/nginx/prod.conf
+          target: ${{ env.DEPLOY_DIR }}
           strip_components: 2
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.API_SSH_HOST }}
           username: ${{ secrets.API_SSH_USERNAME }}
           key: ${{ secrets.API_SSH_PRIVATE_KEY }}
           script: |
-            cd ${{ env.ROOT_DIR }}
-            sudo docker-compose pull app
-            sudo docker-compose up -d app --no-deps
-            sudo docker image prune -af
+            set -euo pipefail
+            cd ${{ env.DEPLOY_DIR }}
+
+            docker compose pull app
+            docker compose up -d --no-deps app
+
+            cid=$(docker compose ps -q app)
+            if [ -z "$cid" ]; then
+              echo "app container not found"
+              docker compose ps
+              exit 1
+            fi
+
+            status=none
+            for _ in $(seq 1 30); do
+              status=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid")
+              case "$status" in
+                healthy|unhealthy|none) break ;;
+              esac
+              sleep 3
+            done
+
+            if [ "$status" != healthy ]; then
+              echo "app health status: $status"
+              docker compose logs --tail 100 app
+              exit 1
+            fi
+
+            if ! docker compose run --rm --no-deps -T nginx nginx -t; then
+              echo "nginx config test failed"
+              exit 1
+            fi
+            docker compose up -d --no-deps nginx
+
+            reloaded=false
+            for _ in 1 2 3 4 5; do
+              if docker compose exec -T nginx nginx -s reload; then
+                reloaded=true
+                break
+              fi
+              sleep 2
+            done
+            if [ "$reloaded" != true ]; then
+              echo "nginx reload failed"
+              docker compose logs --tail 50 nginx
+              exit 1
+            fi
+
+            docker image prune -f
