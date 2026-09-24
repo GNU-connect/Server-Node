@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Department } from 'src/type-orm/entities/departments/department.entity';
-import { DepartmentsRepository } from 'src/type-orm/entities/departments/departments.repository';
-import { DepartmentsService } from './departments.service';
+import { Department } from 'src/api/public/departments/domain/entities/department.entity';
+import { DepartmentsRepository } from 'src/api/public/departments/infrastructure/departments.repository';
+import { DepartmentsService } from 'src/api/public/departments/application/departments.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Department])],

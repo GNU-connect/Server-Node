@@ -1,0 +1,45 @@
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { DepartmentListResult } from 'src/api/public/departments/application/dtos/results/department-list-result.dto';
+import { DepartmentsRepository } from 'src/api/public/departments/infrastructure/departments.repository';
+import { CacheKey } from 'src/api/common/decorators/cache-key.decorator';
+
+@Injectable()
+export class DepartmentsService {
+  readonly logger = new Logger(DepartmentsService.name);
+
+  constructor(
+    private readonly departmentsRepository: DepartmentsRepository,
+    @Inject(CACHE_MANAGER) readonly cacheManager: Cache,
+  ) {}
+
+  @CacheKey({
+    key: ([collegeId, page, pageSize]) => {
+      return `departments:college:${collegeId}:page:${Math.max(
+        page as number,
+        1,
+      )}:size:${pageSize}`;
+    },
+  })
+  public async findAll(
+    collegeId: number,
+    page: number,
+    pageSize: number,
+  ): Promise<DepartmentListResult> {
+    const safePage = Math.max(page, 1);
+
+    const [departments, total] = await this.departmentsRepository.findByCollegeId(
+      collegeId,
+      safePage,
+      pageSize,
+    );
+
+    return {
+      departments: departments.map(department => ({
+        id: department.id,
+        name: department.name,
+      })),
+      total,
+    };
+  }
+}

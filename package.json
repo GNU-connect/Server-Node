@@ -6,8 +6,8 @@
     "prepare": "husky",
     "lint-staged": "lint-staged",
     "test": "pnpm run test:api && pnpm run test:mobile",
-    "test:api": "pnpm --dir services/api/app test -- --runInBand",
-    "test:mobile": "pnpm --dir mobile test -- --runInBand"
+    "test:api": "pnpm --dir services/api/app exec jest --runInBand",
+    "test:mobile": "pnpm --dir mobile exec jest --runInBand"
   },
   "devDependencies": {
     "husky": "^9.1.7",

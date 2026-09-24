@@ -4,30 +4,31 @@ services:
     pull_policy: always
     restart: always
     expose:
-      - "3000"
+      - '3000'
     env_file:
       - .env
     networks:
       - connect-gnu-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/api/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -fsS http://127.0.0.1:3000/api/health || exit 1']
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 20s
     logging:
-      driver: gcplogs
+      driver: json-file
       options:
-        gcp-log-cmd: "true"
+        max-size: '10m'
+        max-file: '3'
 
   nginx:
     image: nginx:1.29.5-alpine
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
-      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx:/etc/nginx/conf.d:ro
       - ./letsencrypt/conf:/etc/letsencrypt
       - ./letsencrypt/www:/var/www/certbot
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
@@ -36,9 +37,10 @@ services:
     depends_on:
       - app
     logging:
-      driver: gcplogs
+      driver: json-file
       options:
-        gcp-log-cmd: "true"
+        max-size: '10m'
+        max-file: '3'
 
   certbot:
     image: certbot/certbot:v5.3.1
@@ -50,8 +52,8 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: '10m'
+        max-file: '3'
 
 networks:
   connect-gnu-network:

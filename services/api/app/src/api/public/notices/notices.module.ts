@@ -1,14 +1,24 @@
 import { Module } from '@nestjs/common';
-import { CommonMessageFactory } from 'src/api/public/common/common-message.factory';
-import { NoticeMessageFactory } from 'src/api/public/notices/notice-message.factory';
-import { NoticesRepositoryModule } from 'src/type-orm/entities/notices/notices-repository.module';
-import { NoticesController } from './notices.controller';
-import { NoticesService } from './notices.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonMessageFactory } from 'src/api/public/common/presentation/common-message.factory';
+import { NoticeCategory } from 'src/api/public/notices/domain/entities/notice-category.entity';
+import { Notice } from 'src/api/public/notices/domain/entities/notice.entity';
+import { NoticeCategoriesRepository } from 'src/api/public/notices/infrastructure/notice-categories.repository';
+import { NoticeMessageFactory } from 'src/api/public/notices/presentation/notice-message.factory';
+import { NoticesRepository } from 'src/api/public/notices/infrastructure/notices.repository';
+import { NoticesKakaoController } from 'src/api/public/notices/presentation/notices-kakao.controller';
+import { NoticesService } from 'src/api/public/notices/application/notices.service';
 
 @Module({
-  imports: [NoticesRepositoryModule],
-  controllers: [NoticesController],
-  providers: [NoticesService, NoticeMessageFactory, CommonMessageFactory],
+  imports: [TypeOrmModule.forFeature([Notice, NoticeCategory])],
+  controllers: [NoticesKakaoController],
+  providers: [
+    NoticesService,
+    NoticesRepository,
+    NoticeCategoriesRepository,
+    NoticeMessageFactory,
+    CommonMessageFactory,
+  ],
   exports: [NoticesService],
 })
 export class NoticesModule {}

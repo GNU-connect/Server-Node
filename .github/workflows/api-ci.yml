@@ -5,10 +5,11 @@ on:
     branches:
       - main
       - dev
-
     paths:
       - 'services/api/app/**'
       - '.github/workflows/api-ci.yml'
+
+  workflow_call:
 
   workflow_dispatch:
 
@@ -20,8 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-test:
-    name: Lint and Test
+  verify:
+    name: Lint, Test and Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,15 +30,15 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
-          version: 9.9.0
+          package_json_file: services/api/app/package.json
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -51,3 +52,6 @@ jobs:
 
       - name: Run Tests
         run: pnpm test
+
+      - name: Build
+        run: pnpm build

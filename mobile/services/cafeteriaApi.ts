@@ -57,9 +57,8 @@ export function getCafeterias(campusId: number): Promise<Cafeteria[]> {
 export function getCafeteriaDiet(
   cafeteriaId: number,
   date: string,
-  time?: DietTimeLabel,
+  time: DietTimeLabel,
 ): Promise<CafeteriaDiet> {
-  const params = new URLSearchParams({ date });
-  if (time) params.set('time', time);
+  const params = new URLSearchParams({ date, time });
   return request<CafeteriaDiet>(`/cafeterias/${cafeteriaId}/diet?${params.toString()}`);
 }

@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseModule } from 'src/type-orm/database.module';
-import { ShuttleTimetable } from 'src/type-orm/entities/shuttle-timetables/shuttle-timetable.entity';
-import { ShuttleTimetableRepository } from 'src/type-orm/entities/shuttle-timetables/shuttle-timetable.repository';
-import { ShuttleMessageFactory } from './shuttle-message.factory';
-import { ShuttleTimetableCalculator } from './shuttle-timetable.calculator';
-import { ShuttlesController } from './shuttles.controller';
-import { ShuttlesNativeController } from './shuttles-native.controller';
-import { ShuttlesService } from './shuttles.service';
+import { ShuttleTimetable } from 'src/api/public/shuttles/domain/entities/shuttle-timetable.entity';
+import { ShuttleTimetableRepository } from 'src/api/public/shuttles/infrastructure/shuttle-timetable.repository';
+import { ShuttleMessageFactory } from 'src/api/public/shuttles/presentation/shuttle-message.factory';
+import { ShuttleTimetableCalculator } from 'src/api/public/shuttles/application/shuttle-timetable.calculator';
+import { ShuttlesKakaoController } from 'src/api/public/shuttles/presentation/shuttles-kakao.controller';
+import { ShuttlesNativeController } from 'src/api/public/shuttles/presentation/shuttles-native.controller';
+import { ShuttlesService } from 'src/api/public/shuttles/application/shuttles.service';
 
 @Module({
-  imports: [DatabaseModule, TypeOrmModule.forFeature([ShuttleTimetable])],
-  controllers: [ShuttlesController, ShuttlesNativeController],
+  imports: [TypeOrmModule.forFeature([ShuttleTimetable])],
+  controllers: [ShuttlesKakaoController, ShuttlesNativeController],
   providers: [
     ShuttlesService,
     ShuttleTimetableRepository,
