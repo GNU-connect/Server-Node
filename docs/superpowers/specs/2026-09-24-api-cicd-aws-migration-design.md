@@ -64,7 +64,7 @@ push main / 수동 실행      → api-cd.yml : ci (api-ci.yml 호출) → build
 Job `verify` (기존 `lint-and-test` 이름 변경), `working-directory: services/api/app`:
 
 1. checkout
-2. pnpm 9.9.0 설치
+2. pnpm 설치 (`package_json_file: services/api/app/package.json`의 `packageManager` = pnpm 9.9.0)
 3. Node 24 설정, pnpm 캐시 (`cache-dependency-path: services/api/app/pnpm-lock.yaml`)
 4. `pnpm install --frozen-lockfile`
 5. `pnpm lint:check`
@@ -130,13 +130,20 @@ cd /opt/connectgnu/api   # 워크플로에서는 ${{ env.DEPLOY_DIR }}
 docker compose pull app
 docker compose up -d --no-deps app
 
-# 헬스체크 대기 (최대 약 90초)
 cid=$(docker compose ps -q app)
-status=""
-for i in $(seq 1 30); do
-  status=$(docker inspect -f '{{.State.Health.Status}}' "$cid")
-  [ "$status" = healthy ] && break
-  [ "$status" = unhealthy ] && break
+if [ -z "$cid" ]; then
+  echo "app container not found"
+  docker compose ps
+  exit 1
+fi
+
+# 헬스체크 대기 (최대 약 90초). healthcheck가 없으면 none으로 즉시 실패
+status=none
+for _ in $(seq 1 30); do
+  status=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid")
+  case "$status" in
+    healthy|unhealthy|none) break ;;
+  esac
   sleep 3
 done
 if [ "$status" != healthy ]; then
@@ -145,10 +152,19 @@ if [ "$status" != healthy ]; then
   exit 1
 fi
 
-# nginx 설정 반영
+# nginx 설정 반영 (재생성 직후 pid 미생성 대비 reload 재시도)
 docker compose up -d --no-deps nginx
 docker compose exec -T nginx nginx -t
-docker compose exec -T nginx nginx -s reload
+reloaded=false
+for _ in 1 2 3 4 5; do
+  if docker compose exec -T nginx nginx -s reload; then reloaded=true; break; fi
+  sleep 2
+done
+if [ "$reloaded" != true ]; then
+  echo "nginx reload failed"
+  docker compose logs --tail 50 nginx
+  exit 1
+fi
 
 docker image prune -f
 ```
