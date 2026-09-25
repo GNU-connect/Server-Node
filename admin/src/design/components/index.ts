@@ -5,3 +5,4 @@ export { Chip, type ChipProps } from './Chip';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { Icon, type IconName, type IconProps } from './Icon';
 export { Notice, type NoticeProps } from './Notice';
+export { TextField, type TextFieldProps } from './TextField';
