@@ -1,0 +1,57 @@
+name: Batch CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'services/api/batch/**'
+      - '.github/workflows/batch-ci.yml'
+
+  workflow_call:
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: batch-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, Test and Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/api/batch
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: services/api/batch/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: services/api/batch/pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Lint
+        run: pnpm lint:check
+
+      - name: Run Tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
