@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { BatchService } from './batch.service';
+import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DatabaseModule } from './database/database.module';
+import { ShuttleTimetable } from './jobs/shuttle/domain/shuttle-timetable.entity';
 import { BATCH_JOBS, BatchJob } from './jobs/batch-job.interface';
 import { AcademicCalendarJob } from './jobs/academic-calendar/academic-calendar.job';
 import { CafeteriaJob } from './jobs/cafeteria/cafeteria.job';
@@ -12,7 +16,12 @@ import { ShuttleParser } from './jobs/shuttle/shuttle.parser';
 import { ShuttleRepository } from './jobs/shuttle/shuttle.repository';
 
 @Module({
-  imports: [ScheduleModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    DatabaseModule,
+    TypeOrmModule.forFeature([ShuttleTimetable]),
+  ],
   providers: [
     BatchService,
     FetchHttpClient,
