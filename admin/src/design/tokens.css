@@ -1,0 +1,96 @@
+/* 커넥트 지누 디자인 토큰. 출처: 디자인 시스템 project/tokens.json */
+:root {
+  color-scheme: light dark;
+
+  --bg: #ffffff;
+  --bg-soft: #f3f8fe;
+  --surface: #ffffff;
+  --surface-sunken: #e8f1fc;
+  --line: #d6e3f3;
+  --line-strong: #768aa6;
+  --ink: #15213a;
+  --ink-muted: #526079;
+  --ink-subtle: #7d8ba1;
+  --jinu-blue: #2468d8;
+  --jinu-blue-pressed: #1a55b8;
+  --jinu-blue-tint: #e2eefd;
+  --jinu-blue-ink: #1b5bc4;
+  --on-blue: #ffffff;
+  --jinu-sky: #58c3d9;
+  --jinu-sky-tint: #dcf3f8;
+  --jinu-sky-ink: #0e6478;
+  --on-sky: #15213a;
+  --jinu-cream: #fff3da;
+  --success: #0e7350;
+  --success-tint: #dff5eb;
+  --warning: #9a6200;
+  --warning-tint: #fff1d2;
+  --danger: #ba2332;
+  --danger-tint: #fde7e9;
+  --focus: #2468d8;
+  --overlay: rgba(13, 21, 34, 0.45);
+
+  --shadow-sm: 0 1px 2px rgba(21, 33, 58, 0.06), 0 2px 8px rgba(36, 104, 216, 0.06);
+  --shadow-md: 0 4px 16px rgba(21, 33, 58, 0.08), 0 1px 3px rgba(21, 33, 58, 0.06);
+  --shadow-lg: 0 -6px 24px rgba(21, 33, 58, 0.12);
+
+  --font-display: 'Jua', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  --tap-min: 44px;
+  --button-lg: 54px;
+  --button-md: 46px;
+  --chip-h: 38px;
+  --avatar: 40px;
+  --tabbar-h: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1522;
+    --bg-soft: #111b2b;
+    --surface: #172336;
+    --surface-sunken: #1f2e45;
+    --line: #2b3b55;
+    --line-strong: #6a7ea0;
+    --ink: #edf3fb;
+    --ink-muted: #a6b3c7;
+    --ink-subtle: #7f8da4;
+    --jinu-blue: #5ea4f7;
+    --jinu-blue-pressed: #86bcfa;
+    --jinu-blue-tint: #1b3358;
+    --jinu-blue-ink: #9cc8fb;
+    --on-blue: #0d1522;
+    --jinu-sky-tint: #15394a;
+    --jinu-sky-ink: #8fdceb;
+    --jinu-cream: #3b3322;
+    --success: #4cc996;
+    --success-tint: #133a2e;
+    --warning: #f2bc4e;
+    --warning-tint: #3a2e14;
+    --danger: #f47c87;
+    --danger-tint: #431b22;
+    --focus: #86bcfa;
+    --overlay: rgba(0, 0, 0, 0.6);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 -6px 24px rgba(0, 0, 0, 0.55);
+  }
+}
