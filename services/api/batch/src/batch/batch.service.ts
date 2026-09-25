@@ -23,18 +23,20 @@ export class BatchService implements OnApplicationBootstrap {
 
     this.isRunning = true;
 
-    for (const job of this.jobs) {
-      try {
-        await job.run();
-      } catch (error) {
-        // TODO: 에러 로깅 및 알림 시스템 연동
-        console.error(
-          `[${this.name}] 잡 실행 중 에러 발생: ${job.name}`,
-          error,
-        );
-      } finally {
-        this.isRunning = false;
+    try {
+      for (const job of this.jobs) {
+        try {
+          await job.run();
+        } catch (error) {
+          // TODO: 에러 로깅 및 알림 시스템 연동
+          console.error(
+            `[${this.name}] 잡 실행 중 에러 발생: ${job.name}`,
+            error,
+          );
+        }
       }
+    } finally {
+      this.isRunning = false;
     }
   }
 
