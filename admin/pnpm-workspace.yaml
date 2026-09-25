@@ -1,2 +1,9 @@
+# admin은 루트와 독립된 pnpm 프로젝트다. pnpm 9는 packages 필드를 요구한다.
+packages:
+  - '.'
+
+# esbuild(vite 의존성) postinstall 허용. pnpm 9·10은 onlyBuiltDependencies, pnpm 11+는 allowBuilds를 읽는다.
+onlyBuiltDependencies:
+  - esbuild
 allowBuilds:
   esbuild: true
