@@ -8,11 +8,9 @@ import {
   ParseIntPipe,
   Post,
   Query,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiAcceptedResponse, ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 import { AdminApiKeyGuard } from 'src/api/admin/common/guards/admin-api-key.guard';
 import { ScrapeRunsService } from 'src/api/admin/scrape-runs/application/scrape-runs.service';
 import { NativeResponseDto } from 'src/api/common/dtos/native-response.dto';
@@ -80,10 +78,8 @@ export class ScrapeRunsController {
   })
   async requestRun(
     @Body() body: CreateScrapeRunRequestDto,
-    @Res({ passthrough: true }) res: Response,
   ): Promise<NativeResponseDto<ScrapeRunResponseDto>> {
     const run = await this.scrapeRunsService.requestRun(body.type);
-    res.location(`/api/admin/scrape-runs/${run.id}`);
     return new NativeResponseDto(ScrapeRunResponseDto.from(run), 'Accepted', HttpStatus.ACCEPTED);
   }
 }
