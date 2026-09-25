@@ -366,6 +366,7 @@ body {
   border-top: 1px solid var(--line);
   color: var(--ink);
   vertical-align: middle;
+  white-space: nowrap;
 }
 .ad-table .is-num {
   font-variant-numeric: tabular-nums;
@@ -418,6 +419,9 @@ body {
 }
 .ad-runs.has-panel {
   grid-template-columns: minmax(0, 1fr) 420px;
+}
+.ad-runs.has-panel .ad-ellipsis {
+  max-width: 120px;
 }
 .ad-panel {
   position: sticky;
