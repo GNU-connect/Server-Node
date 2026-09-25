@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 export const ROUTER_FUTURE = { v7_startTransition: true, v7_relativeSplatPath: true };
 import { AuthProvider } from './auth/AuthContext';
 import { RequireAuth } from './auth/RequireAuth';
+import { AppLayout } from './layout/AppLayout';
 import { LoginPage } from './pages/LoginPage';
 import { ScrapeRunsPage } from './pages/ScrapeRunsPage';
 import { ScrapersPage } from './pages/ScrapersPage';
@@ -13,21 +14,15 @@ export function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/scrapers"
         element={
           <RequireAuth>
-            <ScrapersPage />
+            <AppLayout />
           </RequireAuth>
         }
-      />
-      <Route
-        path="/scrape-runs"
-        element={
-          <RequireAuth>
-            <ScrapeRunsPage />
-          </RequireAuth>
-        }
-      />
+      >
+        <Route path="/scrapers" element={<ScrapersPage />} />
+        <Route path="/scrape-runs" element={<ScrapeRunsPage />} />
+      </Route>
       <Route path="*" element={<Navigate to="/scrapers" replace />} />
     </Routes>
   );
