@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+/* 출처: 커넥트 지누 디자인 시스템 project/components/bundle.css (https://claude.ai/artifact/GAP9Ps56WZuu2UgUS2hZSB). 직접 고치지 말고 원본에서 다시 복사한다. */
+
+/* 커넥트 지누 — 컴포넌트 스타일. 모든 색·간격·모서리는 tokens.css 변수에서 가져온다. */
+
+body { margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+.jn-stage { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+.jn-stage.soft { background: var(--bg-soft); }
+.jn-row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+
+.jn-icon { flex: none; display: block; }
+
+/* 포커스: 모든 컨트롤 공통 */
+.jn-btn:focus-visible, .jn-chip:focus-visible, .jn-seg-opt:focus-visible, .jn-day:focus-visible,
+.jn-radio-row:focus-visible, .jn-tab:focus-visible, .jn-qr:focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 2px;
+}
+
+/* 누름 반응: 살짝 작아짐 */
+.jn-btn, .jn-chip, .jn-seg-opt, .jn-day, .jn-qr, .jn-tab, .jn-radio-row {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease-out, background-color 160ms ease-out, color 160ms ease-out;
+}
+.jn-btn:active, .jn-chip:active, .jn-day:active, .jn-qr:active { transform: scale(0.97); }
+@media (prefers-reduced-motion: reduce) {
+  .jn-btn, .jn-chip, .jn-seg-opt, .jn-day, .jn-qr, .jn-tab, .jn-radio-row { transition: none; }
+  .jn-btn:active, .jn-chip:active, .jn-day:active, .jn-qr:active { transform: none; }
+}
+
+/* Button */
+.jn-btn {
+  font: inherit; font-size: 16px; line-height: 24px; font-weight: 500;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: var(--button-md); padding: 0 var(--space-5); border: 0; border-radius: var(--radius-md);
+  cursor: pointer; white-space: nowrap;
+}
+.jn-btn-lg { height: var(--button-lg); font-size: 17px; border-radius: var(--radius-md); }
+.jn-btn-sm { height: 36px; padding: 0 var(--space-4); font-size: 14px; border-radius: var(--radius-sm); }
+.jn-btn-block { display: flex; width: 100%; }
+.jn-btn-primary { background: var(--jinu-blue); color: var(--on-blue); }
+.jn-btn-primary:active { background: var(--jinu-blue-pressed); }
+.jn-btn-soft { background: var(--jinu-blue-tint); color: var(--jinu-blue-ink); }
+.jn-btn-ghost { background: transparent; color: var(--jinu-blue-ink); }
+.jn-btn-ghost:active { background: var(--jinu-blue-tint); }
+.jn-btn:disabled { background: var(--surface-sunken); color: var(--ink-muted); cursor: default; transform: none; }
+
+/* Chip */
+.jn-chip {
+  font: inherit; font-size: 14px; line-height: 21px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--chip-h); padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill);
+  background: var(--surface-sunken); color: var(--ink-muted); cursor: pointer; white-space: nowrap;
+}
+.jn-chip[aria-pressed="true"] { background: var(--jinu-blue); color: var(--on-blue); }
+
+/* SegmentedControl */
+.jn-seg { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-md); background: var(--surface-sunken); }
+.jn-seg-opt {
+  flex: 1; font: inherit; font-size: 15px; line-height: 22px; font-weight: 500;
+  height: 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink-muted); cursor: pointer;
+}
+.jn-seg-opt[aria-checked="true"] { background: var(--surface); color: var(--jinu-blue-ink); box-shadow: var(--shadow-sm); }
+
+/* DaySelector */
+.jn-days { display: flex; gap: var(--space-1); justify-content: space-between; }
+.jn-day {
+  font: inherit; flex: 1; min-width: 44px; max-width: 56px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 0 10px; border: 0; border-radius: var(--radius-pill);
+  background: var(--surface-sunken); color: var(--ink-muted); cursor: pointer;
+}
+.jn-day-label { font-size: 13px; line-height: 18px; font-weight: 500; }
+.jn-day-num { font-family: var(--font-display); font-size: 20px; line-height: 24px; color: var(--ink); }
+.jn-day.is-near .jn-day-label { color: var(--jinu-blue-ink); }
+.jn-day.is-weekend .jn-day-label, .jn-day.is-weekend .jn-day-num { color: var(--danger); }
+.jn-day[aria-checked="true"] { background: var(--jinu-blue); }
+.jn-day[aria-checked="true"] .jn-day-label, .jn-day[aria-checked="true"] .jn-day-num { color: var(--on-blue); }
+
+/* Badge */
+.jn-badge {
+  display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
+  font-size: 12px; line-height: 17px; font-weight: 500;
+  height: 24px; padding: 0 10px; border-radius: var(--radius-pill);
+  background: var(--surface-sunken); color: var(--ink-muted); white-space: nowrap;
+}
+.jn-badge-blue { background: var(--jinu-blue-tint); color: var(--jinu-blue-ink); }
+.jn-badge-sky { background: var(--jinu-sky-tint); color: var(--jinu-sky-ink); }
+.jn-badge-success { background: var(--success-tint); color: var(--success); }
+.jn-badge-warning { background: var(--warning-tint); color: var(--warning); }
+.jn-badge-danger { background: var(--danger-tint); color: var(--danger); }
+
+/* Card */
+.jn-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4);
+}
+.jn-card-cream { background: var(--jinu-cream); border-color: transparent; }
+.jn-card-sky { background: var(--jinu-sky-tint); border-color: transparent; }
+.jn-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.jn-card-titles { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.jn-card-title { margin: 0; font-size: 18px; line-height: 26px; font-weight: 700; letter-spacing: -0.2px; color: var(--ink); }
+.jn-card-meta { margin: 0; font-size: 14px; line-height: 21px; color: var(--ink-muted); }
+.jn-card-body { display: flex; flex-direction: column; gap: var(--space-4); }
+
+/* MenuList */
+.jn-menu { display: flex; flex-direction: column; gap: var(--space-2); }
+.jn-menu-cat { margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--ink-muted); }
+.jn-menu-items { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.jn-menu-item { display: flex; align-items: center; gap: var(--space-2); font-size: 15px; line-height: 23px; color: var(--ink); }
+.jn-menu-item::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 3px; background: var(--jinu-blue); }
+.jn-menu-item.is-main { font-weight: 700; }
+
+/* ChatBubble */
+.jn-msg { display: flex; gap: var(--space-3); align-items: flex-start; max-width: 100%; }
+.jn-msg-me { flex-direction: row-reverse; }
+.jn-avatar {
+  flex: none; width: var(--avatar); height: var(--avatar); border-radius: 14px; overflow: hidden;
+  background: var(--jinu-sky);
+}
+.jn-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jn-msg-col { display: flex; flex-direction: column; gap: 6px; min-width: 0; max-width: 78%; }
+.jn-msg-me .jn-msg-col { align-items: flex-end; }
+.jn-msg-name { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--jinu-sky-ink); }
+.jn-msg-line { display: flex; align-items: flex-end; gap: 6px; }
+.jn-msg-me .jn-msg-line { flex-direction: row-reverse; }
+.jn-bubble {
+  font-size: 15px; line-height: 23px; padding: 12px 16px; border-radius: 20px;
+  overflow-wrap: anywhere;
+}
+.jn-msg-jinu .jn-bubble { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-top-left-radius: 6px; }
+.jn-msg-me .jn-bubble { background: var(--jinu-blue); color: var(--on-blue); border-top-right-radius: 6px; }
+.jn-msg-time { flex: none; font-size: 12px; line-height: 17px; color: var(--ink-muted); }
+
+/* QuickReplies */
+.jn-qrs { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.jn-qr {
+  font: inherit; font-size: 14px; line-height: 21px; font-weight: 500;
+  height: var(--chip-h); padding: 0 var(--space-4); border-radius: var(--radius-pill);
+  border: 1.5px solid var(--jinu-blue-ink); background: var(--surface); color: var(--jinu-blue-ink); cursor: pointer;
+}
+.jn-qr:active { background: var(--jinu-blue-tint); }
+
+/* RadioList */
+.jn-radios { display: flex; flex-direction: column; }
+.jn-radio-row {
+  font: inherit; text-align: left; display: flex; align-items: center; gap: var(--space-4);
+  min-height: 56px; padding: 0 var(--space-3); margin: 0 calc(-1 * var(--space-3));
+  border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--ink-muted); cursor: pointer;
+}
+.jn-radio-row:hover, .jn-radio-row:active { background: var(--bg-soft); }
+.jn-radio-dot {
+  flex: none; width: 22px; height: 22px; border-radius: 11px; border: 2px solid var(--line-strong);
+  display: grid; place-items: center; box-sizing: border-box;
+}
+.jn-radio-row[aria-checked="true"] .jn-radio-dot { border-color: var(--jinu-blue); }
+.jn-radio-row[aria-checked="true"] .jn-radio-dot::after { content: ""; width: 10px; height: 10px; border-radius: 5px; background: var(--jinu-blue); }
+.jn-radio-text { display: flex; flex-direction: column; }
+.jn-radio-label { font-size: 15px; line-height: 23px; }
+.jn-radio-row[aria-checked="true"] .jn-radio-label { color: var(--ink); font-weight: 500; }
+.jn-radio-desc { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+
+/* BottomSheet: 부모 요소(position: relative)를 가득 채움 */
+.jn-sheet-root { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; }
+.jn-sheet-dim { position: absolute; inset: 0; background: var(--overlay); border: 0; padding: 0; cursor: pointer; }
+.jn-sheet {
+  position: relative; background: var(--surface); color: var(--ink);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0; box-shadow: var(--shadow-lg);
+  padding: 10px var(--space-6) var(--space-6);
+  animation: jn-sheet-up 260ms cubic-bezier(.2, .9, .3, 1.15);
+}
+@keyframes jn-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .jn-sheet { animation: none; } }
+.jn-sheet-handle { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto var(--space-5); }
+.jn-sheet-title { margin: 0 0 var(--space-3); font-size: 22px; line-height: 30px; font-weight: 700; letter-spacing: -0.3px; }
+
+/* TabBar */
+.jn-tabbar {
+  display: flex; height: var(--tabbar-h); background: var(--bg);
+  border-top: 1px solid var(--line); padding: 0 var(--space-2);
+}
+.jn-tab {
+  flex: 1; font: inherit; border: 0; background: transparent; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--ink-muted); font-size: 12px; line-height: 17px; font-weight: 500;
+}
+.jn-tab-pill { display: grid; place-items: center; width: 52px; height: 30px; border-radius: var(--radius-pill); color: var(--ink-subtle); }
+.jn-tab[aria-selected="true"] .jn-tab-pill { background: var(--jinu-blue-tint); color: var(--jinu-blue-ink); }
+.jn-tab[aria-selected="true"] .jn-tab-label { color: var(--jinu-blue-ink); }
+
+/* EmptyState */
+.jn-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-3); padding: var(--space-8) var(--space-5); }
+.jn-empty-art { width: 88px; height: 88px; border-radius: 26px; overflow: hidden; background: var(--jinu-sky); margin-bottom: var(--space-2); }
+.jn-empty-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.jn-empty-title { margin: 0; font-family: var(--font-display); font-size: 22px; line-height: 28px; font-weight: 400; color: var(--ink); }
+.jn-empty-desc { margin: 0; font-size: 15px; line-height: 23px; color: var(--ink-muted); max-width: 28ch; }
+.jn-empty .jn-btn { margin-top: var(--space-2); }
+
+/* Notice (오류·안내 상자) */
+.jn-notice { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-4); border-radius: var(--radius-md); font-size: 14px; line-height: 21px; }
+.jn-notice-info { background: var(--jinu-blue-tint); color: var(--ink); }
+.jn-notice-info .jn-icon { color: var(--jinu-blue-ink); }
+.jn-notice-danger { background: var(--danger-tint); color: var(--ink); }
+.jn-notice-danger .jn-icon { color: var(--danger); }
+.jn-notice-title { font-weight: 700; display: block; }
