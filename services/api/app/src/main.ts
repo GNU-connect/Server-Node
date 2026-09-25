@@ -46,6 +46,15 @@ async function bootstrap() {
       },
       'X-USER-ID',
     )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'X-ADMIN-API-KEY',
+        in: 'header',
+        description: 'admin API 키 (ADMIN_API_KEY 환경변수)',
+      },
+      'X-ADMIN-API-KEY',
+    )
     .addSecurityRequirements('X-USER-ID')
     .build();
 

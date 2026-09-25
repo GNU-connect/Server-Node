@@ -14,6 +14,7 @@ import { NoticesModule } from './api/public/notices/notices.module';
 import { SchedulesModule } from './api/public/schedules/schedules.module';
 import { ShuttlesModule } from './api/public/shuttles/shuttles.module';
 import { HealthModule } from './api/internal/health/health.module';
+import { ScrapeRunsModule } from './api/admin/scrape-runs/scrape-runs.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { HealthModule } from './api/internal/health/health.module';
     SchedulesModule,
     ShuttlesModule,
     HealthModule,
+    ScrapeRunsModule,
   ],
   providers: [
     {

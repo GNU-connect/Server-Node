@@ -14,16 +14,19 @@ import { ShuttleClient } from './jobs/shuttle/shuttle.client';
 import { ShuttleJob } from './jobs/shuttle/shuttle.job';
 import { ShuttleParser } from './jobs/shuttle/shuttle.parser';
 import { ShuttleRepository } from './jobs/shuttle/shuttle.repository';
+import { ScrapeRun } from './scrape-run/domain/scrape-run.entity';
+import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     DatabaseModule,
-    TypeOrmModule.forFeature([ShuttleTimetable]),
+    TypeOrmModule.forFeature([ShuttleTimetable, ScrapeRun]),
   ],
   providers: [
     BatchService,
+    ScrapeRunRepository,
     FetchHttpClient,
     ShuttleClient,
     ShuttleParser,
