@@ -3,13 +3,14 @@ import { getScrapeRun } from '../../api/adminClient';
 import { ApiError, UnauthorizedError, errorText } from '../../api/errors';
 import type { ScrapeRun } from '../../api/types';
 import { useApiKey, useAuth } from '../../auth/AuthContext';
-import { Badge, Icon, Notice } from '../../design/components';
+import { Badge, Button, Icon, Notice } from '../../design/components';
 import { formatDateTime, formatDuration } from './format';
 import { STATUS_VIEWS, TRIGGER_LABELS, TYPE_LABELS, isInProgress } from './labels';
 import { useNow } from './useNow';
 import { usePolling } from './usePolling';
 
 const ACTIVE_INTERVAL_MS = 3000;
+const NOT_FOUND_TEXT = '이 실행 기록을 찾지 못했어요. 번호를 확인해 주세요.';
 
 interface RunDetailPanelProps {
   runId: number;
@@ -30,12 +31,12 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
       setError(null);
     } catch (err) {
       if (err instanceof UnauthorizedError) logout();
-      // 404처럼 서버가 이유를 말해 주면 그대로 보여 준다
-      else setError(err instanceof ApiError ? err.message : errorText(err));
+      else if (err instanceof ApiError && err.status === 404) setError(NOT_FOUND_TEXT);
+      else setError(errorText(err));
     }
   }, [apiKey, runId, logout]);
 
-  // 처음 한 번 불러오고, 진행 중인 동안만 이어서 부른다. 오류가 나면 멈춘다.
+  // 처음 한 번 불러오고, 진행 중인 동안만 이어서 부른다. 오류가 나면 멈추고, 다시 시도하면 error를 지워 재개한다.
   usePolling(load, ACTIVE_INTERVAL_MS, error === null && (run === null || isInProgress(run)));
 
   useEffect(() => {
@@ -59,7 +60,12 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
       </div>
       {error && (
         <div className="ad-panel-body">
-          <Notice tone="danger">{error}</Notice>
+          <Notice tone="danger">
+            {error}{' '}
+            <Button variant="ghost" size="sm" onClick={() => setError(null)}>
+              다시 시도
+            </Button>
+          </Notice>
         </div>
       )}
       {run && view && (

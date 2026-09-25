@@ -140,8 +140,49 @@ describe('실행 기록 화면', () => {
     renderApp('/scrape-runs?run=999', { apiKey: 'k' });
 
     const panel = await screen.findByRole('complementary', { name: '실행 #999' });
-    expect(await within(panel).findByRole('alert')).toHaveTextContent('999번 수집 실행 기록을 찾을 수 없습니다.');
+    expect(await within(panel).findByRole('alert')).toHaveTextContent(
+      '이 실행 기록을 찾지 못했어요. 번호를 확인해 주세요.',
+    );
     expect(callsTo(fetchMock, 'GET', '/api/admin/scrape-runs/999')).toHaveLength(1);
+  });
+
+  it('상세를 불러오지 못하면 안내하고, 다시 시도로 다시 불러온다', async () => {
+    let fail = true;
+    routeFetch({
+      'GET /api/admin/scrape-runs': () => ok({ items: [RUN_12], nextCursor: null }),
+      'GET /api/admin/scrape-runs/12': () =>
+        fail ? new Response('Internal Server Error', { status: 500 }) : ok(RUN_12),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrape-runs?run=12', { apiKey: 'k' });
+
+    const panel = await screen.findByRole('complementary', { name: '실행 #12' });
+    expect(await within(panel).findByRole('alert')).toHaveTextContent(
+      '요청이 실패했어요(HTTP 500). 잠시 뒤 다시 시도해 주세요.',
+    );
+    fail = false;
+    await user.click(within(panel).getByRole('button', { name: '다시 시도' }));
+
+    expect(await within(panel).findByText('자동')).toBeInTheDocument();
+    expect(within(panel).queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('필터를 바꾼 요청이 실패하면 이전 목록과 더 보기를 남기지 않는다', async () => {
+    routeFetch({
+      'GET /api/admin/scrape-runs': url =>
+        url.searchParams.get('status') === 'failed'
+          ? new Response('Internal Server Error', { status: 500 })
+          : ok({ items: [RUN_12, RUN_11], nextCursor: 11 }),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrape-runs', { apiKey: 'k' });
+    await screen.findByText('11');
+
+    await user.click(within(screen.getByRole('group', { name: '상태' })).getByRole('button', { name: '실패' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('요청이 실패했어요(HTTP 500).');
+    expect(screen.queryByText('11')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '더 보기' })).not.toBeInTheDocument();
   });
 
   it('조건에 맞는 기록이 없으면 필터 초기화를 제안한다', async () => {

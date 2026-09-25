@@ -51,6 +51,9 @@ export function ScrapeRunsPage() {
 
   useEffect(() => {
     let cancelled = false;
+    // 새 조건의 결과가 오기 전(또는 실패했을 때) 이전 조건의 목록과 커서가 남지 않게 비운다
+    setItems([]);
+    setNextCursor(null);
     setLoading(true);
     setError(null);
     listScrapeRuns(apiKey, { type, status, limit: PAGE_SIZE })
