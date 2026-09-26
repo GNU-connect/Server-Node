@@ -45,6 +45,7 @@ services:
       - ./nginx:/etc/nginx/conf.d:ro
       - ./letsencrypt/conf:/etc/letsencrypt
       - ./letsencrypt/www:/var/www/certbot
+      - ./admin:/usr/share/nginx/admin:ro
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     networks:
       - connect-gnu-network
