@@ -15,6 +15,7 @@ export function RunTable({ runs, now, caption, selectedId, onSelect }: RunTableP
   const columns: Column<ScrapeRun>[] = [
     { key: 'id', header: '번호', numeric: true, render: run => run.id },
     { key: 'type', header: '타입', render: run => TYPE_LABELS[run.type] },
+    { key: 'target', header: '대상', render: run => run.targetName ?? run.target ?? '-' },
     { key: 'trigger', header: '트리거', render: run => TRIGGER_LABELS[run.trigger] },
     {
       key: 'status',

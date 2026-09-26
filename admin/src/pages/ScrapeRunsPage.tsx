@@ -15,7 +15,7 @@ import { cx } from '../design/cx';
 import { RunDetailPanel } from '../features/scrapers/RunDetailPanel';
 import { RunTable } from '../features/scrapers/RunTable';
 import { STATUS_VIEWS, TYPE_LABELS } from '../features/scrapers/labels';
-import { parseRunId, parseStatus, parseType } from '../features/scrapers/searchParams';
+import { parseRunId, parseStatus, parseTarget, parseType } from '../features/scrapers/searchParams';
 import { useNow } from '../features/scrapers/useNow';
 import { PageHeader } from '../layout/PageHeader';
 
@@ -27,6 +27,7 @@ export function ScrapeRunsPage() {
   const now = useNow();
   const [params, setParams] = useSearchParams();
   const type = parseType(params.get('type'));
+  const target = parseTarget(params.get('target'));
   const status = parseStatus(params.get('status'));
   const selectedId = parseRunId(params.get('run'));
 
@@ -37,7 +38,7 @@ export function ScrapeRunsPage() {
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
   // 지금 보고 있는 필터. 늦게 도착한 "더 보기" 응답이 다른 필터 목록에 섞이지 않게 한다.
-  const filterKey = `${type ?? ''}|${status ?? ''}|${reloadToken}`;
+  const filterKey = `${type ?? ''}|${target ?? ''}|${status ?? ''}|${reloadToken}`;
   const filterKeyRef = useRef(filterKey);
   filterKeyRef.current = filterKey;
 
@@ -56,7 +57,7 @@ export function ScrapeRunsPage() {
     setNextCursor(null);
     setLoading(true);
     setError(null);
-    listScrapeRuns(apiKey, { type, status, limit: PAGE_SIZE })
+    listScrapeRuns(apiKey, { type, target, status, limit: PAGE_SIZE })
       .then(page => {
         if (cancelled) return;
         setItems(page.items);
@@ -71,14 +72,20 @@ export function ScrapeRunsPage() {
     return () => {
       cancelled = true;
     };
-  }, [apiKey, type, status, reloadToken, handleError]);
+  }, [apiKey, type, target, status, reloadToken, handleError]);
 
   async function loadMore() {
     if (nextCursor === null || loadingMore) return;
     const requestedFor = filterKeyRef.current;
     setLoadingMore(true);
     try {
-      const page = await listScrapeRuns(apiKey, { type, status, cursor: nextCursor, limit: PAGE_SIZE });
+      const page = await listScrapeRuns(apiKey, {
+        type,
+        target,
+        status,
+        cursor: nextCursor,
+        limit: PAGE_SIZE,
+      });
       if (filterKeyRef.current !== requestedFor) return;
       setItems(prev => [...prev, ...page.items]);
       setNextCursor(page.nextCursor);
@@ -90,11 +97,13 @@ export function ScrapeRunsPage() {
   }
 
   const updateParam = useCallback(
-    (key: 'type' | 'status' | 'run', value: string | null) => {
+    (key: 'type' | 'target' | 'status' | 'run', value: string | null) => {
       setParams(prev => {
         const next = new URLSearchParams(prev);
         if (value === null) next.delete(key);
         else next.set(key, value);
+        // 다른 타입으로 바꾸면 이전 타입의 대상 필터는 의미가 없다
+        if (key === 'type') next.delete('target');
         return next;
       });
     },
@@ -103,7 +112,7 @@ export function ScrapeRunsPage() {
 
   const closePanel = useCallback(() => updateParam('run', null), [updateParam]);
 
-  const hasFilter = Boolean(type || status);
+  const hasFilter = Boolean(type || target || status);
 
   return (
     <div className="ad-page">
@@ -125,6 +134,15 @@ export function ScrapeRunsPage() {
           onChange={value => updateParam('status', value ?? null)}
         />
       </div>
+
+      {target && (
+        <Notice>
+          {items[0]?.targetName ?? `대상 #${target}`}의 기록만 보고 있어요.{' '}
+          <Button variant="ghost" size="sm" onClick={() => updateParam('target', null)}>
+            대상 필터 해제
+          </Button>
+        </Notice>
+      )}
 
       {error && (
         <Notice tone="danger">

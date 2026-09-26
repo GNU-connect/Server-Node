@@ -209,4 +209,61 @@ describe('수집 상태 화면', () => {
       expect(sessionStorage.getItem('admin.apiKey')).toBeNull();
     });
   });
+
+  it('대상별 수집 버튼은 타입과 대상을 함께 요청한다', async () => {
+    const fetchMock = routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ type: 'cafeteria', target: '2' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+      'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    await screen.findByRole('heading', { name: '학식', level: 3 });
+    await user.click(within(card('학식')).getByRole('button', { name: '교육문화식당 수집' }));
+
+    const posts = callsTo(fetchMock, 'POST', '/api/admin/scrape-runs');
+    expect(posts).toHaveLength(1);
+    expect(JSON.parse(posts[0][1].body as string)).toEqual({ type: 'cafeteria', target: '2' });
+  });
+
+  it('대상이 있는 카드의 전체 수집은 target 없이 요청한다', async () => {
+    const fetchMock = routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ type: 'cafeteria', target: '2' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+      'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    await screen.findByRole('heading', { name: '학식', level: 3 });
+    await user.click(within(card('학식')).getByRole('button', { name: '전체 수집' }));
+
+    const posts = callsTo(fetchMock, 'POST', '/api/admin/scrape-runs');
+    expect(JSON.parse(posts[0][1].body as string)).toEqual({ type: 'cafeteria' });
+  });
 });

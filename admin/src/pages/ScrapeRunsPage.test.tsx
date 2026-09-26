@@ -233,4 +233,19 @@ describe('실행 기록 화면', () => {
       expect(detailCalls()).toBe(2);
     });
   });
+
+  it('주소의 target을 서버에 넘기고 대상 이름과 해제 버튼을 보여 준다', async () => {
+    const fetchMock = routeFetch({
+      'GET /api/admin/scrape-runs': () =>
+        ok({
+          items: [makeRun({ id: 5, type: 'cafeteria', target: '2', targetName: '교육문화식당' })],
+          nextCursor: null,
+        }),
+    });
+    renderApp('/scrape-runs?type=cafeteria&target=2', { apiKey: 'k' });
+
+    expect(await screen.findByText(/교육문화식당의 기록만 보고 있어요/)).toBeInTheDocument();
+    expect(listUrls(fetchMock)[0]).toBe('/api/admin/scrape-runs?type=cafeteria&target=2&limit=20');
+    expect(screen.getByRole('button', { name: '대상 필터 해제' })).toBeInTheDocument();
+  });
 });
