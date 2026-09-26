@@ -1,7 +1,7 @@
 # 어드민 웹 배포 설계 (admin.connectgnu.kro.kr)
 
 - 작성일: 2026-09-26
-- 대상: `services/api/nginx/prod.conf`, `services/api/docker-compose.yml`, `.github/workflows/api-cd.yml`, `.github/workflows/admin-ci.yml`(신규), `.github/workflows/admin-cd.yml`(신규), `admin/package.json`, `admin/README.md`
+- 대상: `services/api/nginx/prod.conf`, `services/api/docker-compose.yml`, `.github/workflows/admin-ci.yml`(신규), `.github/workflows/admin-cd.yml`(신규), `admin/scripts/activate-release.sh`(신규), `admin/package.json`
 - 선행: 어드민 웹(`admin/`, #93), 설계 `docs/superpowers/specs/2026-09-25-admin-web-design.md`
 
 ## 1. 목표
@@ -24,13 +24,14 @@
 - nginx에 admin 서버 블록 추가, 80번 블록 `server_name`에 admin 추가
 - compose nginx에 admin 정적 파일 볼륨 추가
 - `admin-ci.yml`(PR·재사용), `admin-cd.yml`(main push 배포)
-- api CD 배포 스크립트에 `admin` 디렉터리 선생성 한 줄
-- `admin/package.json`에 `packageManager` 고정, README에 배포·롤백 안내
+- 릴리스 전환 스크립트 `admin/scripts/activate-release.sh`
+- `admin/package.json`에 `packageManager` 고정
 
 제외:
 
 - 인증서 발급 (서버에서 수동으로 이미 완료: `/etc/letsencrypt/live/admin.connectgnu.kro.kr/`, 만료 2026-12-25, 갱신은 기존 certbot 컨테이너)
 - DNS (이미 `admin.connectgnu.kro.kr` → 3.35.117.126)
+- 서버 `admin/` 디렉터리 생성 (서버에서 `ec2-user` 소유로 수동으로 이미 완료)
 - 접근 제한 추가(Basic Auth, IP 허용 목록). 보호는 어드민의 `ADMIN_API_KEY` 로그인만 쓴다
 - 서버 CORS 변경, 어드민 코드 변경
 - dev 환경(`nginx/dev.conf`, `docker-compose.dev.yml`) 배포
@@ -63,7 +64,7 @@
     current -> releases/<git sha>   (상대 심볼릭 링크)
 ```
 
-- `admin/`은 `ec2-user`가 만든다. 먼저 배포되는 쪽이 어느 쪽이든(api CD의 compose 재생성, admin CD의 업로드) `mkdir -p admin`을 먼저 실행한다. compose가 없는 바인드 경로를 root 소유로 만드는 것을 막기 위해서다.
+- `admin/`은 서버에 `ec2-user` 소유로 미리 만들어 둔다(수동, CD가 만들지 않는다). 없는 상태에서 compose가 nginx를 띄우면 바인드 경로가 root 소유로 생겨 admin CD가 쓸 수 없으므로, 서버를 새로 꾸릴 때도 nginx보다 먼저 만든다.
 - 릴리스는 최신 3개만 남긴다(현재 링크 대상은 항상 보존).
 
 ## 5. nginx (`services/api/nginx/prod.conf`)
@@ -140,20 +141,21 @@ nginx `volumes`에 추가:
 - `ci` job: `uses: ./.github/workflows/admin-ci.yml`
 - `deploy` job (`needs: ci`):
   1. checkout, pnpm/Node 설정, `pnpm install --frozen-lockfile`, `pnpm build`
-  2. SSH로 `mkdir -p $DEPLOY_DIR/admin/releases`
+  2. SSH로 `mkdir -p $DEPLOY_DIR/admin/releases/${{ github.sha }}`
   3. scp `admin/dist/*` → `$DEPLOY_DIR/admin/releases/${{ github.sha }}` (`strip_components: 2`)
-  4. SSH: 업로드된 `releases/<sha>/index.html` 존재 확인(없으면 링크를 바꾸지 않고 실패) → `ln -sfn releases/<sha> admin/current.tmp && mv -Tf admin/current.tmp admin/current` → 현재 대상을 뺀 오래된 릴리스를 최신 3개만 남기고 삭제
+  4. scp `admin/scripts/activate-release.sh` → `$DEPLOY_DIR/admin/activate-release.sh`
+  5. SSH: `bash activate-release.sh <admin 디렉터리> <sha>` 실행. 스크립트는 `releases/<sha>/index.html` 존재 확인(없으면 링크를 바꾸지 않고 실패) → `ln -sfn releases/<sha> current.tmp && mv -Tf current.tmp current` → 활성 릴리스를 뺀 오래된 릴리스를 최신 3개만 남기고 삭제
   - CD에서 `curl`로 도메인을 확인하지 않는다. 첫 배포 때 api CD(nginx admin 블록 적용)보다 먼저 끝나면 실패하기 때문이다. 접속 확인은 런북 4단계에서 한다.
 
-`api-cd.yml` 배포 스크립트: `cd $DEPLOY_DIR` 직후 `mkdir -p admin` 추가.
+`api-cd.yml`은 바꾸지 않는다.
 
 ## 8. 배포 순서 (런북)
 
-1. (완료) 서버에서 admin 인증서 발급
+1. (완료) 서버에서 admin 인증서 발급, `/opt/connectgnu/api/admin` 디렉터리 생성(`ec2-user` 소유)
 2. 이 브랜치 PR → `dev` 머지 → `main` 반영
 3. `main` 반영 시 api CD(nginx·compose 변경)와 admin CD(`admin/**` 변경 없으면 트리거 안 됨)가 돈다
-   - 이 PR은 `admin/package.json`, `admin/README.md`를 바꾸므로 admin CD도 함께 돈다
-   - 둘의 순서는 보장되지 않는다. 어느 쪽이 먼저여도 `mkdir -p admin` 덕분에 결과는 같다
+   - 이 PR은 `admin/package.json`, `admin/scripts/`를 바꾸므로 admin CD도 함께 돈다
+   - 둘의 순서는 보장되지 않는다. `admin/`이 미리 있으므로 어느 쪽이 먼저여도 결과는 같다
 4. 확인
    - `curl -I http://admin.connectgnu.kro.kr` → 301 `https://admin...`
    - `openssl s_client -connect admin.connectgnu.kro.kr:443 -servername admin.connectgnu.kro.kr` → CN `admin.connectgnu.kro.kr`
@@ -164,7 +166,7 @@ nginx `volumes`에 추가:
 
 롤백:
 
-- 어드민 파일: 서버에서 `cd /opt/connectgnu/api/admin && ls releases` 후 `ln -sfn releases/<이전 sha> current.tmp && mv -Tf current.tmp current`
+- 어드민 파일: 서버에서 `cd /opt/connectgnu/api/admin && ls -t releases`로 남은 릴리스(최근 3개)를 확인한 뒤 `bash activate-release.sh . <이전 sha>`. 되돌린 릴리스는 다음 배포 전까지 정리 대상에서 빠진다
 - nginx 설정: 이전 커밋의 `prod.conf`로 revert 후 api CD 재실행
 
 ## 9. 검증 (배포 전, 로컬)
