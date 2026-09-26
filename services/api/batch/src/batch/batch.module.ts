@@ -6,7 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
 import { ShuttleTimetable } from './jobs/shuttle/domain/shuttle-timetable.entity';
 import { BATCH_JOBS, BatchJob } from './jobs/batch-job.interface';
+import { AcademicCalendar } from './jobs/academic-calendar/domain/academic-calendar.entity';
+import { AcademicCalendarClient } from './jobs/academic-calendar/academic-calendar.client';
 import { AcademicCalendarJob } from './jobs/academic-calendar/academic-calendar.job';
+import { AcademicCalendarParser } from './jobs/academic-calendar/academic-calendar.parser';
+import { AcademicCalendarRepository } from './jobs/academic-calendar/academic-calendar.repository';
 import { CafeteriaJob } from './jobs/cafeteria/cafeteria.job';
 import { NoticeJob } from './jobs/notice/notice.job';
 import { FetchHttpClient } from './http/fetch-http.client';
@@ -22,7 +26,7 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     DatabaseModule,
-    TypeOrmModule.forFeature([ShuttleTimetable, ScrapeRun]),
+    TypeOrmModule.forFeature([ShuttleTimetable, ScrapeRun, AcademicCalendar]),
   ],
   providers: [
     BatchService,
@@ -34,6 +38,9 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     ShuttleJob,
     CafeteriaJob,
     NoticeJob,
+    AcademicCalendarClient,
+    AcademicCalendarParser,
+    AcademicCalendarRepository,
     AcademicCalendarJob,
     {
       provide: BATCH_JOBS,
