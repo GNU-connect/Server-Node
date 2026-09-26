@@ -17,7 +17,10 @@ ON CONFLICT ("id") DO UPDATE
 
 --cafeteria.sql
 INSERT INTO "public"."cafeteria" ("id", "cafeteria_name_ko", "campus_id", "mi", "rest_seq", "type", "sch_sys_id", "form_type", "last_date", "thumbnail_url") VALUES
-  (1, '아람관', 1, 7278, 47, 'dorm', '', 1, '2026-03-22', 'https://www.gnu.ac.kr/upload//campus/img_c3bdec74-8530-4cce-a492-aac38e7375aa1667882180927.jpg')
+  (1, '아람관', 1, 7278, 47, 'dorm', '', 1, '2026-03-22', 'https://www.gnu.ac.kr/upload//campus/img_c3bdec74-8530-4cce-a492-aac38e7375aa1667882180927.jpg'),
+  (4, '교직원식당', 1, 1341, 4, 'main', '', 2, '2026-09-23', 'https://www.gnu.ac.kr/upload//campus/img_815ce126-4421-4e10-b82c-c9c83fa84ade1667881780423.jpg'),
+  (5, '중앙식당', 1, 1341, 5, 'main', '', 1, '2026-09-23', 'https://www.gnu.ac.kr/upload//campus/img_53597ab5-434e-4bca-bf88-373cd39693361675164218273.jpg'),
+  (6, '교육문화식당', 1, 1341, 63, 'main', '', 1, '2026-09-25', 'https://www.gnu.ac.kr/upload//campus/img_815ce126-4421-4e10-b82c-c9c83fa84ade1667881780423.jpg')
 ON CONFLICT ("id") DO UPDATE
   SET "cafeteria_name_ko" = EXCLUDED."cafeteria_name_ko",
       "campus_id" = EXCLUDED."campus_id",
