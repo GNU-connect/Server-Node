@@ -17,7 +17,12 @@ import { CafeteriaClient } from './jobs/cafeteria/cafeteria.client';
 import { CafeteriaJob } from './jobs/cafeteria/cafeteria.job';
 import { CafeteriaParser } from './jobs/cafeteria/cafeteria.parser';
 import { CafeteriaRepository } from './jobs/cafeteria/cafeteria.repository';
-import { NoticeJob } from './jobs/notice/notice.job';
+import { Notice } from './jobs/notice/domain/notice.entity';
+import { NoticeCategory } from './jobs/notice/domain/notice-category.entity';
+import { NoticeClient } from './jobs/notice/notice.client';
+import { NoticeParser } from './jobs/notice/notice.parser';
+import { NoticeRepository } from './jobs/notice/notice.repository';
+import { UniversityNoticeJob } from './jobs/notice/university-notice.job';
 import { FetchHttpClient } from './http/fetch-http.client';
 import { ShuttleClient } from './jobs/shuttle/shuttle.client';
 import { ShuttleJob } from './jobs/shuttle/shuttle.job';
@@ -37,6 +42,8 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
       AcademicCalendar,
       Cafeteria,
       CafeteriaDiet,
+      Notice,
+      NoticeCategory,
     ]),
   ],
   providers: [
@@ -51,7 +58,10 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     CafeteriaParser,
     CafeteriaRepository,
     CafeteriaJob,
-    NoticeJob,
+    NoticeClient,
+    NoticeParser,
+    NoticeRepository,
+    UniversityNoticeJob,
     AcademicCalendarClient,
     AcademicCalendarParser,
     AcademicCalendarRepository,
@@ -59,7 +69,12 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     {
       provide: BATCH_JOBS,
       useFactory: (...jobs: BatchJob[]): BatchJob[] => jobs,
-      inject: [ShuttleJob, CafeteriaJob, NoticeJob, AcademicCalendarJob],
+      inject: [
+        ShuttleJob,
+        CafeteriaJob,
+        UniversityNoticeJob,
+        AcademicCalendarJob,
+      ],
     },
   ],
 })
