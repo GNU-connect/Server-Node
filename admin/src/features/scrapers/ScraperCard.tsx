@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { ScrapeRunType, ScraperStatus } from '../../api/types';
+import type { ScrapeRun, ScrapeRunType, ScraperStatus, ScraperTargetStatus } from '../../api/types';
 import { Badge, Button, Card, Icon, Notice } from '../../design/components';
 import { formatDateTime, formatDuration } from './format';
 import {
@@ -8,7 +8,9 @@ import {
   TRIGGER_LABELS,
   TYPE_ICONS,
   TYPE_LABELS,
+  failedTargets,
   isInProgress,
+  overallView,
   summarizeTargets,
 } from './labels';
 
@@ -33,13 +35,14 @@ export function ScraperCard({
   onRequest,
 }: ScraperCardProps) {
   const { type, latestRun, lastSucceededRun, targets } = status;
-  const view = latestRun ? STATUS_VIEWS[latestRun.status] : NO_RUN_VIEW;
+  const view = overallView(status);
   const hasTargets = targets.length > 0;
+  const failed = failedTargets(status);
   // 대상이 있으면 모든 대상이 진행 중일 때만 전체 수집을 막는다
   const inProgress = hasTargets
     ? targets.every(item => isInProgress(item.latestRun))
     : isInProgress(latestRun);
-  const lastSuccessAt = lastSucceededRun?.finishedAt ?? lastSucceededRun?.createdAt;
+  const lastSuccessAt = hasTargets ? oldestLastSuccess(targets) : succeededAt(lastSucceededRun);
   const requestingAny = requesting || requestingTarget !== null;
 
   return (
@@ -102,10 +105,29 @@ export function ScraperCard({
         </details>
       )}
 
-      {latestRun?.status === 'failed' && (
+      {!hasTargets && latestRun?.status === 'failed' && (
         <Notice tone="danger" title="수집 실패">
           <p className="ad-clamp-3">{latestRun.errorMessage || '오류 메시지가 없어요.'}</p>
           <Link className="ad-link" to={`/scrape-runs?type=${type}&run=${latestRun.id}`}>
+            실행 기록에서 전체 보기
+          </Link>
+        </Notice>
+      )}
+
+      {hasTargets && failed.length > 0 && (
+        <Notice tone="danger" title={`${failed.length}곳 수집 실패`}>
+          <ul>
+            {failed.map(item => (
+              <li key={item.target}>
+                <strong>{item.targetName}</strong>
+                <p className="ad-clamp-3">{item.latestRun?.errorMessage || '오류 메시지가 없어요.'}</p>
+              </li>
+            ))}
+          </ul>
+          <Link
+            className="ad-link"
+            to={`/scrape-runs?type=${type}&target=${failed[0].target}&run=${failed[0].latestRun?.id}`}
+          >
             실행 기록에서 전체 보기
           </Link>
         </Notice>
@@ -130,4 +152,15 @@ export function ScraperCard({
       </Button>
     </Card>
   );
+}
+
+function succeededAt(run: ScrapeRun | null): string | undefined {
+  return run ? (run.finishedAt ?? run.createdAt) : undefined;
+}
+
+/** 모든 대상이 이 시각 이후로 성공했다는 뜻으로, 대상별 마지막 성공 중 가장 오래된 시각. 성공 기록이 없는 대상이 있으면 없음. */
+function oldestLastSuccess(targets: ScraperTargetStatus[]): string | undefined {
+  const times = targets.map(item => succeededAt(item.lastSucceededRun));
+  if (times.some(time => time === undefined)) return undefined;
+  return (times as string[]).reduce((oldest, time) => (time < oldest ? time : oldest));
 }

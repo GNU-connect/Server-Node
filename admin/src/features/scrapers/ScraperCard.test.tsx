@@ -179,5 +179,60 @@ describe('ScraperCard', () => {
       expect(screen.getByRole('button', { name: '교육문화식당 수집' })).toBeDisabled();
       expect(screen.getByRole('button', { name: '아람관 수집' })).toBeEnabled();
     });
+
+    it('타입 전체 최근 run이 성공이어도 실패한 대상이 있으면 실패로 표시하고 대상 이름과 오류를 알려 준다', () => {
+      const failed = makeRun({
+        id: 40,
+        type: 'cafeteria',
+        target: '2',
+        targetName: '교육문화식당',
+        status: 'failed',
+        errorMessage: '식단 표를 찾을 수 없습니다.',
+      });
+      renderCard(
+        makeStatus('cafeteria', makeRun({ id: 99, type: 'cafeteria', status: 'succeeded' }), null, [
+          target('1', '아람관', 'succeeded'),
+          { target: '2', targetName: '교육문화식당', latestRun: failed, lastSucceededRun: null },
+        ]),
+      );
+
+      // 첫 배지가 카드 머리의 전체 상태이고, 이어지는 배지는 대상별 상태다
+      const [headerBadge] = screen.getAllByText('실패', { selector: '.jn-badge' });
+      expect(headerBadge).toHaveClass('jn-badge-danger');
+      expect(screen.getByRole('alert')).toHaveTextContent('교육문화식당');
+      expect(screen.getByRole('alert')).toHaveTextContent('식단 표를 찾을 수 없습니다.');
+      expect(screen.getByRole('link', { name: '실행 기록에서 전체 보기' })).toHaveAttribute(
+        'href',
+        '/scrape-runs?type=cafeteria&target=2&run=40',
+      );
+    });
+
+    it('마지막 성공은 모든 대상 중 가장 오래된 성공 시각이고, 성공 기록이 없는 대상이 있으면 아직 없다고 한다', () => {
+      const success = (id: number, finishedAt: string) =>
+        makeRun({ id, type: 'cafeteria', target: String(id), finishedAt });
+      const withSuccess = (id: string, name: string, finishedAt: string) => ({
+        target: id,
+        targetName: name,
+        latestRun: success(Number(id), finishedAt),
+        lastSucceededRun: success(Number(id), finishedAt),
+      });
+
+      renderCard(
+        makeStatus('cafeteria', success(2, '2026-09-25T05:21:13.000Z'), null, [
+          withSuccess('1', '아람관', '2026-09-25T03:00:00.000Z'),
+          withSuccess('2', '교육문화식당', '2026-09-25T05:21:13.000Z'),
+        ]),
+      );
+
+      // 가장 오래된 성공(12:00 KST)이지 가장 최근(14:21)이 아니다
+      expect(screen.getByText('오늘 12:00')).toBeInTheDocument();
+      expect(screen.queryByText('오늘 14:21')).not.toBeInTheDocument();
+    });
+
+    it('성공 기록이 없는 대상이 있으면 마지막 성공을 아직 없다고 한다', () => {
+      renderCard(cafeteriaStatus());
+
+      expect(screen.getByText('아직 없어요')).toBeInTheDocument();
+    });
   });
 });

@@ -266,4 +266,28 @@ describe('수집 상태 화면', () => {
     const posts = callsTo(fetchMock, 'POST', '/api/admin/scrape-runs');
     expect(JSON.parse(posts[0][1].body as string)).toEqual({ type: 'cafeteria' });
   });
+
+  it('타입 전체 최근 run이 성공이어도 실패한 대상이 있으면 맨 위 알림에 그 타입을 올린다', async () => {
+    routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ id: 99, type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ id: 40, type: 'cafeteria', target: '2', status: 'failed' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+    });
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    expect(
+      await screen.findByText('학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),
+    ).toBeInTheDocument();
+  });
 });

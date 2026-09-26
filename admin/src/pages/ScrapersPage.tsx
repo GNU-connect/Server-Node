@@ -13,7 +13,7 @@ import { Button, EmptyState, Notice, Section } from '../design/components';
 import { RunTable } from '../features/scrapers/RunTable';
 import { ScraperCard } from '../features/scrapers/ScraperCard';
 import { formatElapsed } from '../features/scrapers/format';
-import { TYPE_LABELS, isInProgress } from '../features/scrapers/labels';
+import { TYPE_LABELS, isFailing, isStatusInProgress } from '../features/scrapers/labels';
 import { useNow } from '../features/scrapers/useNow';
 import { usePolling } from '../features/scrapers/usePolling';
 import { PageHeader } from '../layout/PageHeader';
@@ -80,7 +80,7 @@ export function ScrapersPage() {
   }, [apiKey, handleError]);
 
   const cards = statuses ? toCards(statuses) : null;
-  const active = cards?.some(card => isInProgress(card.latestRun)) ?? false;
+  const active = cards?.some(isStatusInProgress) ?? false;
   usePolling(load, active ? ACTIVE_INTERVAL_MS : IDLE_INTERVAL_MS);
 
   async function handleRequest(type: ScrapeRunType, target?: string) {
@@ -101,7 +101,7 @@ export function ScrapersPage() {
   }
 
   const failedLabels = (cards ?? [])
-    .filter(card => card.latestRun?.status === 'failed')
+    .filter(isFailing)
     .map(card => TYPE_LABELS[card.type]);
 
   return (
