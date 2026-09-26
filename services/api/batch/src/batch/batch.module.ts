@@ -11,7 +11,12 @@ import { AcademicCalendarClient } from './jobs/academic-calendar/academic-calend
 import { AcademicCalendarJob } from './jobs/academic-calendar/academic-calendar.job';
 import { AcademicCalendarParser } from './jobs/academic-calendar/academic-calendar.parser';
 import { AcademicCalendarRepository } from './jobs/academic-calendar/academic-calendar.repository';
+import { Cafeteria } from './jobs/cafeteria/domain/cafeteria.entity';
+import { CafeteriaDiet } from './jobs/cafeteria/domain/cafeteria-diet.entity';
+import { CafeteriaClient } from './jobs/cafeteria/cafeteria.client';
 import { CafeteriaJob } from './jobs/cafeteria/cafeteria.job';
+import { CafeteriaParser } from './jobs/cafeteria/cafeteria.parser';
+import { CafeteriaRepository } from './jobs/cafeteria/cafeteria.repository';
 import { NoticeJob } from './jobs/notice/notice.job';
 import { FetchHttpClient } from './http/fetch-http.client';
 import { ShuttleClient } from './jobs/shuttle/shuttle.client';
@@ -26,7 +31,13 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     DatabaseModule,
-    TypeOrmModule.forFeature([ShuttleTimetable, ScrapeRun, AcademicCalendar]),
+    TypeOrmModule.forFeature([
+      ShuttleTimetable,
+      ScrapeRun,
+      AcademicCalendar,
+      Cafeteria,
+      CafeteriaDiet,
+    ]),
   ],
   providers: [
     BatchService,
@@ -36,6 +47,9 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
     ShuttleParser,
     ShuttleRepository,
     ShuttleJob,
+    CafeteriaClient,
+    CafeteriaParser,
+    CafeteriaRepository,
     CafeteriaJob,
     NoticeJob,
     AcademicCalendarClient,
