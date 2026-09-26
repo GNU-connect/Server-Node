@@ -11,13 +11,7 @@ Sentry.init({
   // Add Performance Monitoring by setting tracesSampleRate
   // The value is automatically adjusted depending on the environment
   // Learn more about sampling here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/sampling/
-  tracesSampler: ({ name }) => {
-    if (name.includes('/api/metrics')) {
-      return 0;
-    }
-
-    return 1.0;
-  },
+  tracesSampleRate: 1.0,
 
   // Set sampling rate for profiling - this is relative to tracesSampleRate
   profilesSampleRate: 1.0,
@@ -38,10 +32,6 @@ Sentry.init({
 
   // Advanced, optional: Called for transaction events, you can further debug your transactions here
   beforeSendTransaction(event) {
-    if (event.transaction === '/api/metrics') {
-      return null;
-    }
-
     return event;
   },
 });

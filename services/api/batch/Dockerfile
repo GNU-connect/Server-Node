@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1.5
+
+FROM node:24.11.0-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
+
+# --------------------
+# deps (prod)
+# --------------------
+FROM base AS prod-deps
+COPY package.json pnpm-lock.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --frozen-lockfile
+
+# --------------------
+# build
+# --------------------
+FROM base AS build
+COPY package.json pnpm-lock.yaml ./
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm run build
+
+# --------------------
+# prod runtime
+# --------------------
+FROM base AS prod
+ENV NODE_ENV=production
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+
+CMD ["node", "dist/main"]

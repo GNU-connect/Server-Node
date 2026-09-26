@@ -1,0 +1,41 @@
+name: DB Migrate
+
+# API/Batch CD에서 배포 전에 호출한다. 마이그레이션만 바꾼 경우에는 수동 실행(workflow_dispatch)한다.
+on:
+  workflow_call:
+    secrets:
+      SUPABASE_DB_URL:
+        required: true
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    name: Apply Supabase Migrations
+    runs-on: ubuntu-latest
+    # API/Batch CD가 동시에 호출해도 순서대로 적용한다 (이미 적용된 마이그레이션은 건너뜀)
+    concurrency:
+      group: db-migrate
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Show Migration Status
+        run: supabase migration list --db-url "$SUPABASE_DB_URL"
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+      - name: Apply Migrations
+        run: supabase db push --db-url "$SUPABASE_DB_URL"
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
