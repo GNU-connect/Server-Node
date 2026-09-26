@@ -79,7 +79,7 @@ describe('BatchService', () => {
 
       await service.run();
 
-      expect(repository.start).toHaveBeenCalledWith('shuttle', 'cron');
+      expect(repository.start).toHaveBeenCalledWith('shuttle', 'cron', null);
       expect(repository.succeed).toHaveBeenCalledWith(1);
       expect(repository.fail).not.toHaveBeenCalled();
     });
@@ -115,6 +115,91 @@ describe('BatchService', () => {
       expect(skippedJobRun).not.toHaveBeenCalled();
       expect(nextJobRun).toHaveBeenCalledTimes(1);
     });
+
+    it('대상이 있는 잡은 대상마다 run을 기록하고 target을 넘겨 실행한다', async () => {
+      const jobRun = jest.fn().mockResolvedValue(undefined);
+      const service = createService([
+        {
+          name: 'cafeteria',
+          targets: jest.fn().mockResolvedValue(['1', '2']),
+          run: jobRun,
+        },
+      ]);
+
+      await service.run();
+
+      expect(repository.start).toHaveBeenNthCalledWith(
+        1,
+        'cafeteria',
+        'cron',
+        '1',
+      );
+      expect(repository.start).toHaveBeenNthCalledWith(
+        2,
+        'cafeteria',
+        'cron',
+        '2',
+      );
+      expect(jobRun).toHaveBeenNthCalledWith(1, '1');
+      expect(jobRun).toHaveBeenNthCalledWith(2, '2');
+      expect(repository.succeed).toHaveBeenCalledTimes(2);
+    });
+
+    it('한 대상이 실패해도 run을 실패 처리하고 나머지 대상을 계속 실행한다', async () => {
+      const jobRun = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('표 없음'))
+        .mockResolvedValue(undefined);
+      const service = createService([
+        {
+          name: 'cafeteria',
+          targets: jest.fn().mockResolvedValue(['1', '2', '3']),
+          run: jobRun,
+        },
+      ]);
+
+      await service.run();
+
+      expect(jobRun).toHaveBeenCalledTimes(3);
+      expect(repository.fail).toHaveBeenCalledWith(1, '표 없음');
+      expect(repository.succeed).toHaveBeenCalledWith(2);
+      expect(repository.succeed).toHaveBeenCalledWith(3);
+    });
+
+    it('이미 대기/실행 중인 대상은 건너뛰고 나머지 대상을 실행한다', async () => {
+      repository.start.mockResolvedValueOnce(null);
+      const jobRun = jest.fn().mockResolvedValue(undefined);
+      const service = createService([
+        {
+          name: 'cafeteria',
+          targets: jest.fn().mockResolvedValue(['1', '2']),
+          run: jobRun,
+        },
+      ]);
+
+      await service.run();
+
+      expect(jobRun).toHaveBeenCalledTimes(1);
+      expect(jobRun).toHaveBeenCalledWith('2');
+    });
+
+    it('대상 목록 조회가 실패하면 그 잡만 건너뛰고 다음 잡을 실행한다', async () => {
+      const nextRun = jest.fn().mockResolvedValue(undefined);
+      const service = createService([
+        {
+          name: 'cafeteria',
+          targets: jest.fn().mockRejectedValue(new Error('db down')),
+          run: jest.fn(),
+        },
+        { name: 'shuttle', run: nextRun },
+      ]);
+
+      await service.run();
+
+      expect(nextRun).toHaveBeenCalledTimes(1);
+      expect(repository.start).toHaveBeenCalledTimes(1);
+      expect(repository.start).toHaveBeenCalledWith('shuttle', 'cron', null);
+    });
   });
 
   describe('runPending (수동 실행)', () => {
@@ -125,7 +210,10 @@ describe('BatchService', () => {
         { name: 'shuttle', run: shuttleRun },
         { name: 'notice', run: noticeRun },
       ]);
-      queuePending({ id: 10, type: 'shuttle' }, { id: 11, type: 'notice' });
+      queuePending(
+        { id: 10, type: 'shuttle', target: null },
+        { id: 11, type: 'notice', target: null },
+      );
 
       await service.runPending();
 
@@ -144,7 +232,10 @@ describe('BatchService', () => {
         },
         { name: 'notice', run: nextRun },
       ]);
-      queuePending({ id: 10, type: 'shuttle' }, { id: 11, type: 'notice' });
+      queuePending(
+        { id: 10, type: 'shuttle', target: null },
+        { id: 11, type: 'notice', target: null },
+      );
 
       await service.runPending();
 
@@ -155,7 +246,7 @@ describe('BatchService', () => {
 
     it('등록되지 않은 타입의 run은 실패 처리한다', async () => {
       const service = createService([]);
-      queuePending({ id: 10, type: 'unknown' });
+      queuePending({ id: 10, type: 'unknown', target: null });
 
       await service.runPending();
 
@@ -171,7 +262,7 @@ describe('BatchService', () => {
         () => new Promise<void>((resolve) => (release = resolve)),
       );
       const service = createService([{ name: 'shuttle', run: jobRun }]);
-      queuePending({ id: 10, type: 'shuttle' });
+      queuePending({ id: 10, type: 'shuttle', target: null });
 
       const firstPoll = service.runPending();
       await new Promise((resolve) => setImmediate(resolve));
@@ -181,6 +272,29 @@ describe('BatchService', () => {
 
       release();
       await firstPoll;
+    });
+
+    it('target이 있는 대기 run은 target을 잡에 넘긴다', async () => {
+      const jobRun = jest.fn().mockResolvedValue(undefined);
+      const service = createService([
+        { name: 'cafeteria', targets: jest.fn(), run: jobRun },
+      ]);
+      queuePending({ id: 20, type: 'cafeteria', target: '3' });
+
+      await service.runPending();
+
+      expect(jobRun).toHaveBeenCalledWith('3');
+      expect(repository.succeed).toHaveBeenCalledWith(20);
+    });
+
+    it('target이 없는 대기 run은 target 없이 잡을 실행한다', async () => {
+      const jobRun = jest.fn().mockResolvedValue(undefined);
+      const service = createService([{ name: 'shuttle', run: jobRun }]);
+      queuePending({ id: 21, type: 'shuttle', target: null });
+
+      await service.runPending();
+
+      expect(jobRun).toHaveBeenCalledWith(undefined);
     });
   });
 

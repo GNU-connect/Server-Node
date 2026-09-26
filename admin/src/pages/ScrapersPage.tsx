@@ -13,7 +13,7 @@ import { Button, EmptyState, Notice, Section } from '../design/components';
 import { RunTable } from '../features/scrapers/RunTable';
 import { ScraperCard } from '../features/scrapers/ScraperCard';
 import { formatElapsed } from '../features/scrapers/format';
-import { TYPE_LABELS, isInProgress } from '../features/scrapers/labels';
+import { TYPE_LABELS, isFailing, isStatusInProgress } from '../features/scrapers/labels';
 import { useNow } from '../features/scrapers/useNow';
 import { usePolling } from '../features/scrapers/usePolling';
 import { PageHeader } from '../layout/PageHeader';
@@ -27,7 +27,12 @@ const CONFLICT_NOTICE = '이미 수집이 대기 중이거나 실행 중이에�
 function toCards(statuses: ScraperStatus[]): ScraperStatus[] {
   return SCRAPE_RUN_TYPES.map(
     type =>
-      statuses.find(status => status.type === type) ?? { type, latestRun: null, lastSucceededRun: null },
+      statuses.find(status => status.type === type) ?? {
+        type,
+        latestRun: null,
+        lastSucceededRun: null,
+        targets: [],
+      },
   );
 }
 
@@ -41,7 +46,9 @@ export function ScrapersPage() {
   const [recent, setRecent] = useState<ScrapeRun[]>([]);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [requesting, setRequesting] = useState<ScrapeRunType | null>(null);
+  const [requesting, setRequesting] = useState<{ type: ScrapeRunType; target?: string } | null>(
+    null,
+  );
   const [notices, setNotices] = useState<Partial<Record<ScrapeRunType, string>>>({});
   // 연타 방지: state 반영 전 두 번째 클릭도 막는다
   const requestingRef = useRef(false);
@@ -73,16 +80,16 @@ export function ScrapersPage() {
   }, [apiKey, handleError]);
 
   const cards = statuses ? toCards(statuses) : null;
-  const active = cards?.some(card => isInProgress(card.latestRun)) ?? false;
+  const active = cards?.some(isStatusInProgress) ?? false;
   usePolling(load, active ? ACTIVE_INTERVAL_MS : IDLE_INTERVAL_MS);
 
-  async function handleRequest(type: ScrapeRunType) {
+  async function handleRequest(type: ScrapeRunType, target?: string) {
     if (requestingRef.current) return;
     requestingRef.current = true;
-    setRequesting(type);
+    setRequesting({ type, target });
     setNotices(prev => ({ ...prev, [type]: undefined }));
     try {
-      await requestScrapeRun(apiKey, type);
+      await requestScrapeRun(apiKey, type, target);
       await load();
     } catch (err) {
       if (err instanceof ConflictError) setNotices(prev => ({ ...prev, [type]: CONFLICT_NOTICE }));
@@ -94,7 +101,7 @@ export function ScrapersPage() {
   }
 
   const failedLabels = (cards ?? [])
-    .filter(card => card.latestRun?.status === 'failed')
+    .filter(isFailing)
     .map(card => TYPE_LABELS[card.type]);
 
   return (
@@ -133,7 +140,10 @@ export function ScrapersPage() {
                 key={status.type}
                 status={status}
                 now={now}
-                requesting={requesting === status.type}
+                requesting={requesting?.type === status.type && requesting.target === undefined}
+                requestingTarget={
+                  requesting?.type === status.type ? (requesting.target ?? null) : null
+                }
                 notice={notices[status.type] ?? null}
                 onRequest={handleRequest}
               />

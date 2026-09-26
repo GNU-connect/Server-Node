@@ -17,7 +17,7 @@ describe('수집 상태 화면', () => {
     });
     renderApp('/scrapers', { apiKey: 'k' });
 
-    for (const name of ['셔틀', '공지사항', '학식', '학사 일정']) {
+    for (const name of ['셔틀', '학교 공지', '학식', '학사 일정']) {
       expect(await screen.findByRole('heading', { name, level: 3 })).toBeInTheDocument();
     }
     const recent = screen.getByRole('region', { name: '최근 실행' });
@@ -47,7 +47,10 @@ describe('수집 상태 화면', () => {
         ok(
           allStatuses({
             cafeteria: makeStatus('cafeteria', makeRun({ type: 'cafeteria', status: 'failed' })),
-            notice: makeStatus('notice', makeRun({ type: 'notice', status: 'failed' })),
+            'university-notice': makeStatus(
+              'university-notice',
+              makeRun({ type: 'university-notice', status: 'failed' }),
+            ),
           }),
         ),
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
@@ -55,7 +58,7 @@ describe('수집 상태 화면', () => {
     renderApp('/scrapers', { apiKey: 'k' });
 
     expect(
-      await screen.findByText('공지사항, 학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),
+      await screen.findByText('학교 공지, 학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),
     ).toBeInTheDocument();
   });
 
@@ -67,7 +70,7 @@ describe('수집 상태 화면', () => {
       'POST /api/admin/scrape-runs': () => {
         const pending = makeRun({ id: 200, status: 'pending', trigger: 'manual', startedAt: null, finishedAt: null });
         statuses = allStatuses({ shuttle: makeStatus('shuttle', pending, makeRun()) });
-        return ok(pending, 202);
+        return ok({ runs: [pending] }, 202);
       },
     });
     const user = userEvent.setup();
@@ -89,7 +92,7 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
       'POST /api/admin/scrape-runs': () =>
         new Promise<Response>(resolve => {
-          release = () => resolve(ok(makeRun({ status: 'pending' }), 202));
+          release = () => resolve(ok({ runs: [makeRun({ status: 'pending' })] }, 202));
         }),
     });
     const user = userEvent.setup();
@@ -109,15 +112,15 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrapers': () => ok(allStatuses()),
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
       'POST /api/admin/scrape-runs': () =>
-        jsonResponse(409, { statusCode: 409, message: "'notice' 수집이 이미 대기 또는 실행 중입니다." }),
+        jsonResponse(409, { statusCode: 409, message: "'university-notice' 수집이 이미 대기 또는 실행 중입니다." }),
     });
     const user = userEvent.setup();
     renderApp('/scrapers', { apiKey: 'k' });
 
-    await screen.findByRole('heading', { name: '공지사항', level: 3 });
-    await user.click(within(card('공지사항')).getByRole('button', { name: '지금 수집' }));
+    await screen.findByRole('heading', { name: '학교 공지', level: 3 });
+    await user.click(within(card('학교 공지')).getByRole('button', { name: '지금 수집' }));
 
-    expect(await within(card('공지사항')).findByRole('status')).toHaveTextContent(
+    expect(await within(card('학교 공지')).findByRole('status')).toHaveTextContent(
       '이미 수집이 대기 중이거나 실행 중이에요.',
     );
   });
@@ -205,5 +208,86 @@ describe('수집 상태 화면', () => {
       expect(screen.getByRole('heading', { name: '운영자 확인이 필요해요' })).toBeInTheDocument();
       expect(sessionStorage.getItem('admin.apiKey')).toBeNull();
     });
+  });
+
+  it('대상별 수집 버튼은 타입과 대상을 함께 요청한다', async () => {
+    const fetchMock = routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ type: 'cafeteria', target: '2' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+      'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    await screen.findByRole('heading', { name: '학식', level: 3 });
+    await user.click(within(card('학식')).getByRole('button', { name: '교육문화식당 수집' }));
+
+    const posts = callsTo(fetchMock, 'POST', '/api/admin/scrape-runs');
+    expect(posts).toHaveLength(1);
+    expect(JSON.parse(posts[0][1].body as string)).toEqual({ type: 'cafeteria', target: '2' });
+  });
+
+  it('대상이 있는 카드의 전체 수집은 target 없이 요청한다', async () => {
+    const fetchMock = routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ type: 'cafeteria', target: '2' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+      'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
+    });
+    const user = userEvent.setup();
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    await screen.findByRole('heading', { name: '학식', level: 3 });
+    await user.click(within(card('학식')).getByRole('button', { name: '전체 수집' }));
+
+    const posts = callsTo(fetchMock, 'POST', '/api/admin/scrape-runs');
+    expect(JSON.parse(posts[0][1].body as string)).toEqual({ type: 'cafeteria' });
+  });
+
+  it('타입 전체 최근 run이 성공이어도 실패한 대상이 있으면 맨 위 알림에 그 타입을 올린다', async () => {
+    routeFetch({
+      'GET /api/admin/scrapers': () =>
+        ok(
+          allStatuses({
+            cafeteria: makeStatus('cafeteria', makeRun({ id: 99, type: 'cafeteria' }), null, [
+              {
+                target: '2',
+                targetName: '교육문화식당',
+                latestRun: makeRun({ id: 40, type: 'cafeteria', target: '2', status: 'failed' }),
+                lastSucceededRun: null,
+              },
+            ]),
+          }),
+        ),
+      'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
+    });
+    renderApp('/scrapers', { apiKey: 'k' });
+
+    expect(
+      await screen.findByText('학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),
+    ).toBeInTheDocument();
   });
 });

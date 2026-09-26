@@ -33,25 +33,53 @@ export class BatchService implements OnApplicationBootstrap {
 
     try {
       for (const job of this.jobs) {
-        try {
-          const runId = await this.scrapeRunRepository.start(job.name, 'cron');
-          if (runId === null) {
-            console.warn(
-              `[${this.name}] 이미 대기/실행 중인 run이 있어 건너뜁니다: ${job.name}`,
-            );
-            continue;
-          }
-          await this.execute(runId, job);
-        } catch (error) {
-          // TODO: 에러 로깅 및 알림 시스템 연동
-          console.error(
-            `[${this.name}] 잡 실행 중 에러 발생: ${job.name}`,
-            error,
-          );
+        const targets = await this.resolveTargets(job);
+        for (const target of targets) {
+          await this.runScheduled(job, target);
         }
       }
     } finally {
       this.isRunning = false;
+    }
+  }
+
+  /** 대상이 없는 잡은 [null] 한 번, 대상 조회에 실패하면 [] (그 잡만 건너뜀). */
+  private async resolveTargets(job: BatchJob): Promise<(string | null)[]> {
+    if (!job.targets) return [null];
+
+    try {
+      return await job.targets();
+    } catch (error) {
+      console.error(
+        `[${this.name}] 대상 조회 중 에러 발생: ${job.name}`,
+        error,
+      );
+      return [];
+    }
+  }
+
+  private async runScheduled(
+    job: BatchJob,
+    target: string | null,
+  ): Promise<void> {
+    const label = target === null ? job.name : `${job.name}:${target}`;
+
+    try {
+      const runId = await this.scrapeRunRepository.start(
+        job.name,
+        'cron',
+        target,
+      );
+      if (runId === null) {
+        console.warn(
+          `[${this.name}] 이미 대기/실행 중인 run이 있어 건너뜁니다: ${label}`,
+        );
+        return;
+      }
+      await this.execute(runId, job, target);
+    } catch (error) {
+      // TODO: 에러 로깅 및 알림 시스템 연동
+      console.error(`[${this.name}] 잡 실행 중 에러 발생: ${label}`, error);
     }
   }
 
@@ -68,7 +96,7 @@ export class BatchService implements OnApplicationBootstrap {
         const job = this.jobsByName.get(claimed.type);
         if (job) {
           try {
-            await this.execute(claimed.id, job);
+            await this.execute(claimed.id, job, claimed.target);
           } catch (error) {
             console.error(
               `[${this.name}] 수동 실행 잡 에러 발생: ${job.name}`,
@@ -100,9 +128,13 @@ export class BatchService implements OnApplicationBootstrap {
     await this.run();
   }
 
-  private async execute(runId: number, job: BatchJob): Promise<void> {
+  private async execute(
+    runId: number,
+    job: BatchJob,
+    target: string | null,
+  ): Promise<void> {
     try {
-      await job.run();
+      await job.run(target ?? undefined);
     } catch (error) {
       await this.scrapeRunRepository.fail(runId, toErrorMessage(error));
       throw error;
