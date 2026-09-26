@@ -1,0 +1,94 @@
+name: Admin CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'admin/**'
+      - '.github/workflows/admin-cd.yml'
+      - '.github/workflows/admin-ci.yml'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: admin-cd-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ADMIN_DIR: /opt/connectgnu/api/admin
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/admin-ci.yml
+
+  deploy:
+    name: Deploy Admin Web
+    runs-on: ubuntu-latest
+    needs: ci
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          package_json_file: admin/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: admin/pnpm-lock.yaml
+
+      - name: Build
+        working-directory: admin
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Prepare release directory
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.API_SSH_HOST }}
+          username: ${{ secrets.API_SSH_USERNAME }}
+          key: ${{ secrets.API_SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            mkdir -p ${{ env.ADMIN_DIR }}/releases/${{ github.sha }}
+
+      - name: Copy build output
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.API_SSH_HOST }}
+          username: ${{ secrets.API_SSH_USERNAME }}
+          key: ${{ secrets.API_SSH_PRIVATE_KEY }}
+          source: admin/dist/*
+          target: ${{ env.ADMIN_DIR }}/releases/${{ github.sha }}
+          strip_components: 2
+
+      - name: Copy release script
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.API_SSH_HOST }}
+          username: ${{ secrets.API_SSH_USERNAME }}
+          key: ${{ secrets.API_SSH_PRIVATE_KEY }}
+          source: admin/scripts/activate-release.sh
+          target: ${{ env.ADMIN_DIR }}
+          strip_components: 2
+
+      - name: Activate release
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.API_SSH_HOST }}
+          username: ${{ secrets.API_SSH_USERNAME }}
+          key: ${{ secrets.API_SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+            bash ${{ env.ADMIN_DIR }}/activate-release.sh ${{ env.ADMIN_DIR }} ${{ github.sha }}
