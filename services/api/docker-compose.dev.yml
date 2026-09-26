@@ -14,19 +14,30 @@ services:
     build:
       context: ./app
       target: dev
+    env_file:
+      - .env.local
     volumes:
       - ./app:/app
       - /app/node_modules
     restart: always
     ports:
       - '3000:3000'
+    networks:
+      - connect-gnu-network
+
+  # 로컬 수집 확인용. `supabase start`로 띄운 DB(54322)에 붙는다.
+  # 같은 폴더의 .env(운영 DB 값)가 ${VAR} 치환으로 섞이지 않도록 값을 그대로 적는다.
+  batch:
+    build:
+      context: ./batch
+      target: prod
+    restart: 'no'
     environment:
-      - DB_HOST=${DB_HOST:-host.docker.internal}
-      - DB_PORT=${DB_PORT:-54322}
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_DATABASE=${DB_DATABASE:-postgres}
-      - DB_STORAGE_URL=${DB_STORAGE_URL:-http://host.docker.internal:54321/storage/v1/s3}
+      DB_HOST: host.docker.internal
+      DB_PORT: '54322'
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: postgres
     networks:
       - connect-gnu-network
 
