@@ -3,6 +3,12 @@ alter table scrape_run add column target varchar(50);
 
 -- 타입 이름 변경: notice -> university-notice (학과 공지는 나중에 department-notice로 추가)
 alter table scrape_run drop constraint scrape_run_type_check;
+-- 배포 시점에 대기/실행 중이던 옛 notice run은 대상(target)이 없어 새 배치가 처리할 수 없으므로 먼저 실패 처리한다.
+update scrape_run
+    set status = 'failed',
+        finished_at = now(),
+        error_message = '수집 대상(target) 도입 마이그레이션으로 중단됨'
+    where type = 'notice' and status in ('pending', 'running');
 update scrape_run set type = 'university-notice' where type = 'notice';
 alter table scrape_run add constraint scrape_run_type_check
     check (type in ('shuttle', 'university-notice', 'cafeteria', 'academic-calendar'));
