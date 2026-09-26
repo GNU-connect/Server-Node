@@ -52,7 +52,7 @@ describe('ScraperCard', () => {
     ['pending', '대기 중'],
     ['running', '수집 중'],
   ] as const)('%s이면 버튼을 막고 수집 중으로 표시한다', (status, label) => {
-    renderCard(makeStatus('notice', makeRun({ type: 'notice', status, finishedAt: null })));
+    renderCard(makeStatus('university-notice', makeRun({ type: 'university-notice', status, finishedAt: null })));
 
     expect(screen.getByText(label, { selector: '.jn-badge' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '수집 중…' })).toBeDisabled();

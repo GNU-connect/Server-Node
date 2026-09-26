@@ -27,7 +27,12 @@ const CONFLICT_NOTICE = '이미 수집이 대기 중이거나 실행 중이에�
 function toCards(statuses: ScraperStatus[]): ScraperStatus[] {
   return SCRAPE_RUN_TYPES.map(
     type =>
-      statuses.find(status => status.type === type) ?? { type, latestRun: null, lastSucceededRun: null },
+      statuses.find(status => status.type === type) ?? {
+        type,
+        latestRun: null,
+        lastSucceededRun: null,
+        targets: [],
+      },
   );
 }
 

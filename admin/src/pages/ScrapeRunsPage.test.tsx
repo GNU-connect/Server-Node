@@ -7,7 +7,7 @@ import { renderApp } from '../test/renderApp';
 
 const RUN_12 = makeRun({ id: 12, type: 'cafeteria', status: 'failed', errorMessage: 'line 1\nline 2' });
 const RUN_11 = makeRun({ id: 11 });
-const RUN_5 = makeRun({ id: 5, type: 'notice' });
+const RUN_5 = makeRun({ id: 5, type: 'university-notice' });
 
 function listUrls(fetchMock: ReturnType<typeof routeFetch>) {
   return callsTo(fetchMock, 'GET', '/api/admin/scrape-runs?').map(([url]) => url);
