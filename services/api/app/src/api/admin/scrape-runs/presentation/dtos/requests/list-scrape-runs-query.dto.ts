@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 import {
   SCRAPE_RUN_STATUSES,
   SCRAPE_RUN_TYPES,
@@ -13,6 +13,12 @@ export class ListScrapeRunsQueryDto {
   @IsIn(SCRAPE_RUN_TYPES)
   @ApiPropertyOptional({ description: '수집 타입', enum: SCRAPE_RUN_TYPES })
   type?: ScrapeRunType;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  @ApiPropertyOptional({ description: '수집 대상(식당 id, 공지 카테고리 id)' })
+  target?: string;
 
   @IsOptional()
   @IsIn(SCRAPE_RUN_STATUSES)

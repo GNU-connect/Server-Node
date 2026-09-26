@@ -1,6 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-export const SCRAPE_RUN_TYPES = ['shuttle', 'notice', 'cafeteria', 'academic-calendar'] as const;
+export const SCRAPE_RUN_TYPES = [
+  'shuttle',
+  'university-notice',
+  'cafeteria',
+  'academic-calendar',
+] as const;
 export type ScrapeRunType = (typeof SCRAPE_RUN_TYPES)[number];
 
 export const SCRAPE_RUN_STATUSES = ['pending', 'running', 'succeeded', 'failed'] as const;
@@ -15,6 +20,9 @@ export class ScrapeRun {
 
   @Column({ length: 30 })
   type: ScrapeRunType;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  target: string | null;
 
   @Column({ length: 10 })
   trigger: ScrapeRunTrigger;
