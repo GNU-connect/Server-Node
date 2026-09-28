@@ -15,6 +15,73 @@ describe('FetchHttpClient', () => {
     jest.restoreAllMocks();
   });
 
+  it('재시도가 결정되면 warn 로그를 남긴다', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    fetchMock
+      .mockRejectedValueOnce(new Error('network down'))
+      .mockResolvedValueOnce(new Response('ok', { status: 200 }));
+
+    await client.getText('https://example.com', {
+      retry: { retries: 1, retryDelayMs: 0 },
+    });
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('1/2번째 시도'),
+      expect.any(Error),
+    );
+  });
+
+  it('재시도할 때마다 시도 횟수가 증가한 warn 로그를 남긴다', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    fetchMock
+      .mockRejectedValueOnce(new Error('first failure'))
+      .mockRejectedValueOnce(new Error('second failure'))
+      .mockResolvedValueOnce(new Response('ok', { status: 200 }));
+
+    await client.getText('https://example.com', {
+      retry: { retries: 2, retryDelayMs: 0 },
+    });
+
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(warnSpy).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('1/3번째 시도'),
+      expect.any(Error),
+    );
+    expect(warnSpy).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('2/3번째 시도'),
+      expect.any(Error),
+    );
+  });
+
+  it('마지막 시도가 실패해 재시도 없이 종료될 때는 warn 로그를 남기지 않는다', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    fetchMock.mockRejectedValueOnce(new Error('network down'));
+
+    await expect(
+      client.request('https://example.com', {
+        retry: { retries: 0, retryDelayMs: 0 },
+      }),
+    ).rejects.toThrow(HttpRequestError);
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('재시도 불가능한 에러는 warn 로그 없이 즉시 실패한다', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    fetchMock.mockResolvedValueOnce(new Response('not found', { status: 404 }));
+
+    await expect(
+      client.request('https://example.com', {
+        retry: { retries: 3, retryDelayMs: 0 },
+      }),
+    ).rejects.toThrow(HttpRequestError);
+
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
   it('성공 응답은 재시도 없이 반환한다', async () => {
     fetchMock.mockResolvedValueOnce(new Response('ok', { status: 200 }));
 
