@@ -55,6 +55,11 @@ export class FetchHttpClient implements HttpClient {
         }
       }
 
+      console.warn(
+        `[FetchHttpClient] ${url} 요청 실패 (${attempt + 1}/${retryOptions.retries + 1}번째 시도), ${retryOptions.retryDelayMs}ms 후 재시도합니다.`,
+        lastError,
+      );
+
       await delay(retryOptions.retryDelayMs);
     }
 
