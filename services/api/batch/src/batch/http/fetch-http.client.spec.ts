@@ -29,7 +29,9 @@ describe('FetchHttpClient', () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('1/2번째 시도'),
-      expect.any(Error),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('network down'),
     );
   });
 
@@ -48,12 +50,10 @@ describe('FetchHttpClient', () => {
     expect(warnSpy).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('1/3번째 시도'),
-      expect.any(Error),
     );
     expect(warnSpy).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('2/3번째 시도'),
-      expect.any(Error),
     );
   });
 

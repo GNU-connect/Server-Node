@@ -58,8 +58,7 @@ export class FetchHttpClient implements HttpClient {
       }
 
       this.logger.warn(
-        `${url} 요청 실패 (${attempt + 1}/${retryOptions.retries + 1}번째 시도), ${retryOptions.retryDelayMs}ms 후 재시도합니다.`,
-        lastError,
+        `${url} 요청 실패 (${attempt + 1}/${retryOptions.retries + 1}번째 시도), ${retryOptions.retryDelayMs}ms 후 재시도합니다. 오류: ${this.toLogString(lastError)}`,
       );
 
       await delay(retryOptions.retryDelayMs);
@@ -141,5 +140,11 @@ export class FetchHttpClient implements HttpClient {
     }
 
     return new HttpRequestError('HTTP request failed', undefined, error);
+  }
+
+  private toLogString(error: unknown): string {
+    return error instanceof Error
+      ? (error.stack ?? error.message)
+      : String(error);
   }
 }
