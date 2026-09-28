@@ -1,4 +1,9 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { Cron, Interval } from '@nestjs/schedule';
 import { BATCH_JOBS, BatchJob } from './jobs/batch-job.interface';
 import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
@@ -7,7 +12,7 @@ const MANUAL_RUN_POLL_INTERVAL_MS = 10_000;
 
 @Injectable()
 export class BatchService implements OnApplicationBootstrap {
-  private readonly name = 'BatchService';
+  private readonly logger = new Logger(BatchService.name);
   private readonly jobsByName: Map<string, BatchJob>;
   private isRunning = false;
   private isPolling = false;
@@ -23,8 +28,8 @@ export class BatchService implements OnApplicationBootstrap {
   @Cron('0 0 * * * *') // 매 정각마다 실행
   async run(): Promise<void> {
     if (this.isRunning) {
-      console.warn(
-        `[${this.name}] 이전 작업이 아직 완료되지 않았습니다. 이번 실행을 건너뜁니다.`,
+      this.logger.warn(
+        '이전 작업이 아직 완료되지 않았습니다. 이번 실행을 건너뜁니다.',
       );
       return;
     }
@@ -50,9 +55,9 @@ export class BatchService implements OnApplicationBootstrap {
     try {
       return await job.targets();
     } catch (error) {
-      console.error(
-        `[${this.name}] 대상 조회 중 에러 발생: ${job.name}`,
-        error,
+      this.logger.error(
+        `대상 조회 중 에러 발생: ${job.name}`,
+        toErrorStack(error),
       );
       return [];
     }
@@ -71,15 +76,13 @@ export class BatchService implements OnApplicationBootstrap {
         target,
       );
       if (runId === null) {
-        console.warn(
-          `[${this.name}] 이미 대기/실행 중인 run이 있어 건너뜁니다: ${label}`,
-        );
+        this.logger.warn(`이미 대기/실행 중인 run이 있어 건너뜁니다: ${label}`);
         return;
       }
       await this.execute(runId, job, target);
     } catch (error) {
       // TODO: 에러 로깅 및 알림 시스템 연동
-      console.error(`[${this.name}] 잡 실행 중 에러 발생: ${label}`, error);
+      this.logger.error(`잡 실행 중 에러 발생: ${label}`, toErrorStack(error));
     }
   }
 
@@ -98,9 +101,9 @@ export class BatchService implements OnApplicationBootstrap {
           try {
             await this.execute(claimed.id, job, claimed.target);
           } catch (error) {
-            console.error(
-              `[${this.name}] 수동 실행 잡 에러 발생: ${job.name}`,
-              error,
+            this.logger.error(
+              `수동 실행 잡 에러 발생: ${job.name}`,
+              toErrorStack(error),
             );
           }
         } else {
@@ -112,7 +115,7 @@ export class BatchService implements OnApplicationBootstrap {
         claimed = await this.scrapeRunRepository.claimPending();
       }
     } catch (error) {
-      console.error(`[${this.name}] 수동 실행 처리 중 에러 발생`, error);
+      this.logger.error('수동 실행 처리 중 에러 발생', toErrorStack(error));
     } finally {
       this.isPolling = false;
     }
@@ -121,9 +124,7 @@ export class BatchService implements OnApplicationBootstrap {
   async onApplicationBootstrap(): Promise<void> {
     const interrupted = await this.scrapeRunRepository.failInterrupted();
     if (interrupted > 0) {
-      console.warn(
-        `[${this.name}] 중단된 run ${interrupted}건을 실패 처리했습니다.`,
-      );
+      this.logger.warn(`중단된 run ${interrupted}건을 실패 처리했습니다.`);
     }
     await this.run();
   }
@@ -145,4 +146,10 @@ export class BatchService implements OnApplicationBootstrap {
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function toErrorStack(error: unknown): string {
+  return error instanceof Error
+    ? (error.stack ?? error.message)
+    : String(error);
 }

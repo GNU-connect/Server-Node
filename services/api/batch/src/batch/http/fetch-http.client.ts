@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   HttpClient,
   HttpRequestOptions,
@@ -14,6 +14,8 @@ const DEFAULT_RETRY_ON_STATUSES = [429, 500, 502, 503, 504];
 
 @Injectable()
 export class FetchHttpClient implements HttpClient {
+  private readonly logger = new Logger(FetchHttpClient.name);
+
   async request(
     url: string,
     options: HttpRequestOptions = {},
@@ -55,9 +57,8 @@ export class FetchHttpClient implements HttpClient {
         }
       }
 
-      console.warn(
-        `[FetchHttpClient] ${url} 요청 실패 (${attempt + 1}/${retryOptions.retries + 1}번째 시도), ${retryOptions.retryDelayMs}ms 후 재시도합니다.`,
-        lastError,
+      this.logger.warn(
+        `${url} 요청 실패 (${attempt + 1}/${retryOptions.retries + 1}번째 시도), ${retryOptions.retryDelayMs}ms 후 재시도합니다. 오류: ${this.toLogString(lastError)}`,
       );
 
       await delay(retryOptions.retryDelayMs);
@@ -139,5 +140,11 @@ export class FetchHttpClient implements HttpClient {
     }
 
     return new HttpRequestError('HTTP request failed', undefined, error);
+  }
+
+  private toLogString(error: unknown): string {
+    return error instanceof Error
+      ? (error.stack ?? error.message)
+      : String(error);
   }
 }

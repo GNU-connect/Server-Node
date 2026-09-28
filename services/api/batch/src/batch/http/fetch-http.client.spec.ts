@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { FetchHttpClient } from './fetch-http.client';
 import { HttpRequestError } from './error/http-request.error';
 
@@ -16,7 +17,7 @@ describe('FetchHttpClient', () => {
   });
 
   it('재시도가 결정되면 warn 로그를 남긴다', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     fetchMock
       .mockRejectedValueOnce(new Error('network down'))
       .mockResolvedValueOnce(new Response('ok', { status: 200 }));
@@ -28,12 +29,14 @@ describe('FetchHttpClient', () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('1/2번째 시도'),
-      expect.any(Error),
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('network down'),
     );
   });
 
   it('재시도할 때마다 시도 횟수가 증가한 warn 로그를 남긴다', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     fetchMock
       .mockRejectedValueOnce(new Error('first failure'))
       .mockRejectedValueOnce(new Error('second failure'))
@@ -47,17 +50,15 @@ describe('FetchHttpClient', () => {
     expect(warnSpy).toHaveBeenNthCalledWith(
       1,
       expect.stringContaining('1/3번째 시도'),
-      expect.any(Error),
     );
     expect(warnSpy).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining('2/3번째 시도'),
-      expect.any(Error),
     );
   });
 
   it('마지막 시도가 실패해 재시도 없이 종료될 때는 warn 로그를 남기지 않는다', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     fetchMock.mockRejectedValueOnce(new Error('network down'));
 
     await expect(
@@ -70,7 +71,7 @@ describe('FetchHttpClient', () => {
   });
 
   it('재시도 불가능한 에러는 warn 로그 없이 즉시 실패한다', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
     fetchMock.mockResolvedValueOnce(new Response('not found', { status: 404 }));
 
     await expect(

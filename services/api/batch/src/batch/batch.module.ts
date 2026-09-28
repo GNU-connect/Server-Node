@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BatchService } from './batch.service';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from '../infrastructure/logger/logger.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
@@ -34,6 +35,7 @@ import { ScrapeRunRepository } from './scrape-run/scrape-run.repository';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    LoggerModule,
     ScheduleModule.forRoot(),
     DatabaseModule,
     TypeOrmModule.forFeature([
