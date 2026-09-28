@@ -55,7 +55,10 @@ export class BatchService implements OnApplicationBootstrap {
     try {
       return await job.targets();
     } catch (error) {
-      this.logger.error(`대상 조회 중 에러 발생: ${job.name}`, error);
+      this.logger.error(
+        `대상 조회 중 에러 발생: ${job.name}`,
+        toErrorStack(error),
+      );
       return [];
     }
   }
@@ -79,7 +82,7 @@ export class BatchService implements OnApplicationBootstrap {
       await this.execute(runId, job, target);
     } catch (error) {
       // TODO: 에러 로깅 및 알림 시스템 연동
-      this.logger.error(`잡 실행 중 에러 발생: ${label}`, error);
+      this.logger.error(`잡 실행 중 에러 발생: ${label}`, toErrorStack(error));
     }
   }
 
@@ -98,7 +101,10 @@ export class BatchService implements OnApplicationBootstrap {
           try {
             await this.execute(claimed.id, job, claimed.target);
           } catch (error) {
-            this.logger.error(`수동 실행 잡 에러 발생: ${job.name}`, error);
+            this.logger.error(
+              `수동 실행 잡 에러 발생: ${job.name}`,
+              toErrorStack(error),
+            );
           }
         } else {
           await this.scrapeRunRepository.fail(
@@ -109,7 +115,7 @@ export class BatchService implements OnApplicationBootstrap {
         claimed = await this.scrapeRunRepository.claimPending();
       }
     } catch (error) {
-      this.logger.error('수동 실행 처리 중 에러 발생', error);
+      this.logger.error('수동 실행 처리 중 에러 발생', toErrorStack(error));
     } finally {
       this.isPolling = false;
     }
@@ -140,4 +146,10 @@ export class BatchService implements OnApplicationBootstrap {
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function toErrorStack(error: unknown): string {
+  return error instanceof Error
+    ? (error.stack ?? error.message)
+    : String(error);
 }

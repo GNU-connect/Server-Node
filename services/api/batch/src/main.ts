@@ -10,6 +10,9 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  new Logger('Bootstrap').error('배치 애플리케이션 실행 중 에러 발생', error);
+  new Logger('Bootstrap').error(
+    '배치 애플리케이션 실행 중 에러 발생',
+    error instanceof Error ? (error.stack ?? error.message) : String(error),
+  );
   process.exit(1);
 });
