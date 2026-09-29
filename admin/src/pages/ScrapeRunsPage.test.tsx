@@ -121,6 +121,49 @@ describe('실행 기록 화면', () => {
     expect(screen.queryByRole('complementary', { name: '실행 #12' })).not.toBeInTheDocument();
   });
 
+  it('상세 패널은 대상 메타데이터를 라벨과 함께 타입 다음에 순서대로 보여 준다', async () => {
+    const run = makeRun({
+      id: 12,
+      type: 'cafeteria',
+      target: '4',
+      targetName: '교직원식당',
+      targetMeta: [
+        { label: '캠퍼스', value: '가좌캠퍼스' },
+        { label: '식당', value: '교직원식당' },
+      ],
+    });
+    routeFetch({
+      'GET /api/admin/scrape-runs': () => ok({ items: [run], nextCursor: null }),
+      'GET /api/admin/scrape-runs/12': () => ok(run),
+    });
+    renderApp('/scrape-runs?type=cafeteria&run=12', { apiKey: 'k' });
+
+    const panel = await screen.findByRole('complementary', { name: '실행 #12' });
+
+    const labels = within(panel)
+      .getAllByRole('rowheader')
+      .map(header => header.textContent);
+    expect(labels.slice(0, 4)).toEqual(['타입', '캠퍼스', '식당', '트리거']);
+    expect(within(panel).getByText('캠퍼스').closest('tr')).toHaveTextContent('가좌캠퍼스');
+    expect(within(panel).getByText('식당').closest('tr')).toHaveTextContent('교직원식당');
+  });
+
+  it.each([
+    ['메타데이터를 찾지 못한 대상은 대상 id', '99', '99'],
+    ['대상이 없는 타입은 -', null, '-'],
+  ])('상세 패널: %s를 대상 행에 보여 준다', async (_name, target, expected) => {
+    const run = makeRun({ id: 12, type: 'cafeteria', target, targetMeta: [] });
+    routeFetch({
+      'GET /api/admin/scrape-runs': () => ok({ items: [run], nextCursor: null }),
+      'GET /api/admin/scrape-runs/12': () => ok(run),
+    });
+    renderApp('/scrape-runs?type=cafeteria&run=12', { apiKey: 'k' });
+
+    const panel = await screen.findByRole('complementary', { name: '실행 #12' });
+
+    expect(within(panel).getByText('대상').closest('tr')).toHaveTextContent(expected);
+  });
+
   it('주소에 run이 있으면 상세 패널을 바로 연다', async () => {
     routeFetch({
       'GET /api/admin/scrape-runs': () => ok({ items: [RUN_12], nextCursor: null }),

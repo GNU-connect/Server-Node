@@ -17,6 +17,7 @@ import {
   targetKey,
 } from 'src/api/admin/scrape-runs/application/scrape-runs.service';
 import { ScrapeRun } from 'src/api/admin/scrape-runs/domain/entities/scrape-run.entity';
+import { ScrapeTargetMeta } from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
 import { NativeResponseDto } from 'src/api/common/dtos/native-response.dto';
 import { CreateScrapeRunRequestDto } from './dtos/requests/create-scrape-run-request.dto';
 import { ListScrapeRunsQueryDto } from './dtos/requests/list-scrape-runs-query.dto';
@@ -48,10 +49,10 @@ export class ScrapeRunsController {
       targets: status.targets.map(item => ({
         target: item.target,
         targetName: item.targetName,
-        latestRun: item.latestRun && ScrapeRunResponseDto.from(item.latestRun, item.targetName),
+        latestRun: item.latestRun && ScrapeRunResponseDto.from(item.latestRun, item.targetMeta),
         lastSucceededRun:
           item.lastSucceededRun &&
-          ScrapeRunResponseDto.from(item.lastSucceededRun, item.targetName),
+          ScrapeRunResponseDto.from(item.lastSucceededRun, item.targetMeta),
       })),
     }));
     return new NativeResponseDto(data);
@@ -69,9 +70,9 @@ export class ScrapeRunsController {
       cursor: query.cursor,
       limit: query.limit ?? DEFAULT_PAGE_SIZE,
     });
-    const names = await this.scrapeRunsService.getTargetNames(result.runs);
+    const metas = await this.scrapeRunsService.getTargetMetas(result.runs);
     return new NativeResponseDto({
-      items: result.runs.map(run => ScrapeRunResponseDto.from(run, this.nameOf(names, run))),
+      items: result.runs.map(run => ScrapeRunResponseDto.from(run, this.metaOf(metas, run))),
       nextCursor: result.nextCursor,
     });
   }
@@ -82,8 +83,8 @@ export class ScrapeRunsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<NativeResponseDto<ScrapeRunResponseDto>> {
     const run = await this.scrapeRunsService.getRun(id);
-    const names = await this.scrapeRunsService.getTargetNames([run]);
-    return new NativeResponseDto(ScrapeRunResponseDto.from(run, this.nameOf(names, run)));
+    const metas = await this.scrapeRunsService.getTargetMetas([run]);
+    return new NativeResponseDto(ScrapeRunResponseDto.from(run, this.metaOf(metas, run)));
   }
 
   @Post('scrape-runs')
@@ -96,15 +97,15 @@ export class ScrapeRunsController {
     @Body() body: CreateScrapeRunRequestDto,
   ): Promise<NativeResponseDto<CreateScrapeRunResponseDto>> {
     const runs = await this.scrapeRunsService.requestRun(body.type, body.target);
-    const names = await this.scrapeRunsService.getTargetNames(runs);
+    const metas = await this.scrapeRunsService.getTargetMetas(runs);
     return new NativeResponseDto(
-      { runs: runs.map(run => ScrapeRunResponseDto.from(run, this.nameOf(names, run))) },
+      { runs: runs.map(run => ScrapeRunResponseDto.from(run, this.metaOf(metas, run))) },
       'Accepted',
       HttpStatus.ACCEPTED,
     );
   }
 
-  private nameOf(names: Map<string, string>, run: ScrapeRun): string | null {
-    return run.target === null ? null : names.get(targetKey(run.type, run.target)) ?? null;
+  private metaOf(metas: Map<string, ScrapeTargetMeta[]>, run: ScrapeRun): ScrapeTargetMeta[] {
+    return run.target === null ? [] : metas.get(targetKey(run.type, run.target)) ?? [];
   }
 }

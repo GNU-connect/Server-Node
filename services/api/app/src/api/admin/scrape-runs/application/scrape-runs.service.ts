@@ -17,7 +17,11 @@ import {
   ScrapeRunRepository,
   ScrapeRunSearchCondition,
 } from 'src/api/admin/scrape-runs/infrastructure/scrape-run.repository';
-import { ScrapeTargetsRepository } from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
+import {
+  ScrapeTargetMeta,
+  ScrapeTargetsRepository,
+  targetNameOf,
+} from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
 
 export function targetKey(type: ScrapeRunType, target: string): string {
   return `${type}:${target}`;
@@ -91,18 +95,18 @@ export class ScrapeRunsService {
     return runs;
   }
 
-  /** run 목록의 대상 id를 이름으로 바꾸기 위한 맵. 키는 targetKey(type, target). */
-  public async getTargetNames(runs: ScrapeRun[]): Promise<Map<string, string>> {
+  /** run 목록의 대상 id를 메타데이터로 바꾸기 위한 맵. 키는 targetKey(type, target). */
+  public async getTargetMetas(runs: ScrapeRun[]): Promise<Map<string, ScrapeTargetMeta[]>> {
     const types = [...new Set(runs.filter(run => run.target !== null).map(run => run.type))];
     const found = await Promise.all(
       types.map(async type => [type, await this.scrapeTargetsRepository.findByType(type)] as const),
     );
 
-    const names = new Map<string, string>();
+    const metas = new Map<string, ScrapeTargetMeta[]>();
     for (const [type, targets] of found) {
-      for (const item of targets ?? []) names.set(targetKey(type, item.id), item.name);
+      for (const item of targets ?? []) metas.set(targetKey(type, item.id), item.meta);
     }
-    return names;
+    return metas;
   }
 
   public async getScraperStatuses(): Promise<ScraperStatusResult[]> {
@@ -122,7 +126,8 @@ export class ScrapeRunsService {
           lastSucceededRun: succeededRuns.find(run => run.type === type) ?? null,
           targets: (targets ?? []).map(item => ({
             target: item.id,
-            targetName: item.name,
+            targetName: targetNameOf(item.meta) ?? item.id,
+            targetMeta: item.meta,
             latestRun:
               latestTargetRuns.find(run => run.type === type && run.target === item.id) ?? null,
             lastSucceededRun:

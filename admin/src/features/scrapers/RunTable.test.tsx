@@ -46,4 +46,70 @@ describe('RunTable', () => {
 
     expect(screen.getAllByRole('row')[1]).not.toHaveAttribute('tabindex');
   });
+
+  describe('대상 셀', () => {
+    const cafeteriaMeta = [
+      { label: '캠퍼스', value: '가좌캠퍼스' },
+      { label: '식당', value: '교직원식당' },
+    ];
+
+    function renderTarget(overrides: Parameters<typeof makeRun>[0]) {
+      render(<RunTable runs={[makeRun(overrides)]} now={NOW} caption="실행 기록" />);
+      // 열 순서: 번호, 타입, 대상 — 오류 열도 '-'를 쓰므로 대상 셀로 범위를 좁힌다
+      return within(within(screen.getAllByRole('row')[1]).getAllByRole('cell')[2]);
+    }
+
+    it('가장 구체적인 항목을 윗줄에, 나머지 맥락을 아랫줄에 보여 준다', () => {
+      const row = renderTarget({
+        type: 'cafeteria',
+        target: '4',
+        targetName: '교직원식당',
+        targetMeta: cafeteriaMeta,
+      });
+
+      expect(row.getByText('교직원식당')).toHaveClass('ad-target-main');
+      expect(row.getByText('가좌캠퍼스')).toHaveClass('ad-target-sub');
+    });
+
+    it('맥락 항목이 여럿이면 일반 → 구체 순서로 ·로 이어 보여 주고 title로 전체를 알려 준다', () => {
+      const row = renderTarget({
+        type: 'university-notice',
+        target: '9',
+        targetMeta: [
+          { label: '학과', value: '컴퓨터과학부' },
+          { label: '단과대', value: '공과대학' },
+          { label: '게시판', value: '학부 공지사항' },
+        ],
+      });
+
+      expect(row.getByText('학부 공지사항')).toHaveClass('ad-target-main');
+      expect(row.getByText('컴퓨터과학부 · 공과대학')).toHaveAttribute(
+        'title',
+        '컴퓨터과학부 · 공과대학',
+      );
+    });
+
+    it('항목이 하나뿐이면 아랫줄 없이 윗줄만 보여 준다', () => {
+      const row = renderTarget({
+        type: 'university-notice',
+        target: '3',
+        targetMeta: [{ label: '게시판', value: '일반공지' }],
+      });
+
+      expect(row.getByText('일반공지')).toHaveClass('ad-target-main');
+      expect(row.getByText('일반공지').parentElement?.querySelector('.ad-target-sub')).toBeNull();
+    });
+
+    it('메타데이터를 찾지 못한 대상은 대상 id를 보여 준다', () => {
+      const row = renderTarget({ type: 'cafeteria', target: '99', targetMeta: [] });
+
+      expect(row.getByText('99')).toHaveClass('ad-target-main');
+    });
+
+    it('대상이 없는 타입은 -를 보여 준다', () => {
+      const row = renderTarget({ type: 'shuttle', target: null, targetMeta: [] });
+
+      expect(row.getByText('-')).toBeInTheDocument();
+    });
+  });
 });

@@ -13,6 +13,7 @@ export function makeRun(overrides: Partial<ScrapeRun> = {}): ScrapeRun {
     type: 'shuttle',
     target: null,
     targetName: null,
+    targetMeta: [],
     trigger: 'cron',
     status: 'succeeded',
     errorMessage: null,

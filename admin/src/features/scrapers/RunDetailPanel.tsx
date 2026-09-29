@@ -75,10 +75,19 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
               <th scope="row">타입</th>
               <td>{TYPE_LABELS[run.type]}</td>
             </tr>
-            <tr>
-              <th scope="row">대상</th>
-              <td>{run.targetName ?? run.target ?? '-'}</td>
-            </tr>
+            {run.targetMeta.length > 0 ? (
+              run.targetMeta.map(item => (
+                <tr key={item.label}>
+                  <th scope="row">{item.label}</th>
+                  <td>{item.value}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <th scope="row">대상</th>
+                <td>{run.target ?? '-'}</td>
+              </tr>
+            )}
             <tr>
               <th scope="row">트리거</th>
               <td>{TRIGGER_LABELS[run.trigger]}</td>
