@@ -381,6 +381,22 @@ body {
 .ad-table tr[aria-selected='true'] {
   background: var(--jinu-blue-tint);
 }
+.ad-target-main,
+.ad-target-sub {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ad-target-main {
+  font-weight: 500;
+}
+.ad-target-sub {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-subtle);
+}
 .ad-ellipsis {
   display: block;
   max-width: 280px;
@@ -420,7 +436,9 @@ body {
 .ad-runs.has-panel {
   grid-template-columns: minmax(0, 1fr) 420px;
 }
-.ad-runs.has-panel .ad-ellipsis {
+.ad-runs.has-panel .ad-ellipsis,
+.ad-runs.has-panel .ad-target-main,
+.ad-runs.has-panel .ad-target-sub {
   max-width: 120px;
 }
 .ad-panel {

@@ -2,6 +2,7 @@ import type { ScrapeRun } from '../../api/types';
 import { Badge, DataTable, type Column } from '../../design/components';
 import { formatDateTime, formatDuration } from './format';
 import { STATUS_VIEWS, TRIGGER_LABELS, TYPE_LABELS } from './labels';
+import { TargetCell } from './TargetCell';
 
 interface RunTableProps {
   runs: ScrapeRun[];
@@ -15,7 +16,7 @@ export function RunTable({ runs, now, caption, selectedId, onSelect }: RunTableP
   const columns: Column<ScrapeRun>[] = [
     { key: 'id', header: '번호', numeric: true, render: run => run.id },
     { key: 'type', header: '타입', render: run => TYPE_LABELS[run.type] },
-    { key: 'target', header: '대상', render: run => run.targetName ?? run.target ?? '-' },
+    { key: 'target', header: '대상', render: run => <TargetCell run={run} /> },
     { key: 'trigger', header: '트리거', render: run => TRIGGER_LABELS[run.trigger] },
     {
       key: 'status',
