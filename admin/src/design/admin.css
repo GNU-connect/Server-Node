@@ -554,3 +554,21 @@ body {
 .ad-field-input::placeholder {
   color: var(--ink-muted);
 }
+
+.ad-target-list summary {
+  cursor: pointer;
+}
+
+.ad-target-list ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ad-target-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+}

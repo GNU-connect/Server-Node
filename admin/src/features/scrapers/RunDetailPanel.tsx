@@ -76,6 +76,10 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
               <td>{TYPE_LABELS[run.type]}</td>
             </tr>
             <tr>
+              <th scope="row">대상</th>
+              <td>{run.targetName ?? run.target ?? '-'}</td>
+            </tr>
+            <tr>
               <th scope="row">트리거</th>
               <td>{TRIGGER_LABELS[run.trigger]}</td>
             </tr>

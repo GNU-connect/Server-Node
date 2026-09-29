@@ -11,6 +11,7 @@ const UNIQUE_VIOLATION = '23505';
 
 export interface ScrapeRunSearchCondition {
   type?: ScrapeRunType;
+  target?: string;
   status?: ScrapeRunStatus;
   cursor?: number;
   limit: number;
@@ -23,9 +24,16 @@ export class ScrapeRunRepository {
     private readonly scrapeRunRepository: Repository<ScrapeRun>,
   ) {}
 
-  findMany({ type, status, cursor, limit }: ScrapeRunSearchCondition): Promise<ScrapeRun[]> {
+  findMany({
+    type,
+    target,
+    status,
+    cursor,
+    limit,
+  }: ScrapeRunSearchCondition): Promise<ScrapeRun[]> {
     const where: FindOptionsWhere<ScrapeRun> = {};
     if (type) where.type = type;
+    if (target) where.target = target;
     if (status) where.status = status;
     if (cursor) where.id = LessThan(cursor);
 
@@ -57,13 +65,46 @@ export class ScrapeRunRepository {
       .getMany();
   }
 
+  /** (타입, 대상)별 가장 최근 run. 대상 없는 run은 제외한다. */
+  findLatestPerTarget(): Promise<ScrapeRun[]> {
+    return this.scrapeRunRepository
+      .createQueryBuilder('run')
+      .distinctOn(['run.type', 'run.target'])
+      .where('run.target IS NOT NULL')
+      .orderBy('run.type')
+      .addOrderBy('run.target')
+      .addOrderBy('run.id', 'DESC')
+      .getMany();
+  }
+
+  /** (타입, 대상)별 가장 최근 성공 run. 대상 없는 run은 제외한다. */
+  findLastSucceededPerTarget(): Promise<ScrapeRun[]> {
+    return this.scrapeRunRepository
+      .createQueryBuilder('run')
+      .distinctOn(['run.type', 'run.target'])
+      .where('run.target IS NOT NULL')
+      .andWhere('run.status = :status', { status: 'succeeded' })
+      .orderBy('run.type')
+      .addOrderBy('run.target')
+      .addOrderBy('run.id', 'DESC')
+      .getMany();
+  }
+
   /**
    * 수동 실행 요청을 대기 상태로 등록한다.
-   * 같은 타입의 run이 이미 대기/실행 중이면 null을 반환한다.
+   * 같은 (타입, 대상)의 run이 이미 대기/실행 중이면 null을 반환한다.
    */
-  async createPending(type: ScrapeRunType): Promise<ScrapeRun | null> {
+  async createPending(
+    type: ScrapeRunType,
+    target: string | null = null,
+  ): Promise<ScrapeRun | null> {
     try {
-      const run = this.scrapeRunRepository.create({ type, trigger: 'manual', status: 'pending' });
+      const run = this.scrapeRunRepository.create({
+        type,
+        target,
+        trigger: 'manual',
+        status: 'pending',
+      });
       const { id } = await this.scrapeRunRepository.save(run);
       return this.findById(id);
     } catch (error) {

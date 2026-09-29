@@ -11,6 +11,9 @@ export class ScrapeRun {
   @Column({ length: 30 })
   type: string;
 
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  target: string | null;
+
   @Column({ length: 10 })
   trigger: ScrapeRunTrigger;
 

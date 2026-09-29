@@ -30,8 +30,17 @@ export function getScrapeRun(apiKey: string, id: number): Promise<ScrapeRun> {
   return request(apiKey, `/scrape-runs/${id}`);
 }
 
-export function requestScrapeRun(apiKey: string, type: ScrapeRunType): Promise<ScrapeRun> {
-  return request(apiKey, '/scrape-runs', { method: 'POST', body: JSON.stringify({ type }) });
+export async function requestScrapeRun(
+  apiKey: string,
+  type: ScrapeRunType,
+  target?: string,
+): Promise<ScrapeRun[]> {
+  const body = target === undefined ? { type } : { type, target };
+  const data = await request<{ runs: ScrapeRun[] }>(apiKey, '/scrape-runs', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+  return data.runs;
 }
 
 async function request<T>(apiKey: string, path: string, init: RequestInit = {}): Promise<T> {

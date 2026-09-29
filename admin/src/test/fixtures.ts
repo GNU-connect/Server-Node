@@ -3,6 +3,7 @@ import {
   type ScrapeRun,
   type ScrapeRunType,
   type ScraperStatus,
+  type ScraperTargetStatus,
 } from '../api/types';
 
 // 2026-09-25(금) 14:20 KST 시작, 1분 12초 걸린 성공 실행
@@ -10,6 +11,8 @@ export function makeRun(overrides: Partial<ScrapeRun> = {}): ScrapeRun {
   return {
     id: 1,
     type: 'shuttle',
+    target: null,
+    targetName: null,
     trigger: 'cron',
     status: 'succeeded',
     errorMessage: null,
@@ -24,8 +27,9 @@ export function makeStatus(
   type: ScrapeRunType,
   latestRun: ScrapeRun | null,
   lastSucceededRun: ScrapeRun | null = latestRun?.status === 'succeeded' ? latestRun : null,
+  targets: ScraperTargetStatus[] = [],
 ): ScraperStatus {
-  return { type, latestRun, lastSucceededRun };
+  return { type, latestRun, lastSucceededRun, targets };
 }
 
 /** 4개 타입 모두 성공 상태. overrides로 타입별 상태를 바꾼다. */

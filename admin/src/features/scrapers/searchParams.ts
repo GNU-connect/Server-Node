@@ -19,3 +19,7 @@ export function parseRunId(value: string | null): number | null {
   const id = Number(value);
   return id > 0 ? id : null;
 }
+
+export function parseTarget(value: string | null): string | undefined {
+  return value && /^[A-Za-z0-9_-]{1,50}$/.test(value) ? value : undefined;
+}

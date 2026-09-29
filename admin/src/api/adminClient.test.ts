@@ -49,17 +49,33 @@ describe('adminClient', () => {
     expect(fetchMock.mock.calls[0][0]).toBe('/api/admin/scrape-runs/7');
   });
 
-  it('수동 실행은 JSON 본문으로 POST 한다', async () => {
+  it('수동 실행은 JSON 본문으로 POST 하고 등록된 run 목록을 돌려준다', async () => {
     const run = makeRun({ status: 'pending', trigger: 'manual' });
-    const fetchMock = mockFetch().mockResolvedValue(ok(run, 202));
+    const fetchMock = mockFetch().mockResolvedValue(ok({ runs: [run] }, 202));
 
-    await expect(requestScrapeRun('k', 'shuttle')).resolves.toEqual(run);
+    await expect(requestScrapeRun('k', 'shuttle')).resolves.toEqual([run]);
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('/api/admin/scrape-runs');
     expect(init.method).toBe('POST');
     expect(init.headers['Content-Type']).toBe('application/json');
     expect(JSON.parse(init.body)).toEqual({ type: 'shuttle' });
+  });
+
+  it('대상을 지정한 수동 실행은 target도 본문에 담는다', async () => {
+    const fetchMock = mockFetch().mockResolvedValue(ok({ runs: [] }, 202));
+
+    await requestScrapeRun('k', 'cafeteria', '3');
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ type: 'cafeteria', target: '3' });
+  });
+
+  it('목록 조회는 target도 쿼리로 보낸다', async () => {
+    const fetchMock = mockFetch().mockResolvedValue(ok({ items: [], nextCursor: null }));
+
+    await listScrapeRuns('k', { type: 'cafeteria', target: '3' });
+
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/admin/scrape-runs?type=cafeteria&target=3');
   });
 
   it.each([401, 403])('%i 응답은 UnauthorizedError', async status => {

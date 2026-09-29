@@ -10,7 +10,12 @@ const NOW = new Date('2026-09-25T06:00:00.000Z');
 
 function renderCard(
   status: ScraperStatus,
-  props: Partial<{ requesting: boolean; notice: string | null; onRequest: () => void }> = {},
+  props: Partial<{
+    requesting: boolean;
+    requestingTarget: string | null;
+    notice: string | null;
+    onRequest: () => void;
+  }> = {},
 ) {
   const onRequest = props.onRequest ?? vi.fn();
   render(
@@ -19,6 +24,7 @@ function renderCard(
         status={status}
         now={NOW}
         requesting={props.requesting ?? false}
+        requestingTarget={props.requestingTarget ?? null}
         notice={props.notice ?? null}
         onRequest={onRequest}
       />
@@ -52,7 +58,7 @@ describe('ScraperCard', () => {
     ['pending', '대기 중'],
     ['running', '수집 중'],
   ] as const)('%s이면 버튼을 막고 수집 중으로 표시한다', (status, label) => {
-    renderCard(makeStatus('notice', makeRun({ type: 'notice', status, finishedAt: null })));
+    renderCard(makeStatus('university-notice', makeRun({ type: 'university-notice', status, finishedAt: null })));
 
     expect(screen.getByText(label, { selector: '.jn-badge' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '수집 중…' })).toBeDisabled();
@@ -96,5 +102,137 @@ describe('ScraperCard', () => {
     renderCard(makeStatus('shuttle', makeRun()), { notice: '이미 수집이 대기 중이거나 실행 중이에요.' });
 
     expect(screen.getByRole('status')).toHaveTextContent('이미 수집이 대기 중이거나 실행 중이에요.');
+  });
+
+  describe('대상이 있는 타입', () => {
+    const target = (id: string, name: string, status: 'succeeded' | 'failed' | 'running' | null) => ({
+      target: id,
+      targetName: name,
+      latestRun: status
+        ? makeRun({
+            id: Number(id),
+            type: 'cafeteria',
+            target: id,
+            targetName: name,
+            status,
+            ...(status === 'running' ? { finishedAt: null } : {}),
+          })
+        : null,
+      lastSucceededRun: null,
+    });
+    const cafeteriaStatus = () =>
+      makeStatus('cafeteria', makeRun({ type: 'cafeteria' }), null, [
+        target('1', '아람관', 'succeeded'),
+        target('2', '교육문화식당', 'failed'),
+        target('3', '가좌식당', 'running'),
+      ]);
+
+    it('대상별 상태 요약을 보여 주고 버튼 이름을 전체 수집으로 바꾼다', () => {
+      renderCard(cafeteriaStatus());
+
+      expect(screen.getByText('성공 1 · 실패 1 · 진행 중 1')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '전체 수집' })).toBeEnabled();
+    });
+
+    it('대상마다 이름 링크·상태·수집 버튼을 보여 주고 대상별 실행 기록으로 연결한다', () => {
+      renderCard(cafeteriaStatus());
+
+      expect(screen.getByRole('link', { name: '아람관' })).toHaveAttribute(
+        'href',
+        '/scrape-runs?type=cafeteria&target=1',
+      );
+      expect(screen.getByRole('button', { name: '아람관 수집' })).toBeEnabled();
+      expect(screen.getByRole('button', { name: '가좌식당 수집' })).toBeDisabled();
+    });
+
+    it('대상의 수집 버튼을 누르면 타입과 대상을 넘긴다', async () => {
+      const user = userEvent.setup();
+      const { onRequest } = renderCard(cafeteriaStatus());
+
+      await user.click(screen.getByRole('button', { name: '교육문화식당 수집' }));
+
+      expect(onRequest).toHaveBeenCalledWith('cafeteria', '2');
+    });
+
+    it('전체 수집을 누르면 타입만 넘긴다', async () => {
+      const user = userEvent.setup();
+      const { onRequest } = renderCard(cafeteriaStatus());
+
+      await user.click(screen.getByRole('button', { name: '전체 수집' }));
+
+      expect(onRequest).toHaveBeenCalledWith('cafeteria');
+    });
+
+    it('모든 대상이 진행 중이면 전체 수집을 막는다', () => {
+      renderCard(
+        makeStatus('cafeteria', makeRun({ type: 'cafeteria', status: 'running', finishedAt: null }), null, [
+          target('1', '아람관', 'running'),
+        ]),
+      );
+
+      expect(screen.getByRole('button', { name: '수집 중…' })).toBeDisabled();
+    });
+
+    it('한 대상의 요청을 보내는 동안 그 대상 버튼만 막는다', () => {
+      renderCard(cafeteriaStatus(), { requestingTarget: '2' });
+
+      expect(screen.getByRole('button', { name: '교육문화식당 수집' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: '아람관 수집' })).toBeEnabled();
+    });
+
+    it('타입 전체 최근 run이 성공이어도 실패한 대상이 있으면 실패로 표시하고 대상 이름과 오류를 알려 준다', () => {
+      const failed = makeRun({
+        id: 40,
+        type: 'cafeteria',
+        target: '2',
+        targetName: '교육문화식당',
+        status: 'failed',
+        errorMessage: '식단 표를 찾을 수 없습니다.',
+      });
+      renderCard(
+        makeStatus('cafeteria', makeRun({ id: 99, type: 'cafeteria', status: 'succeeded' }), null, [
+          target('1', '아람관', 'succeeded'),
+          { target: '2', targetName: '교육문화식당', latestRun: failed, lastSucceededRun: null },
+        ]),
+      );
+
+      // 첫 배지가 카드 머리의 전체 상태이고, 이어지는 배지는 대상별 상태다
+      const [headerBadge] = screen.getAllByText('실패', { selector: '.jn-badge' });
+      expect(headerBadge).toHaveClass('jn-badge-danger');
+      expect(screen.getByRole('alert')).toHaveTextContent('교육문화식당');
+      expect(screen.getByRole('alert')).toHaveTextContent('식단 표를 찾을 수 없습니다.');
+      expect(screen.getByRole('link', { name: '실행 기록에서 전체 보기' })).toHaveAttribute(
+        'href',
+        '/scrape-runs?type=cafeteria&target=2&run=40',
+      );
+    });
+
+    it('마지막 성공은 모든 대상 중 가장 오래된 성공 시각이고, 성공 기록이 없는 대상이 있으면 아직 없다고 한다', () => {
+      const success = (id: number, finishedAt: string) =>
+        makeRun({ id, type: 'cafeteria', target: String(id), finishedAt });
+      const withSuccess = (id: string, name: string, finishedAt: string) => ({
+        target: id,
+        targetName: name,
+        latestRun: success(Number(id), finishedAt),
+        lastSucceededRun: success(Number(id), finishedAt),
+      });
+
+      renderCard(
+        makeStatus('cafeteria', success(2, '2026-09-25T05:21:13.000Z'), null, [
+          withSuccess('1', '아람관', '2026-09-25T03:00:00.000Z'),
+          withSuccess('2', '교육문화식당', '2026-09-25T05:21:13.000Z'),
+        ]),
+      );
+
+      // 가장 오래된 성공(12:00 KST)이지 가장 최근(14:21)이 아니다
+      expect(screen.getByText('오늘 12:00')).toBeInTheDocument();
+      expect(screen.queryByText('오늘 14:21')).not.toBeInTheDocument();
+    });
+
+    it('성공 기록이 없는 대상이 있으면 마지막 성공을 아직 없다고 한다', () => {
+      renderCard(cafeteriaStatus());
+
+      expect(screen.getByText('아직 없어요')).toBeInTheDocument();
+    });
   });
 });

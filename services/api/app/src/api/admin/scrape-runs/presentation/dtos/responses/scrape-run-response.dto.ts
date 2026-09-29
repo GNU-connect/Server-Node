@@ -15,6 +15,12 @@ export class ScrapeRunResponseDto {
   @ApiProperty({ enum: SCRAPE_RUN_TYPES })
   type: ScrapeRunType;
 
+  @ApiProperty({ nullable: true, type: String, description: '수집 대상 id. 대상 없는 타입은 null' })
+  target: string | null;
+
+  @ApiProperty({ nullable: true, type: String, description: '수집 대상 이름(식당명, 카테고리명)' })
+  targetName: string | null;
+
   @ApiProperty({ enum: ['cron', 'manual'] })
   trigger: ScrapeRunTrigger;
 
@@ -33,10 +39,12 @@ export class ScrapeRunResponseDto {
   @ApiProperty({ nullable: true, type: String })
   finishedAt: string | null;
 
-  static from(run: ScrapeRun): ScrapeRunResponseDto {
+  static from(run: ScrapeRun, targetName: string | null = null): ScrapeRunResponseDto {
     return {
       id: Number(run.id),
       type: run.type,
+      target: run.target,
+      targetName,
       trigger: run.trigger,
       status: run.status,
       errorMessage: run.errorMessage,
@@ -59,6 +67,20 @@ export class ScrapeRunListResponseDto {
   nextCursor: number | null;
 }
 
+export class ScraperTargetStatusResponseDto {
+  @ApiProperty({ example: '1' })
+  target: string;
+
+  @ApiProperty({ example: '아람관' })
+  targetName: string;
+
+  @ApiProperty({ nullable: true, type: ScrapeRunResponseDto })
+  latestRun: ScrapeRunResponseDto | null;
+
+  @ApiProperty({ nullable: true, type: ScrapeRunResponseDto })
+  lastSucceededRun: ScrapeRunResponseDto | null;
+}
+
 export class ScraperStatusResponseDto {
   @ApiProperty({ enum: SCRAPE_RUN_TYPES })
   type: ScrapeRunType;
@@ -68,4 +90,15 @@ export class ScraperStatusResponseDto {
 
   @ApiProperty({ nullable: true, type: ScrapeRunResponseDto })
   lastSucceededRun: ScrapeRunResponseDto | null;
+
+  @ApiProperty({
+    type: [ScraperTargetStatusResponseDto],
+    description: '대상별 상태. 대상 없이 도는 타입은 빈 배열',
+  })
+  targets: ScraperTargetStatusResponseDto[];
+}
+
+export class CreateScrapeRunResponseDto {
+  @ApiProperty({ type: [ScrapeRunResponseDto], description: '대기열에 등록된 run들' })
+  runs: ScrapeRunResponseDto[];
 }
