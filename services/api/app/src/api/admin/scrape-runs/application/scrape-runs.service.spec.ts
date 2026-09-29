@@ -7,6 +7,21 @@ import { ScrapeRun } from 'src/api/admin/scrape-runs/domain/entities/scrape-run.
 import { ScrapeRunRepository } from 'src/api/admin/scrape-runs/infrastructure/scrape-run.repository';
 import { ScrapeTargetsRepository } from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
 
+const ARAM = {
+  id: '1',
+  meta: [
+    { label: '캠퍼스', value: '가좌캠퍼스' },
+    { label: '식당', value: '아람관' },
+  ],
+};
+const EDU_CULTURE = {
+  id: '2',
+  meta: [
+    { label: '캠퍼스', value: '가좌캠퍼스' },
+    { label: '식당', value: '교육문화식당' },
+  ],
+};
+
 function createRun(overrides: Partial<ScrapeRun>): ScrapeRun {
   return {
     id: 1,
@@ -96,10 +111,7 @@ describe('ScrapeRunsService', () => {
     });
 
     it('target을 지정하면 그 대상의 run 하나만 등록한다', async () => {
-      targetsRepository.findByType.mockResolvedValue([
-        { id: '1', name: '아람관' },
-        { id: '2', name: '교육문화식당' },
-      ]);
+      targetsRepository.findByType.mockResolvedValue([ARAM, EDU_CULTURE]);
       const run = createRun({ id: 8, type: 'cafeteria', target: '2', status: 'pending' });
       repository.createPending.mockResolvedValue(run);
 
@@ -108,14 +120,14 @@ describe('ScrapeRunsService', () => {
     });
 
     it('목록에 없는 target이면 BadRequestException을 던진다', async () => {
-      targetsRepository.findByType.mockResolvedValue([{ id: '1', name: '아람관' }]);
+      targetsRepository.findByType.mockResolvedValue([ARAM]);
 
       await expect(service.requestRun('cafeteria', '99')).rejects.toThrow(BadRequestException);
       expect(repository.createPending).not.toHaveBeenCalled();
     });
 
     it('지정한 대상이 이미 대기/실행 중이면 ConflictException을 던진다', async () => {
-      targetsRepository.findByType.mockResolvedValue([{ id: '1', name: '아람관' }]);
+      targetsRepository.findByType.mockResolvedValue([ARAM]);
       repository.createPending.mockResolvedValue(null);
 
       await expect(service.requestRun('cafeteria', '1')).rejects.toThrow(ConflictException);
@@ -123,9 +135,9 @@ describe('ScrapeRunsService', () => {
 
     it('target 없이 요청하면 대상마다 run을 만들고 진행 중인 대상은 건너뛴다', async () => {
       targetsRepository.findByType.mockResolvedValue([
-        { id: '1', name: '아람관' },
-        { id: '2', name: '교육문화식당' },
-        { id: '3', name: '가좌식당' },
+        ARAM,
+        EDU_CULTURE,
+        { id: '3', meta: [{ label: '식당', value: '가좌식당' }] },
       ]);
       const first = createRun({ id: 10, type: 'cafeteria', target: '1', status: 'pending' });
       const third = createRun({ id: 12, type: 'cafeteria', target: '3', status: 'pending' });
@@ -138,7 +150,7 @@ describe('ScrapeRunsService', () => {
     });
 
     it('target 없이 요청했는데 모든 대상이 진행 중이면 ConflictException을 던진다', async () => {
-      targetsRepository.findByType.mockResolvedValue([{ id: '1', name: '아람관' }]);
+      targetsRepository.findByType.mockResolvedValue([ARAM]);
       repository.createPending.mockResolvedValue(null);
 
       await expect(service.requestRun('cafeteria')).rejects.toThrow(ConflictException);
@@ -151,20 +163,17 @@ describe('ScrapeRunsService', () => {
     });
   });
 
-  describe('getTargetNames', () => {
-    it('run의 대상 id를 이름으로 바꿀 수 있는 맵을 만든다', async () => {
-      targetsRepository.findByType.mockResolvedValue([
-        { id: '1', name: '아람관' },
-        { id: '2', name: '교육문화식당' },
-      ]);
+  describe('getTargetMetas', () => {
+    it('run의 대상 id를 메타데이터로 바꿀 수 있는 맵을 만든다', async () => {
+      targetsRepository.findByType.mockResolvedValue([ARAM, EDU_CULTURE]);
 
-      const names = await service.getTargetNames([
+      const metas = await service.getTargetMetas([
         createRun({ id: 1, type: 'cafeteria', target: '1' }),
         createRun({ id: 2, type: 'shuttle', target: null }),
       ]);
 
-      expect(names.get(targetKey('cafeteria', '1'))).toBe('아람관');
-      expect(names.get(targetKey('cafeteria', '2'))).toBe('교육문화식당');
+      expect(metas.get(targetKey('cafeteria', '1'))).toEqual(ARAM.meta);
+      expect(metas.get(targetKey('cafeteria', '2'))).toEqual(EDU_CULTURE.meta);
       expect(targetsRepository.findByType).toHaveBeenCalledTimes(1);
     });
   });
@@ -193,12 +202,7 @@ describe('ScrapeRunsService', () => {
 
     it('대상이 있는 타입은 대상별 최근 run을 함께 반환한다', async () => {
       targetsRepository.findByType.mockImplementation(async type =>
-        type === 'cafeteria'
-          ? [
-              { id: '1', name: '아람관' },
-              { id: '2', name: '교육문화식당' },
-            ]
-          : null,
+        type === 'cafeteria' ? [ARAM, EDU_CULTURE] : null,
       );
       const latestFirst = createRun({ id: 9, type: 'cafeteria', target: '1', status: 'failed' });
       const succeededFirst = createRun({ id: 7, type: 'cafeteria', target: '1' });
@@ -212,10 +216,17 @@ describe('ScrapeRunsService', () => {
         {
           target: '1',
           targetName: '아람관',
+          targetMeta: ARAM.meta,
           latestRun: latestFirst,
           lastSucceededRun: succeededFirst,
         },
-        { target: '2', targetName: '교육문화식당', latestRun: null, lastSucceededRun: null },
+        {
+          target: '2',
+          targetName: '교육문화식당',
+          targetMeta: EDU_CULTURE.meta,
+          latestRun: null,
+          lastSucceededRun: null,
+        },
       ]);
     });
   });

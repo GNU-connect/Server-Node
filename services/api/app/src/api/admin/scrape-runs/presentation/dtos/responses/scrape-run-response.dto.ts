@@ -7,6 +7,18 @@ import {
   ScrapeRunTrigger,
   ScrapeRunType,
 } from 'src/api/admin/scrape-runs/domain/entities/scrape-run.entity';
+import {
+  ScrapeTargetMeta,
+  targetNameOf,
+} from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
+
+export class ScrapeTargetMetaResponseDto implements ScrapeTargetMeta {
+  @ApiProperty({ example: '캠퍼스' })
+  label: string;
+
+  @ApiProperty({ example: '가좌캠퍼스' })
+  value: string;
+}
 
 export class ScrapeRunResponseDto {
   @ApiProperty({ example: 1 })
@@ -18,8 +30,18 @@ export class ScrapeRunResponseDto {
   @ApiProperty({ nullable: true, type: String, description: '수집 대상 id. 대상 없는 타입은 null' })
   target: string | null;
 
-  @ApiProperty({ nullable: true, type: String, description: '수집 대상 이름(식당명, 카테고리명)' })
+  @ApiProperty({
+    nullable: true,
+    type: String,
+    description: '수집 대상 대표 이름(targetMeta의 마지막 값: 식당명, 게시판명)',
+  })
   targetName: string | null;
+
+  @ApiProperty({
+    type: [ScrapeTargetMetaResponseDto],
+    description: '수집 대상 메타데이터. 일반 → 구체 순서(예: 캠퍼스, 식당). 대상이 없으면 빈 배열',
+  })
+  targetMeta: ScrapeTargetMetaResponseDto[];
 
   @ApiProperty({ enum: ['cron', 'manual'] })
   trigger: ScrapeRunTrigger;
@@ -39,12 +61,13 @@ export class ScrapeRunResponseDto {
   @ApiProperty({ nullable: true, type: String })
   finishedAt: string | null;
 
-  static from(run: ScrapeRun, targetName: string | null = null): ScrapeRunResponseDto {
+  static from(run: ScrapeRun, targetMeta: ScrapeTargetMeta[] = []): ScrapeRunResponseDto {
     return {
       id: Number(run.id),
       type: run.type,
       target: run.target,
-      targetName,
+      targetName: targetNameOf(targetMeta),
+      targetMeta,
       trigger: run.trigger,
       status: run.status,
       errorMessage: run.errorMessage,

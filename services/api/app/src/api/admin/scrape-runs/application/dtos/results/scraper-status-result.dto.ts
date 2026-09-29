@@ -1,3 +1,4 @@
+import { ScrapeTargetMeta } from 'src/api/admin/scrape-runs/infrastructure/scrape-targets.repository';
 import {
   ScrapeRun,
   ScrapeRunType,
@@ -6,6 +7,7 @@ import {
 export interface ScraperTargetStatusResult {
   target: string;
   targetName: string;
+  targetMeta: ScrapeTargetMeta[];
   latestRun: ScrapeRun | null;
   lastSucceededRun: ScrapeRun | null;
 }
