@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { HttpExceptionFilter } from './api/common/filters/http-exception.filter';
@@ -26,6 +27,8 @@ async function bootstrap() {
     }),
   );
 
+  app.use(cookieParser());
+
   app.enableCors({
     origin: ['http://localhost:8081'],
     credentials: true,
@@ -46,15 +49,7 @@ async function bootstrap() {
       },
       'X-USER-ID',
     )
-    .addApiKey(
-      {
-        type: 'apiKey',
-        name: 'X-ADMIN-API-KEY',
-        in: 'header',
-        description: 'admin API 키 (ADMIN_API_KEY 환경변수)',
-      },
-      'X-ADMIN-API-KEY',
-    )
+    .addCookieAuth('admin_session')
     .addSecurityRequirements('X-USER-ID')
     .build();
 

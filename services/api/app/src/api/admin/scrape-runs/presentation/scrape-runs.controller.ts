@@ -10,8 +10,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiAcceptedResponse, ApiOkResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { AdminApiKeyGuard } from 'src/api/admin/common/guards/admin-api-key.guard';
+import { ApiAcceptedResponse, ApiCookieAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { AdminSessionGuard } from 'src/api/admin/common/guards/admin-session.guard';
 import {
   ScrapeRunsService,
   targetKey,
@@ -31,9 +31,9 @@ import {
 const DEFAULT_PAGE_SIZE = 20;
 
 @ApiTags('admin')
-@ApiSecurity('X-ADMIN-API-KEY')
+@ApiCookieAuth()
 @Controller('admin')
-@UseGuards(AdminApiKeyGuard)
+@UseGuards(AdminSessionGuard)
 export class ScrapeRunsController {
   constructor(private readonly scrapeRunsService: ScrapeRunsService) {}
 
