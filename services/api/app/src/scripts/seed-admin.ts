@@ -4,6 +4,9 @@ import { Client } from 'pg';
 import { normalizeEmail } from '../api/admin/auth/application/normalize-email';
 
 const MIN_PASSWORD_LENGTH = 8;
+// 로그인 DTO의 상한과 맞춘다. 넘으면 이 계정으로는 로그인할 수 없다
+const MAX_PASSWORD_LENGTH = 200;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export interface SeedInput {
   email: string;
@@ -18,6 +21,12 @@ export function readSeedInput(env: NodeJS.ProcessEnv): SeedInput {
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
     throw new Error(`비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 해요.`);
+  }
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    throw new Error(`비밀번호는 ${MAX_PASSWORD_LENGTH}자 이하여야 해요.`);
+  }
+  if (!EMAIL_PATTERN.test(email)) {
+    throw new Error('이메일 형식이 올바르지 않아요.');
   }
   return { email, password };
 }

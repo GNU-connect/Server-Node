@@ -26,4 +26,23 @@ describe('readSeedInput', () => {
       readSeedInput({ ADMIN_SEED_EMAIL: 'admin@example.com', ADMIN_SEED_PASSWORD: 'short' }),
     ).toThrow('비밀번호는 8자 이상이어야 해요.');
   });
+
+  it('비밀번호가 200자를 넘으면 오류, 200자는 통과', () => {
+    const env = { ADMIN_SEED_EMAIL: 'admin@example.com' };
+    expect(() => readSeedInput({ ...env, ADMIN_SEED_PASSWORD: 'a'.repeat(201) })).toThrow(
+      '비밀번호는 200자 이하여야 해요.',
+    );
+    expect(readSeedInput({ ...env, ADMIN_SEED_PASSWORD: 'a'.repeat(200) }).password).toHaveLength(
+      200,
+    );
+  });
+
+  it.each(['admin', 'admin@', '@example.com', 'admin@example', 'a b@example.com'])(
+    '이메일 형식이 아니면 오류 (%s)',
+    email => {
+      expect(() =>
+        readSeedInput({ ADMIN_SEED_EMAIL: email, ADMIN_SEED_PASSWORD: 'long-enough-pw' }),
+      ).toThrow('이메일 형식이 올바르지 않아요.');
+    },
+  );
 });
