@@ -54,7 +54,7 @@ function setup(user: AdminUser | null = createUser()) {
     findByEmail: jest.fn().mockResolvedValue(user),
     incrementFailedLogins: jest.fn().mockResolvedValue(1),
     lock: jest.fn().mockResolvedValue(undefined),
-    clearFailures: jest.fn().mockResolvedValue(undefined),
+    clearFailuresIfUnlocked: jest.fn().mockResolvedValue(true),
   };
   const sessions = {
     create: jest.fn().mockResolvedValue(undefined),
@@ -87,7 +87,7 @@ describe('AdminAuthService.login', () => {
       new Date(NOW.getTime() + SESSION_TTL_MS),
     );
     expect(sessions.create.mock.calls[0][1]).not.toBe(result.token);
-    expect(users.clearFailures).toHaveBeenCalledWith(1);
+    expect(users.clearFailuresIfUnlocked).toHaveBeenCalledWith(1, NOW);
     expect(sessions.deleteExpiredOf).toHaveBeenCalledWith(1, NOW);
   });
 
@@ -118,7 +118,7 @@ describe('AdminAuthService.login', () => {
 
     expect(error).toBeInstanceOf(UnauthorizedException);
     expect(error.message).toBe('이메일 또는 비밀번호가 맞지 않아요.');
-    expect(users.incrementFailedLogins).toHaveBeenCalledWith(1);
+    expect(users.incrementFailedLogins).toHaveBeenCalledWith(1, NOW);
     expect(users.lock).not.toHaveBeenCalled();
     expect(sessions.create).not.toHaveBeenCalled();
   });
@@ -132,6 +132,32 @@ describe('AdminAuthService.login', () => {
     );
 
     expect(users.lock).toHaveBeenCalledWith(1, new Date(NOW.getTime() + LOCK_DURATION_MS));
+  });
+
+  it('틀린 비밀번호를 검증하는 사이 다른 요청이 잠갔다면 401이 아니라 429로 답한다', async () => {
+    const { service, users } = setup();
+    users.incrementFailedLogins.mockResolvedValue(null);
+
+    const error = await service.login('admin@example.com', 'wrong').catch(e => e);
+
+    expect(error).toBeInstanceOf(HttpException);
+    expect(error).not.toBeInstanceOf(UnauthorizedException);
+    expect(error.getStatus()).toBe(429);
+    expect(error.message).toBe('로그인 시도가 너무 많아요. 15분 뒤에 다시 시도해 주세요.');
+    expect(users.lock).not.toHaveBeenCalled();
+  });
+
+  it('맞는 비밀번호여도 검증하는 사이 잠겼다면 429이고 세션을 만들지 않는다', async () => {
+    const { service, users, sessions } = setup();
+    users.clearFailuresIfUnlocked.mockResolvedValue(false);
+
+    const error = await service.login('admin@example.com', PASSWORD).catch(e => e);
+
+    expect(error).toBeInstanceOf(HttpException);
+    expect(error.getStatus()).toBe(429);
+    expect(error.message).toBe('로그인 시도가 너무 많아요. 15분 뒤에 다시 시도해 주세요.');
+    expect(sessions.deleteExpiredOf).not.toHaveBeenCalled();
+    expect(sessions.create).not.toHaveBeenCalled();
   });
 
   it('잠긴 동안은 맞는 비밀번호여도 429이고 세션을 만들지 않는다', async () => {

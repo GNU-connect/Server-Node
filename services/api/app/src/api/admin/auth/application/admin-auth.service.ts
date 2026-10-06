@@ -58,14 +58,19 @@ export class AdminAuthService {
     }
 
     if (!(await argon2.verify(user.passwordHash, password))) {
-      const failures = await this.adminUserRepository.incrementFailedLogins(user.id);
+      const failures = await this.adminUserRepository.incrementFailedLogins(user.id, now);
+      // 검증하는 사이 다른 요청이 먼저 잠갔다. 비밀번호가 틀렸다는 사실도 알려주지 않는다.
+      if (failures === null) throw this.lockedError(now);
       if (failures >= MAX_FAILED_LOGINS) {
         await this.adminUserRepository.lock(user.id, new Date(now.getTime() + LOCK_DURATION_MS));
       }
       throw new UnauthorizedException(INVALID_CREDENTIALS);
     }
 
-    await this.adminUserRepository.clearFailures(user.id);
+    // 검증하는 사이 잠겼다면 맞는 비밀번호여도 세션을 만들지 않는다
+    if (!(await this.adminUserRepository.clearFailuresIfUnlocked(user.id, now))) {
+      throw this.lockedError(now);
+    }
     await this.adminSessionRepository.deleteExpiredOf(user.id, now);
 
     const token = randomBytes(32).toString('hex');
@@ -98,6 +103,11 @@ export class AdminAuthService {
 
   async logout(token: string): Promise<void> {
     await this.adminSessionRepository.deleteByTokenHash(hashToken(token));
+  }
+
+  private lockedError(now: Date): HttpException {
+    const lockedUntil = new Date(now.getTime() + LOCK_DURATION_MS);
+    return new HttpException(lockedMessage(lockedUntil, now), HttpStatus.TOO_MANY_REQUESTS);
   }
 
   /** 테스트에서 시각을 고정하려고 분리했다 */
