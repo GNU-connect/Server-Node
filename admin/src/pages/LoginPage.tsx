@@ -1,32 +1,36 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { UnauthorizedError, errorText } from '../api/errors';
+import { ApiError, errorText } from '../api/errors';
 import { useAuth } from '../auth/AuthContext';
 import { Button, Card, Icon, Notice, TextField } from '../design/components';
 
 export function LoginPage() {
-  const { apiKey, login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? '/scrapers';
 
-  const [key, setKey] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [revealed, setRevealed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (apiKey) return <Navigate to={from} replace />;
+  if (user) return <Navigate to={from} replace />;
+
+  const canSubmit = email.trim() !== '' && password !== '' && !submitting;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!key.trim() || submitting) return;
+    if (!canSubmit) return;
     setSubmitting(true);
     setError(null);
     try {
-      await login(key);
+      await login(email, password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err instanceof UnauthorizedError ? '키가 맞지 않아요. 다시 확인해 주세요.' : errorText(err));
+      // 서버가 계정 오류(401)와 잠금(429)을 이미 해요체 문장으로 알려 준다
+      setError(err instanceof ApiError ? err.message : errorText(err));
       setSubmitting(false);
     }
   }
@@ -37,22 +41,30 @@ export function LoginPage() {
         <div className="ad-login-head">
           <img className="ad-login-icon" src="/jinu-app-icon.webp" alt="" />
           <h1 className="ad-login-title">운영자 확인이 필요해요</h1>
-          <p className="ad-login-desc">ADMIN_API_KEY를 입력하면 수집 상태를 볼 수 있어요.</p>
+          <p className="ad-login-desc">운영자 계정으로 로그인해 주세요.</p>
         </div>
         <form className="ad-login-form" onSubmit={handleSubmit}>
           <TextField
-            id="admin-api-key"
-            label="어드민 API 키"
+            id="admin-email"
+            label="이메일"
+            type="email"
+            autoComplete="username"
+            autoFocus
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+          <TextField
+            id="admin-password"
+            label="비밀번호"
             type={revealed ? 'text' : 'password'}
             autoComplete="current-password"
-            autoFocus
-            value={key}
-            onChange={e => setKey(e.target.value)}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
             trailing={
               <button
                 type="button"
                 className="ad-icon-btn"
-                aria-label={revealed ? '키 숨기기' : '키 보기'}
+                aria-label={revealed ? '비밀번호 숨기기' : '비밀번호 보기'}
                 onClick={() => setRevealed(r => !r)}
               >
                 <Icon name={revealed ? 'eye-off' : 'eye'} />
@@ -60,7 +72,7 @@ export function LoginPage() {
             }
           />
           {error && <Notice tone="danger">{error}</Notice>}
-          <Button type="submit" size="lg" block disabled={!key.trim() || submitting}>
+          <Button type="submit" size="lg" block disabled={!canSubmit}>
             {submitting ? '확인하는 중…' : '들어가기'}
           </Button>
         </form>
