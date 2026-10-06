@@ -11,8 +11,8 @@ cp .env.example .env.local   # 운영 서버에 붙이려면 VITE_API_TARGET=htt
 pnpm dev                      # http://localhost:5173
 ```
 
-로그인 화면에 API 서버의 `ADMIN_API_KEY` 값을 넣어요. 키는 브라우저 탭의 sessionStorage에만 남고, 탭을 닫으면 사라져요.
-API 서버에 `ADMIN_API_KEY`가 설정돼 있지 않으면 모든 admin 요청이 403이라 로그인할 수 없어요.
+로그인 화면에 운영자 계정의 이메일과 비밀번호를 넣어요. 서버가 DB에 세션을 만들고 HttpOnly 쿠키로 돌려줘요(24시간, 쓰는 동안 연장). 연속 5번 틀리면 15분 동안 잠겨요.
+계정은 API 서버에서 시드 스크립트로 만들어요: `ADMIN_SEED_EMAIL=... ADMIN_SEED_PASSWORD=... node dist/scripts/seed-admin.js` (`services/api/app`에서 `pnpm build` 뒤에 실행, 운영은 `docker compose exec -e ... app node dist/scripts/seed-admin.js`).
 
 ## 화면
 
