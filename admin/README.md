@@ -7,12 +7,23 @@
 ```bash
 cd admin
 pnpm install
-cp .env.example .env.local   # 운영 서버에 붙이려면 VITE_API_TARGET=https://api.connectgnu.kro.kr
+cp .env.example .env.local   # 운영 서버에 붙이려면 VITE_API_TARGET=https://admin.connectgnu.kro.kr
 pnpm dev                      # http://localhost:5173
 ```
 
 로그인 화면에 운영자 계정의 이메일과 비밀번호를 넣어요. 서버가 DB에 세션을 만들고 HttpOnly 쿠키로 돌려줘요(24시간, 쓰는 동안 연장). 연속 5번 틀리면 15분 동안 잠겨요.
-계정은 API 서버에서 시드 스크립트로 만들어요: `ADMIN_SEED_EMAIL=... ADMIN_SEED_PASSWORD=... node dist/scripts/seed-admin.js` (`services/api/app`에서 `pnpm build` 뒤에 실행, 운영은 `docker compose exec -e ... app node dist/scripts/seed-admin.js`).
+계정은 API 서버에서 시드 스크립트로 만들어요. 비밀번호를 명령줄에 적지 않도록 먼저 입력받아 환경변수로 올려요.
+
+```bash
+# 운영 (서버에서)
+read -s ADMIN_SEED_PASSWORD; export ADMIN_SEED_PASSWORD
+docker compose exec -e ADMIN_SEED_EMAIL=admin@example.com -e ADMIN_SEED_PASSWORD app node dist/scripts/seed-admin.js
+
+# 로컬 (services/api/app에서 pnpm build 뒤에)
+# 스크립트는 .env를 읽지 않으므로 DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE도 설정돼 있어야 해요.
+read -s ADMIN_SEED_PASSWORD; export ADMIN_SEED_PASSWORD
+ADMIN_SEED_EMAIL=admin@example.com node --env-file=.env dist/scripts/seed-admin.js
+```
 
 ## 화면
 

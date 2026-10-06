@@ -139,7 +139,7 @@ services/api/app/src/scripts/seed-admin.ts
 
 ## 7. 계정 시드
 
-`pnpm seed:admin` (`services/api/app`, 빌드된 `dist/scripts/seed-admin.js`를 실행하므로 운영 이미지에서도 돈다): 환경변수 `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`를 읽어 argon2 해시로 `admin_user`에 upsert한다. 이미 있으면 비밀번호 해시만 갱신하고 실패 횟수·잠금을 초기화한다. 두 값 중 하나라도 없으면 아무것도 하지 않고 종료 코드 1로 끝난다. 비밀번호는 코드, 마이그레이션, 문서에 적지 않는다. 운영 서버에서는 충분히 긴 비밀번호로 한 번 실행한다.
+시드는 빌드된 `dist/scripts/seed-admin.js`를 실행한다. 운영 이미지에는 package.json이 없으므로 `node dist/scripts/seed-admin.js`로 돌리고, `pnpm seed:admin`은 로컬용 별칭이다: 환경변수 `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD`를 읽어 argon2 해시로 `admin_user`에 upsert한다. 이미 있으면 비밀번호 해시만 갱신하고 실패 횟수·잠금을 초기화한다. 두 값 중 하나라도 없으면 아무것도 하지 않고 종료 코드 1로 끝난다. 비밀번호는 코드, 마이그레이션, 문서에 적지 않는다. 운영 서버에서는 충분히 긴 비밀번호로 한 번 실행한다.
 
 ## 8. 어드민 웹 변경
 
@@ -169,7 +169,7 @@ services/api/app/src/scripts/seed-admin.ts
 ## 10. 배포·운영 메모
 
 - 마이그레이션은 기존 `db-migrate.yml`이 적용한다. 배포 순서는 마이그레이션 → 시드 → API 배포 → 어드민 배포다.
-- 시드는 서버에서 환경변수와 함께 수동으로 한 번 실행한다.
+- 시드는 서버에서 환경변수와 함께 수동으로 한 번 실행한다. API CD와 어드민 CD는 별개 워크플로라서 API 배포 직후에 시드를 수동으로 한 번 돌려야 하고, API와 어드민은 함께 머지·배포한다.
 - API가 새 가드로 바뀌면 옛 어드민 웹은 로그인할 수 없다. 어드민 CD가 API와 같은 시점에 배포되도록 PR을 함께 머지한다.
 - 서버 환경변수 `ADMIN_API_KEY`는 배포 후 정리한다(코드는 더 이상 읽지 않는다).
 - nginx는 `Cookie`/`Set-Cookie`를 기본으로 전달하므로 설정 변경은 필요 없다(구현 중 확인).
