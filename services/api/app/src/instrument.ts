@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node';
+import { scrubSentryEvent } from './api/common/utils/scrub-sentry-event';
 
 // Read more about the available options here: https://docs.sentry.io/platforms/javascript/guides/nestjs/configuration/options/
 Sentry.init({
@@ -27,7 +28,7 @@ Sentry.init({
 
   // Advanced, optional: Called for message and error events
   beforeSend(event) {
-    return event;
+    return scrubSentryEvent(event);
   },
 
   // Advanced, optional: Called for transaction events, you can further debug your transactions here
