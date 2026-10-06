@@ -22,7 +22,7 @@ describe('실행 기록 화면', () => {
     const fetchMock = routeFetch({
       'GET /api/admin/scrape-runs': () => ok({ items: [RUN_12, RUN_11], nextCursor: null }),
     });
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
 
     expect(await screen.findByText('12')).toBeInTheDocument();
     expect(within(table()).getAllByRole('row')).toHaveLength(3);
@@ -35,7 +35,7 @@ describe('실행 기록 화면', () => {
       'GET /api/admin/scrape-runs': () => ok({ items: [RUN_12], nextCursor: null }),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
     await screen.findByText('12');
 
     await user.click(within(screen.getByRole('group', { name: '타입' })).getByRole('button', { name: '학식' }));
@@ -53,7 +53,7 @@ describe('실행 기록 화면', () => {
           : ok({ items: [RUN_12, RUN_11], nextCursor: 11 }),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
     await screen.findByText('12');
 
     await user.click(screen.getByRole('button', { name: '더 보기' }));
@@ -78,7 +78,7 @@ describe('실행 기록 화면', () => {
       },
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
     await screen.findByText('11');
 
     await user.click(screen.getByRole('button', { name: '더 보기' }));
@@ -94,7 +94,7 @@ describe('실행 기록 화면', () => {
     const fetchMock = routeFetch({
       'GET /api/admin/scrape-runs': () => ok({ items: [RUN_11], nextCursor: null }),
     });
-    renderApp('/scrape-runs?type=foo&status=done&run=abc', { apiKey: 'k' });
+    renderApp('/scrape-runs?type=foo&status=done&run=abc', { loggedIn: true });
 
     await screen.findByText('11');
     expect(listUrls(fetchMock)).toEqual(['/api/admin/scrape-runs?limit=20']);
@@ -110,7 +110,7 @@ describe('실행 기록 화면', () => {
       'GET /api/admin/scrape-runs/12': () => ok(RUN_12),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
 
     await user.click(await screen.findByText('12'));
 
@@ -121,12 +121,55 @@ describe('실행 기록 화면', () => {
     expect(screen.queryByRole('complementary', { name: '실행 #12' })).not.toBeInTheDocument();
   });
 
+  it('상세 패널은 대상 메타데이터를 라벨과 함께 타입 다음에 순서대로 보여 준다', async () => {
+    const run = makeRun({
+      id: 12,
+      type: 'cafeteria',
+      target: '4',
+      targetName: '교직원식당',
+      targetMeta: [
+        { label: '캠퍼스', value: '가좌캠퍼스' },
+        { label: '식당', value: '교직원식당' },
+      ],
+    });
+    routeFetch({
+      'GET /api/admin/scrape-runs': () => ok({ items: [run], nextCursor: null }),
+      'GET /api/admin/scrape-runs/12': () => ok(run),
+    });
+    renderApp('/scrape-runs?type=cafeteria&run=12', { loggedIn: true });
+
+    const panel = await screen.findByRole('complementary', { name: '실행 #12' });
+
+    const labels = within(panel)
+      .getAllByRole('rowheader')
+      .map(header => header.textContent);
+    expect(labels.slice(0, 4)).toEqual(['타입', '캠퍼스', '식당', '트리거']);
+    expect(within(panel).getByText('캠퍼스').closest('tr')).toHaveTextContent('가좌캠퍼스');
+    expect(within(panel).getByText('식당').closest('tr')).toHaveTextContent('교직원식당');
+  });
+
+  it.each([
+    ['메타데이터를 찾지 못한 대상은 대상 id', '99', '99'],
+    ['대상이 없는 타입은 -', null, '-'],
+  ])('상세 패널: %s를 대상 행에 보여 준다', async (_name, target, expected) => {
+    const run = makeRun({ id: 12, type: 'cafeteria', target, targetMeta: [] });
+    routeFetch({
+      'GET /api/admin/scrape-runs': () => ok({ items: [run], nextCursor: null }),
+      'GET /api/admin/scrape-runs/12': () => ok(run),
+    });
+    renderApp('/scrape-runs?type=cafeteria&run=12', { loggedIn: true });
+
+    const panel = await screen.findByRole('complementary', { name: '실행 #12' });
+
+    expect(within(panel).getByText('대상').closest('tr')).toHaveTextContent(expected);
+  });
+
   it('주소에 run이 있으면 상세 패널을 바로 연다', async () => {
     routeFetch({
       'GET /api/admin/scrape-runs': () => ok({ items: [RUN_12], nextCursor: null }),
       'GET /api/admin/scrape-runs/12': () => ok(RUN_12),
     });
-    renderApp('/scrape-runs?type=cafeteria&run=12', { apiKey: 'k' });
+    renderApp('/scrape-runs?type=cafeteria&run=12', { loggedIn: true });
 
     expect(await screen.findByRole('complementary', { name: '실행 #12' })).toBeInTheDocument();
   });
@@ -137,7 +180,7 @@ describe('실행 기록 화면', () => {
       'GET /api/admin/scrape-runs/999': () =>
         jsonResponse(404, { statusCode: 404, message: '999번 수집 실행 기록을 찾을 수 없습니다.' }),
     });
-    renderApp('/scrape-runs?run=999', { apiKey: 'k' });
+    renderApp('/scrape-runs?run=999', { loggedIn: true });
 
     const panel = await screen.findByRole('complementary', { name: '실행 #999' });
     expect(await within(panel).findByRole('alert')).toHaveTextContent(
@@ -154,7 +197,7 @@ describe('실행 기록 화면', () => {
         fail ? new Response('Internal Server Error', { status: 500 }) : ok(RUN_12),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs?run=12', { apiKey: 'k' });
+    renderApp('/scrape-runs?run=12', { loggedIn: true });
 
     const panel = await screen.findByRole('complementary', { name: '실행 #12' });
     expect(await within(panel).findByRole('alert')).toHaveTextContent(
@@ -175,7 +218,7 @@ describe('실행 기록 화면', () => {
           : ok({ items: [RUN_12, RUN_11], nextCursor: 11 }),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
     await screen.findByText('11');
 
     await user.click(within(screen.getByRole('group', { name: '상태' })).getByRole('button', { name: '실패' }));
@@ -193,7 +236,7 @@ describe('실행 기록 화면', () => {
           : ok({ items: [RUN_11], nextCursor: null }),
     });
     const user = userEvent.setup();
-    renderApp('/scrape-runs?status=failed', { apiKey: 'k' });
+    renderApp('/scrape-runs?status=failed', { loggedIn: true });
 
     expect(await screen.findByRole('heading', { name: '조건에 맞는 실행 기록이 없어요' })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '필터 초기화' }));
@@ -206,7 +249,7 @@ describe('실행 기록 화면', () => {
     routeFetch({
       'GET /api/admin/scrape-runs': () => jsonResponse(401, { statusCode: 401, message: 'Unauthorized' }),
     });
-    renderApp('/scrape-runs', { apiKey: 'k' });
+    renderApp('/scrape-runs', { loggedIn: true });
 
     expect(await screen.findByRole('heading', { name: '운영자 확인이 필요해요' })).toBeInTheDocument();
   });
@@ -219,7 +262,7 @@ describe('실행 기록 화면', () => {
         'GET /api/admin/scrape-runs': () => ok({ items: [current], nextCursor: null }),
         'GET /api/admin/scrape-runs/30': () => ok(current),
       });
-      renderApp('/scrape-runs?run=30', { apiKey: 'k' });
+      renderApp('/scrape-runs?run=30', { loggedIn: true });
       await act(() => vi.advanceTimersByTimeAsync(0));
       const detailCalls = () => callsTo(fetchMock, 'GET', '/api/admin/scrape-runs/30').length;
       expect(detailCalls()).toBe(1);
@@ -242,7 +285,7 @@ describe('실행 기록 화면', () => {
           nextCursor: null,
         }),
     });
-    renderApp('/scrape-runs?type=cafeteria&target=2', { apiKey: 'k' });
+    renderApp('/scrape-runs?type=cafeteria&target=2', { loggedIn: true });
 
     expect(await screen.findByText(/교육문화식당의 기록만 보고 있어요/)).toBeInTheDocument();
     expect(listUrls(fetchMock)[0]).toBe('/api/admin/scrape-runs?type=cafeteria&target=2&limit=20');

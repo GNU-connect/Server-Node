@@ -14,6 +14,7 @@ import { NoticesModule } from './api/public/notices/notices.module';
 import { SchedulesModule } from './api/public/schedules/schedules.module';
 import { ShuttlesModule } from './api/public/shuttles/shuttles.module';
 import { HealthModule } from './api/internal/health/health.module';
+import { AdminAuthModule } from './api/admin/auth/admin-auth.module';
 import { ScrapeRunsModule } from './api/admin/scrape-runs/scrape-runs.module';
 
 @Module({
@@ -35,6 +36,7 @@ import { ScrapeRunsModule } from './api/admin/scrape-runs/scrape-runs.module';
     ShuttlesModule,
     HealthModule,
     ScrapeRunsModule,
+    AdminAuthModule,
   ],
   providers: [
     {

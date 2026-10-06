@@ -3,9 +3,10 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { apiKey } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
-  if (!apiKey) {
+  if (loading) return null;
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
   }
   return <>{children}</>;

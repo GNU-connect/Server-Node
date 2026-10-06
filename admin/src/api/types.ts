@@ -11,13 +11,21 @@ export type ScrapeRunStatus = (typeof SCRAPE_RUN_STATUSES)[number];
 
 export type ScrapeRunTrigger = 'cron' | 'manual';
 
+/** 수집 대상을 설명하는 항목 하나(예: 캠퍼스 → 가좌캠퍼스) */
+export interface ScrapeTargetMeta {
+  label: string;
+  value: string;
+}
+
 export interface ScrapeRun {
   id: number;
   type: ScrapeRunType;
   /** 수집 대상 id(식당, 공지 카테고리). 대상 없는 타입은 null */
   target: string | null;
-  /** 수집 대상 이름 */
+  /** 수집 대상 대표 이름(targetMeta의 마지막 값) */
   targetName: string | null;
+  /** 수집 대상 메타데이터. 일반 → 구체 순서. 대상이 없거나 찾지 못하면 빈 배열 */
+  targetMeta: ScrapeTargetMeta[];
   trigger: ScrapeRunTrigger;
   status: ScrapeRunStatus;
   errorMessage: string | null;
@@ -52,4 +60,8 @@ export interface ListScrapeRunsParams {
   status?: ScrapeRunStatus;
   cursor?: number;
   limit?: number;
+}
+
+export interface AdminUser {
+  email: string;
 }

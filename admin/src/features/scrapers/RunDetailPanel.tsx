@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { getScrapeRun } from '../../api/adminClient';
 import { ApiError, UnauthorizedError, errorText } from '../../api/errors';
 import type { ScrapeRun } from '../../api/types';
-import { useApiKey, useAuth } from '../../auth/AuthContext';
+import { useAuth } from '../../auth/AuthContext';
 import { Badge, Button, Icon, Notice } from '../../design/components';
 import { formatDateTime, formatDuration } from './format';
 import { STATUS_VIEWS, TRIGGER_LABELS, TYPE_LABELS, isInProgress } from './labels';
@@ -19,7 +19,6 @@ interface RunDetailPanelProps {
 
 /** 실행 한 건의 전 필드. 진행 중이면 3초마다 새로 불러온다. 호출 측은 key={runId}로 쓴다. */
 export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
-  const apiKey = useApiKey();
   const { logout } = useAuth();
   const now = useNow();
   const [run, setRun] = useState<ScrapeRun | null>(null);
@@ -27,14 +26,14 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
 
   const load = useCallback(async () => {
     try {
-      setRun(await getScrapeRun(apiKey, runId));
+      setRun(await getScrapeRun(runId));
       setError(null);
     } catch (err) {
       if (err instanceof UnauthorizedError) logout();
       else if (err instanceof ApiError && err.status === 404) setError(NOT_FOUND_TEXT);
       else setError(errorText(err));
     }
-  }, [apiKey, runId, logout]);
+  }, [runId, logout]);
 
   // 처음 한 번 불러오고, 진행 중인 동안만 이어서 부른다. 오류가 나면 멈추고, 다시 시도하면 error를 지워 재개한다.
   usePolling(load, ACTIVE_INTERVAL_MS, error === null && (run === null || isInProgress(run)));
@@ -75,10 +74,19 @@ export function RunDetailPanel({ runId, onClose }: RunDetailPanelProps) {
               <th scope="row">타입</th>
               <td>{TYPE_LABELS[run.type]}</td>
             </tr>
-            <tr>
-              <th scope="row">대상</th>
-              <td>{run.targetName ?? run.target ?? '-'}</td>
-            </tr>
+            {run.targetMeta.length > 0 ? (
+              run.targetMeta.map(item => (
+                <tr key={item.label}>
+                  <th scope="row">{item.label}</th>
+                  <td>{item.value}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <th scope="row">대상</th>
+                <td>{run.target ?? '-'}</td>
+              </tr>
+            )}
             <tr>
               <th scope="row">트리거</th>
               <td>{TRIGGER_LABELS[run.trigger]}</td>

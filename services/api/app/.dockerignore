@@ -2,5 +2,4 @@
 .gitignore
 .env*
 *.log
-**/seed*.ts
 node_modules

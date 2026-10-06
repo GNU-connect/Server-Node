@@ -8,7 +8,7 @@ export class ApiError extends Error {
   }
 }
 
-/** 401/403. 키가 없거나 틀림 */
+/** 401/403. 로그인하지 않았거나 세션이 만료됨 */
 export class UnauthorizedError extends ApiError {
   constructor(status: number, message: string) {
     super(status, message);
