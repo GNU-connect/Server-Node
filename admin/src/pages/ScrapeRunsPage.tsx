@@ -9,7 +9,7 @@ import {
   type ScrapeRunStatus,
   type ScrapeRunType,
 } from '../api/types';
-import { useApiKey, useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/AuthContext';
 import { Button, Chip, EmptyState, Notice, Section } from '../design/components';
 import { cx } from '../design/cx';
 import { RunDetailPanel } from '../features/scrapers/RunDetailPanel';
@@ -22,7 +22,6 @@ import { PageHeader } from '../layout/PageHeader';
 const PAGE_SIZE = 20;
 
 export function ScrapeRunsPage() {
-  const apiKey = useApiKey();
   const { logout } = useAuth();
   const now = useNow();
   const [params, setParams] = useSearchParams();
@@ -57,7 +56,7 @@ export function ScrapeRunsPage() {
     setNextCursor(null);
     setLoading(true);
     setError(null);
-    listScrapeRuns(apiKey, { type, target, status, limit: PAGE_SIZE })
+    listScrapeRuns({ type, target, status, limit: PAGE_SIZE })
       .then(page => {
         if (cancelled) return;
         setItems(page.items);
@@ -72,14 +71,14 @@ export function ScrapeRunsPage() {
     return () => {
       cancelled = true;
     };
-  }, [apiKey, type, target, status, reloadToken, handleError]);
+  }, [type, target, status, reloadToken, handleError]);
 
   async function loadMore() {
     if (nextCursor === null || loadingMore) return;
     const requestedFor = filterKeyRef.current;
     setLoadingMore(true);
     try {
-      const page = await listScrapeRuns(apiKey, {
+      const page = await listScrapeRuns({
         type,
         target,
         status,

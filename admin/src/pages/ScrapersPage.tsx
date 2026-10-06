@@ -8,7 +8,7 @@ import {
   type ScrapeRunType,
   type ScraperStatus,
 } from '../api/types';
-import { useApiKey, useAuth } from '../auth/AuthContext';
+import { useAuth } from '../auth/AuthContext';
 import { Button, EmptyState, Notice, Section } from '../design/components';
 import { RunTable } from '../features/scrapers/RunTable';
 import { ScraperCard } from '../features/scrapers/ScraperCard';
@@ -37,7 +37,6 @@ function toCards(statuses: ScraperStatus[]): ScraperStatus[] {
 }
 
 export function ScrapersPage() {
-  const apiKey = useApiKey();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const now = useNow();
@@ -67,8 +66,8 @@ export function ScrapersPage() {
   const load = useCallback(async () => {
     try {
       const [nextStatuses, page] = await Promise.all([
-        getScraperStatuses(apiKey),
-        listScrapeRuns(apiKey, { limit: RECENT_LIMIT }),
+        getScraperStatuses(),
+        listScrapeRuns({ limit: RECENT_LIMIT }),
       ]);
       setStatuses(nextStatuses);
       setRecent(page.items);
@@ -77,7 +76,7 @@ export function ScrapersPage() {
     } catch (err) {
       handleError(err);
     }
-  }, [apiKey, handleError]);
+  }, [handleError]);
 
   const cards = statuses ? toCards(statuses) : null;
   const active = cards?.some(isStatusInProgress) ?? false;
@@ -89,7 +88,7 @@ export function ScrapersPage() {
     setRequesting({ type, target });
     setNotices(prev => ({ ...prev, [type]: undefined }));
     try {
-      await requestScrapeRun(apiKey, type, target);
+      await requestScrapeRun(type, target);
       await load();
     } catch (err) {
       if (err instanceof ConflictError) setNotices(prev => ({ ...prev, [type]: CONFLICT_NOTICE }));

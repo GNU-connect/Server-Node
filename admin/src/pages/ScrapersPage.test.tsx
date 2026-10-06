@@ -15,7 +15,7 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrapers': () => ok(allStatuses()),
       'GET /api/admin/scrape-runs': () => ok({ items: [makeRun({ id: 42 })], nextCursor: 41 }),
     });
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     for (const name of ['셔틀', '학교 공지', '학식', '학사 일정']) {
       expect(await screen.findByRole('heading', { name, level: 3 })).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrapers': () => ok(allStatuses()),
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
     });
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     expect(await screen.findByText('아직 실행 기록이 없어요')).toBeInTheDocument();
     expect(callsTo(fetchMock, 'GET', '/api/admin/scrape-runs')[0][0]).toBe(
@@ -55,7 +55,7 @@ describe('수집 상태 화면', () => {
         ),
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
     });
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     expect(
       await screen.findByText('학교 공지, 학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),
@@ -74,7 +74,7 @@ describe('수집 상태 화면', () => {
       },
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '셔틀', level: 3 });
     await user.click(within(card('셔틀')).getByRole('button', { name: '지금 수집' }));
@@ -96,7 +96,7 @@ describe('수집 상태 화면', () => {
         }),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '셔틀', level: 3 });
     const button = within(card('셔틀')).getByRole('button', { name: '지금 수집' });
@@ -115,7 +115,7 @@ describe('수집 상태 화면', () => {
         jsonResponse(409, { statusCode: 409, message: "'university-notice' 수집이 이미 대기 또는 실행 중입니다." }),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '학교 공지', level: 3 });
     await user.click(within(card('학교 공지')).getByRole('button', { name: '지금 수집' }));
@@ -133,7 +133,7 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       '요청이 실패했어요(HTTP 500). 잠시 뒤 다시 시도해 주세요.',
@@ -151,7 +151,7 @@ describe('수집 상태 화면', () => {
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '셔틀', level: 3 });
     await user.click(screen.getByRole('button', { name: '새로고침' }));
@@ -170,7 +170,7 @@ describe('수집 상태 화면', () => {
           ok(allStatuses({ shuttle: makeStatus('shuttle', makeRun({ status: 'running', finishedAt: null })) })),
         'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
       });
-      renderApp('/scrapers', { apiKey: 'k' });
+      renderApp('/scrapers', { loggedIn: true });
       await act(() => vi.advanceTimersByTimeAsync(0));
       expect(callsTo(fetchMock, 'GET', '/api/admin/scrapers')).toHaveLength(1);
 
@@ -183,7 +183,7 @@ describe('수집 상태 화면', () => {
         'GET /api/admin/scrapers': () => ok(allStatuses()),
         'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
       });
-      renderApp('/scrapers', { apiKey: 'k' });
+      renderApp('/scrapers', { loggedIn: true });
       await act(() => vi.advanceTimersByTimeAsync(0));
 
       await act(() => vi.advanceTimersByTimeAsync(3000));
@@ -192,21 +192,20 @@ describe('수집 상태 화면', () => {
       expect(callsTo(fetchMock, 'GET', '/api/admin/scrapers')).toHaveLength(2);
     });
 
-    it('폴링 중 키가 거절되면(403) 로그아웃하고 로그인 화면으로 간다', async () => {
+    it('폴링 중 세션이 만료되면(401) 로그아웃하고 로그인 화면으로 간다', async () => {
       let revoked = false;
       routeFetch({
         'GET /api/admin/scrapers': () =>
-          revoked ? jsonResponse(403, { statusCode: 403, message: 'Forbidden resource' }) : ok(allStatuses()),
+          revoked ? jsonResponse(401, { statusCode: 401, message: 'Unauthorized' }) : ok(allStatuses()),
         'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
       });
-      renderApp('/scrapers', { apiKey: 'k' });
+      renderApp('/scrapers', { loggedIn: true });
       await act(() => vi.advanceTimersByTimeAsync(0));
 
       revoked = true;
       await act(() => vi.advanceTimersByTimeAsync(30_000));
 
       expect(screen.getByRole('heading', { name: '운영자 확인이 필요해요' })).toBeInTheDocument();
-      expect(sessionStorage.getItem('admin.apiKey')).toBeNull();
     });
   });
 
@@ -229,7 +228,7 @@ describe('수집 상태 화면', () => {
       'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '학식', level: 3 });
     await user.click(within(card('학식')).getByRole('button', { name: '교육문화식당 수집' }));
@@ -258,7 +257,7 @@ describe('수집 상태 화면', () => {
       'POST /api/admin/scrape-runs': () => ok({ runs: [makeRun({ status: 'pending' })] }, 202),
     });
     const user = userEvent.setup();
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     await screen.findByRole('heading', { name: '학식', level: 3 });
     await user.click(within(card('학식')).getByRole('button', { name: '전체 수집' }));
@@ -284,7 +283,7 @@ describe('수집 상태 화면', () => {
         ),
       'GET /api/admin/scrape-runs': () => ok({ items: [], nextCursor: null }),
     });
-    renderApp('/scrapers', { apiKey: 'k' });
+    renderApp('/scrapers', { loggedIn: true });
 
     expect(
       await screen.findByText('학식 수집이 실패했어요. 카드의 오류를 확인하고 다시 수집해 주세요.'),

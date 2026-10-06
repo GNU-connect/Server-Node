@@ -61,3 +61,7 @@ export interface ListScrapeRunsParams {
   cursor?: number;
   limit?: number;
 }
+
+export interface AdminUser {
+  email: string;
+}

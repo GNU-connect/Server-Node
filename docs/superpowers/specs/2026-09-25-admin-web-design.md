@@ -1,5 +1,7 @@
 # 커넥트 지누 어드민 웹 설계
 
+> 인증은 2026-10-06 `2026-10-06-admin-login-design.md`로 대체됐다(API 키 입력 → 이메일/비밀번호 + DB 세션). 이 문서의 로그인·API 키 설명은 옛 방식이다.
+
 - 작성일: 2026-09-25
 - 대상: `admin/` (신규), 루트 `package.json`
 - 참고: 커넥트 지누 디자인 시스템 아티팩트 (https://claude.ai/artifact/GAP9Ps56WZuu2UgUS2hZSB), `services/api/app/src/api/admin/scrape-runs`
